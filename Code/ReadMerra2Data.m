@@ -8,7 +8,7 @@
 % Revised: Sep 17,2023 deactived CreateMerra2Aerosol Diagnostic Report
 %          due to errors added dialog to load pre calculated Political 
 % Revised: Sept 19,2023 problems with CreateMerra2Aerosol Diagnostic Report
-% Revised: Oct 10,2023 Brough under Source Control forth attempt
+% Revised: Oct 10,2023 Brought under Git Control Using Remote Repo
 % fixed
 % Classification: Unclassified/Public Domain
 %% Set Up Globals
