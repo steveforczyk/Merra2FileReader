@@ -1038,8 +1038,6 @@ end
    ROIName8=char(SelectedSeaMaskData{3,3});
    ROIName9=char(SelectedSeaMaskData{4,3});
    ROIName10=char(SelectedSeaMaskData{5,3});
-    
-   ab=1;
    % Load these 5 masks in now
 % Start With Mask 1 if one was defined
 if(numUserSelectedSeaMasks>=1)
