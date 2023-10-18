@@ -24,7 +24,7 @@ global VariableTableBC VariableTableHdr;
 global DataSetLinks TimeSlices;
 global PascalsToMilliBars PascalsToPsi;
 global DustSizeGroups BlackCarbonSizeGroups SeaSaltSizeGroups;
-global DustROICountry MaskList MaskChoices  MaskFileName iDustCalc;
+global DustROICountry MaskList MaskChoices  MaskFileName ;
 global SeaMaskFileName SeaBoundaryFiles SeaMaskChoices numSelectedSeaMasks;
 global SelectedSeaMaskData SortedSBF indexSBF;
 global SelectedMaskData numSelectedMasks numUserSelectedSeaMasks;
@@ -100,7 +100,7 @@ global yd md dd;
 global pwd;
 %% Control Flags DataSet 2
 global iBlackCarbon iDust iOrganicCarbon iSeaSalt iSulfate iAllAerosols;
-
+global iSeaSaltCalc iDustCalc;
 
 clc;
 %% Set Up Fixed Paths
@@ -372,18 +372,19 @@ SelectedSeaMaskData{3,3}='IndianOcean';
 SelectedSeaMaskData{4,1}='NorthAtlanticOceanMask.mat';
 SelectedSeaMaskData{4,2}='Merra2NorthAtlanticOceanMask';
 SelectedSeaMaskData{4,3}='NorthAtlanticOcean';
-SelectedSeaMaskData{5,1}='SouthPacificOceanMask.mat';
-SelectedSeaMaskData{5,2}='Merra2SouthPacificMask';
-SelectedSeaMaskData{5,3}='SouthPacificOcean';
+SelectedSeaMaskData{5,1}='ArcticOceanMask.mat';
+SelectedSeaMaskData{5,2}='Merra2ArcticOceanMask';
+SelectedSeaMaskData{5,3}='ArticOcean';
 %% Control Flags-Dataset 02
 iBlackCarbon=0;
-iDust=1;
+iDust=0;
 iOrganicCarbon=0;
 iSeaSalt=1;
 iSulfate=0;
 iAllAerosols=0;
 iPrintTimingInfo=1;
 iDustCalc=2;% Calculate Dust emission
+iSeaSaltCalc=1;%Calculate Sea Salt totals
 DustROICountry='Sudan';
 %% Set up some initial data
 NumProcFiles=0;
@@ -969,6 +970,18 @@ end
         ROIName3=char(SelectedMaskData{3,3});
         ROIName4=char(SelectedMaskData{4,3});
         ROIName5=char(SelectedMaskData{5,3});
+  fprintf(fid,'%s\n','----- Land Surface Masks Selected-----');
+  roistr1=strcat('ROI Name 1=',ROIName1);
+  fprintf(fid,'%s\n',roistr1);
+  roistr2=strcat('ROI Name 2=',ROIName2);
+  fprintf(fid,'%s\n',roistr2);
+  roistr3=strcat('ROI Name 3=',ROIName3);
+  fprintf(fid,'%s\n',roistr3);
+  roistr4=strcat('ROI Name 4=',ROIName4);
+  fprintf(fid,'%s\n',roistr4);
+  roistr5=strcat('ROI Name 5=',ROIName5);
+  fprintf(fid,'%s\n',roistr5);
+  fprintf(fid,'%s\n','----- End Of Land Surface Masks Selected-----');
 % Load these 5 masks in now
 % Start With Mask 1
     maskFile=char(SelectedMaskData{1,1});
@@ -999,14 +1012,10 @@ end
 %% Load in the Sea Area Masks if the iSeaSalt option is set to 1
    if(iSeaSalt>0)
  % Load in the Sea Mask File
- %       eval(['cd ' watermaskpath(1:length(watermaskpath)-1)])
         eval(['cd ' oceanmappath(1:length(oceanmappath)-1)]);
         load(SeaMaskFileName,'SeaBoundaryFiles','SeaMaskChoices','SortedSBF','indexSBF');
         ab=2;
  % Set up the dialog to ask the user which  seamasks to use (1-5 masks)
-%         for jj=2:102
-%             SeaMaskChoices{jj-1,1}=char(SeaBoundaryFiles{jj,2});
-%         end
         [imask,~] = listdlg('PromptString',{'Select up to 5 Sea area masks'},...
         'SelectionMode','multiple','ListString',SeaMaskChoices,'ListSize',[360,300]);
         ab=3;
@@ -1038,7 +1047,19 @@ end
    ROIName8=char(SelectedSeaMaskData{3,3});
    ROIName9=char(SelectedSeaMaskData{4,3});
    ROIName10=char(SelectedSeaMaskData{5,3});
-   % Load these 5 masks in now
+  fprintf(fid,'%s\n','----- Sea Surface Masks Selected-----');
+  roistr6=strcat('ROI Name 6=',ROIName6);
+  fprintf(fid,'%s\n',roistr6);
+  roistr7=strcat('ROI Name 7=',ROIName7);
+  fprintf(fid,'%s\n',roistr7);
+  roistr8=strcat('ROI Name 8=',ROIName8);
+  fprintf(fid,'%s\n',roistr8);
+  roistr9=strcat('ROI Name 9=',ROIName9);
+  fprintf(fid,'%s\n',roistr9);
+  roistr10=strcat('ROI Name 10=',ROIName10);
+  fprintf(fid,'%s\n',roistr10);
+  fprintf(fid,'%s\n','----- End Sea Surface Masks Selected-----');
+% Load these 5 masks in now
 % Start With Mask 1 if one was defined
 if(numUserSelectedSeaMasks>=1)
     eval(['cd ' watermaskpath(1:length(watermaskpath)-1)])
@@ -1094,6 +1115,19 @@ if(numUserSelectedSeaMasks>=4)
     Merra2WorkingSeaBoundary4Lat=seaLat;
     Merra2WorkingSeaBoundary4Lon=seaLon;
     Merra2WorkingSeaBoundary4Area=seaArea;
+else
+   eval(['cd ' watermaskpath(1:length(watermaskpath)-1)]) 
+   maskFile='NorthAtlanticOceanMask.mat';
+   maskVar=['Merra2NorthAtlanticOcean' ...
+       'Mask'];
+   maskVar2=char(SortedSBF{75,3});
+   load(maskFile,maskVar);
+   Merra2WorkingSeaMask5=eval(maskVar);
+   eval(['cd ' oceanmappath(1:length(oceanmappath)-1)]);
+   load(maskVar2,'seaLat','seaLon','seaArea')
+   Merra2WorkingSeaBoundary4Lat=seaLat;
+   Merra2WorkingSeaBoundary4Lon=seaLon;
+   Merra2WorkingSeaBoundary4Area=seaArea;   
 end
 % Finish With Mask 5
 if(numUserSelectedSeaMasks>=5)
@@ -1108,6 +1142,18 @@ if(numUserSelectedSeaMasks>=5)
     Merra2WorkingSeaBoundary5Lat=seaLat;
     Merra2WorkingSeaBoundary5Lon=seaLon;
     Merra2WorkingSeaBoundary5Area=seaArea;
+else
+   eval(['cd ' watermaskpath(1:length(watermaskpath)-1)]) 
+   maskFile='ArcticOceanMask.mat';
+   maskVar='Merra2ArcticOceanMask';
+   maskVar2=char(SortedSBF{8,3});
+   load(maskFile,maskVar);
+   Merra2WorkingSeaMask5=eval(maskVar);
+   eval(['cd ' oceanmappath(1:length(oceanmappath)-1)]);
+   load(maskVar2,'seaLat','seaLon','seaArea')
+   Merra2WorkingSeaBoundary5Lat=seaLat;
+   Merra2WorkingSeaBoundary5Lon=seaLon;
+   Merra2WorkingSeaBoundary5Area=seaArea;
 end
     ab=2;
         for n=1:numSelectedFiles

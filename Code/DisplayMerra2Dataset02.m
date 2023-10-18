@@ -13,6 +13,8 @@ function  DisplayMerra2Dataset02(ikind,itype,varname,iAddToReport,iNewChapter,iC
 % Revised: July 9,2023 added switch isaveJpeg to allow the user choices in
 % how to save figures. isaveJpeg=2 recommended as normal operating mode
 % Revised: July 10-14 adding final variables to plot list
+% Revised: Oct 16,2023 added land and sea masks. Desired is to plot
+% selected sea area boundaries
 
 % Classification: Unclassified
 global BCDP001S BCDP002S BCEM001S BCEM002S;
@@ -328,6 +330,20 @@ global SUWT004Low SUWT004High SUWT004NaN SUWT004Values;
 global SUWT004Table SUWT004TT;
 global LatitudesS LongitudesS timeS ;
 global numSelectedFiles;
+global Merra2WorkingMask1 Merra2WorkingMask2 Merra2WorkingMask3;
+global Merra2WorkingMask4 Merra2WorkingMask5;
+global Merra2WorkingSeaMask1 Merra2WorkingSeaMask2 Merra2WorkingSeaMask3;
+global Merra2WorkingSeaMask4 Merra2WorkingSeaMask5;
+global ROIName1 ROIName2 ROIName3 ROIName4 ROIName5;
+global ROIName6 ROIName7 ROIName8 ROIName9 ROIName10;
+global Merra2WorkingSeaBoundary1Lat Merra2WorkingSeaBoundary1Lon Merra2WorkingSeaBoundary1Area;
+global Merra2WorkingSeaBoundary2Lat Merra2WorkingSeaBoundary2Lon Merra2WorkingSeaBoundary2Area;
+global Merra2WorkingSeaBoundary3Lat Merra2WorkingSeaBoundary3Lon Merra2WorkingSeaBoundary3Area;
+global Merra2WorkingSeaBoundary4Lat Merra2WorkingSeaBoundary4Lon Merra2WorkingSeaBoundary4Area;
+global Merra2WorkingSeaBoundary5Lat Merra2WorkingSeaBoundary5Lon Merra2WorkingSeaBoundary5Area;
+global SeaMaskFileName SeaBoundaryFiles SeaMaskChoices numSelectedSeaMasks;
+global SelectedSeaMaskData SortedSBF indexSBF;
+global SelectedMaskData numSelectedMasks numUserSelectedSeaMasks;
 
 global PascalsToMilliBars PascalsToPsi;
 global numtimeslice TimeSlices;
@@ -351,7 +367,7 @@ global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
 
 global idebug iCityPlot World200TopCities maxCities framecounter;
 global YearMonthStr YearStr MonthStr DayStr YearMonthDayStr FullTimeStr;
-global NumProcFiles ProcFileList;
+global NumProcFiles ProcFileList iSeaSalt;
 
 % additional paths needed for mapping
 global matpath1 mappath maskpath;
@@ -4827,6 +4843,7 @@ load('AsiaLowResBoundaries.mat','AsiaLat','AsiaLon');
 plot3m(AsiaLat,AsiaLon,maxval2,'r');
 try
     load('EuropeHiResBoundaries.mat','EuropeLat','EuropeLon');
+
 catch
     load('EuropeLowResBoundaries.mat','EuropeLat','EuropeLon');
     disp('Failed to load Hi Res Europe data use low resolution data')
@@ -4834,6 +4851,24 @@ end
 plot3m(EuropeLat,EuropeLon,maxval2,'r');
 load('AustraliaBoundaries.mat','AustraliaLat','AustraliaLon');
 plot3m(AustraliaLat,AustraliaLon,maxval2,'r');
+% Add selected sea are if the iSeaSalt flag is set
+if(iSeaSalt>0)
+    if (numUserSelectedSeaMasks>=1)
+        plot3m(Merra2WorkingSeaBoundary1Lat,Merra2WorkingSeaBoundary1Lon,maxval2,'w');
+    end
+    if (numUserSelectedSeaMasks>=2)
+        plot3m(Merra2WorkingSeaBoundary2Lat,Merra2WorkingSeaBoundary2Lon,maxval2,'w');
+    end
+    if (numUserSelectedSeaMasks>=3)
+        plot3m(Merra2WorkingSeaBoundary3Lat,Merra2WorkingSeaBoundary3Lon,maxval2,'w');
+    end
+    if (numUserSelectedSeaMasks>=4)
+        plot3m(Merra2WorkingSeaBoundary4Lat,Merra2WorkingSeaBoundary4Lon,maxval2,'w');
+    end
+    if (numUserSelectedSeaMasks>=5)
+        plot3m(Merra2WorkingSeaBoundary5Lat,Merra2WorkingSeaBoundary5Lon,maxval2,'w');
+    end
+end
 %% Add Cities to the plot is desired
 if(iCityPlot>0)
     for k=1:maxCities
