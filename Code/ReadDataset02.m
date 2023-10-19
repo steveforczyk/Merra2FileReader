@@ -444,6 +444,7 @@ global DustSedimentationAllBins WDustSedimentationAllBins SumDSed SumWSed;
 global DustSedimentationAllTT DustSedimentationAllTable;
 global WDustSedimentationAllTT WDustSedimentationAllTable;
 global ROIArea ROIPts ROIFracPts numgridpts;
+global SelectedSeaMaskData;
 global Merra2WorkingSeaMask1 Merra2WorkingSeaMask2 Merra2WorkingSeaMask3;
 global Merra2WorkingSeaMask4 Merra2WorkingSeaMask5;
 global SeaSaltDryDepAllBins WSeaSaltDryDepAllBins;
@@ -452,6 +453,7 @@ global SeaSaltSumDepROI7 WSeaSaltSumDepROI7;
 global SeaSaltSumDepROI8 WSeaSaltSumDepROI8;
 global SeaSaltSumDepROI9 WSeaSaltSumDepROI9;
 global SeaSaltSumDepROI10 WSeaSaltSumDepROI10;
+global SSDPSumTable SSDPSumTT;
 
 
 
@@ -13430,204 +13432,43 @@ if(iSeaSaltCalc>0)
         datas3sum=datas3sum+datas3*3600;
         datas4sum=datas4sum+datas4*3600;        
         datas5sum=datas5sum+datas5*3600;
+
     end
-        data0sum=(1E3/1E12)*(data1sum + data2sum + data3sum + data4sum + data5sum);
-%         data1a=(1E3/1E12)*data1.*Merra2WorkingSeaMask1;% Use the mask to limit it to the target country and convert to Tgm
-%         data2a=(1E3/1E12)*data2.*Merra2WorkingSeaMask2;
-%         data3a=(1E3/1E12)*data3.*Merra2WorkingSeaMask3;
-%         data4a=(1E3/1E12)*data4.*Merra2WorkingSeaMask4;
-%         data5a=(1E3/1E12)*data5.*Merra2WorkingSeaMask5;
+        data0sum=(1E3/1E12)*(data1sum + data2sum + data3sum + data4sum + data5sum).*RasterAreaGrid*1E6;
 % Use the mask to limit it to the target country and convert to Tgm        
-        data1sum=data0sum.*Merra2WorkingSeaMask1.*RasterAreaGrid*1E6;
-        data2sum=data0sum.*Merra2WorkingSeaMask2.*RasterAreaGrid*1E6;
-        data3sum=data0sum.*Merra2WorkingSeaMask3.*RasterAreaGrid*1E6;
-        data4sum=data0sum.*Merra2WorkingSeaMask4.*RasterAreaGrid*1E6;
-        data5sum=data0sum.*Merra2WorkingSeaMask5.*RasterAreaGrid*1E6;
-        ab=1;
+        data1sum=data0sum.*Merra2WorkingSeaMask1;
+        data2sum=data0sum.*Merra2WorkingSeaMask2;
+        data3sum=data0sum.*Merra2WorkingSeaMask3;
+        data4sum=data0sum.*Merra2WorkingSeaMask4;
+        data5sum=data0sum.*Merra2WorkingSeaMask5;
         SeaSaltDryDepAllBins(framecounter,1)=sum(sum(data1sum));
         SeaSaltDryDepAllBins(framecounter,2)=sum(sum(data2sum));
         SeaSaltDryDepAllBins(framecounter,3)=sum(sum(data3sum));
         SeaSaltDryDepAllBins(framecounter,4)=sum(sum(data4sum));
         SeaSaltDryDepAllBins(framecounter,5)=sum(sum(data4sum));
         WSeaSaltDryDepAllBins(framecounter,1)=sum(sum(data0sum));
-        ab=2;
-%         sumarea1=0;
-%         sumarea2=0;
-%         sumarea3=0;
-%         sumarea4=0;
-%         sumarea5=0;
-%         ihits1=0;
-%         ihits2=0;
-%         ihits3=0;
-%         ihits4=0;
-%         ihits5=0;
-%         for jj=1:361
-%             nowArea=1E6*RasterAreas(jj,1);% convert km^2 to m^2
-%             for ii=1:576
-%                 if(Merra2WorkingSeaMask1(ii,jj)>0)
-%                     sumarea1=sumarea1+nowArea;
-%                     ihits1=ihits1+1;
-%                 end
-%                 if(Merra2WorkingSeaMask2(ii,jj)>0)
-%                     sumarea2=sumarea2+nowArea;
-%                     ihits2=ihits2+1;
-%                 end
-%                 if(Merra2WorkingSeaMask3(ii,jj)>0)
-%                     sumarea3=sumarea3+nowArea;
-%                     ihits3=ihits3+1;
-%                 end
-%                 if(Merra2WorkingSeaMask4(ii,jj)>0)
-%                     sumarea4=sumarea4+nowArea;
-%                     ihits4=ihits4+1;
-%                 end
-%                 if(Merra2WorkingSeaMask5(ii,jj)>0)
-%                     sumarea5=sumarea5+nowArea;
-%                     ihits5=ihits5+1;
-%                 end
-% 
-%             end
-% 
-%         end
+        summask1=sum(sum(Merra2WorkingSeaMask1));
+        summask2=sum(sum(Merra2WorkingSeaMask2));
+        summask3=sum(sum(Merra2WorkingSeaMask3));
+        summask4=sum(sum(Merra2WorkingSeaMask4));
+        summask5=sum(sum(Merra2WorkingSeaMask5));
+        fprintf(fid,'\n');
+        sumstr1=strcat('Mask 1 Sum=',num2str(summask1));
+        sumstr2=strcat('Mask 2 Sum=',num2str(summask2));
+        sumstr3=strcat('Mask 3 Sum=',num2str(summask3));
+        sumstr4=strcat('Mask 4 Sum=',num2str(summask4));
+        sumstr5=strcat('Mask 5 Sum=',num2str(summask5));
+        fprintf(fid,'%s\n',sumstr1);
+        fprintf(fid,'%s\n',sumstr2);
+        fprintf(fid,'%s\n',sumstr3);
+        fprintf(fid,'%s\n',sumstr4);
+        fprintf(fid,'%s\n',sumstr5);
+        fprintf(fid,'\n');
 
-  
+
+
 end
-    %% Try the sea salt calcuation scheme
-    if(iSeaSaltCalc>1)
-% This section is for the summed Dust Emission
-        data1sumArea=data1sum.*RasterAreaGrid*1E6;
-        data2sumArea=data2sum.*RasterAreaGrid*1E6;
-        data3sumArea=data3sum.*RasterAreaGrid*1E6;
-        data4sumArea=data4sum.*RasterAreaGrid*1E6;
-        data5sumArea=data5sum.*RasterAreaGrid*1E6;
-        data1sumT=sum(sum(data1sumArea));
-        data2sumT=sum(sum(data2sumArea));
-        data3sumT=sum(sum(data3sumArea));        
-        data4sumT=sum(sum(data4sumArea));
-        data5sumT=sum(sum(data5sumArea));
-        DUEMSum(framecounter,1)=(data1sumT+data2sumT+data3sumT+data4sumT+data5sumT)*(1E3/1E12);
-        data1sumArea=data1sum.*RasterAreaGrid*1E6.*Merra2WorkingMask1;
-        data2sumArea=data2sum.*RasterAreaGrid*1E6.*Merra2WorkingMask1;
-        data3sumArea=data3sum.*RasterAreaGrid*1E6.*Merra2WorkingMask1;
-        data4sumArea=data4sum.*RasterAreaGrid*1E6.*Merra2WorkingMask1;
-        data5sumArea=data5sum.*RasterAreaGrid*1E6.*Merra2WorkingMask1;
-        data1sumT=sum(sum(data1sumArea));
-        data2sumT=sum(sum(data2sumArea));
-        data3sumT=sum(sum(data3sumArea));        
-        data4sumT=sum(sum(data4sumArea));
-        data5sumT=sum(sum(data5sumArea));
-        DUEMSum1(framecounter,1)=(data1sumT+data2sumT+data3sumT+data4sumT+data5sumT)*(1E3/1E12);
-        data1sumArea=data1sum.*RasterAreaGrid*1E6.*Merra2WorkingMask2;
-        data2sumArea=data2sum.*RasterAreaGrid*1E6.*Merra2WorkingMask2;
-        data3sumArea=data3sum.*RasterAreaGrid*1E6.*Merra2WorkingMask2;
-        data4sumArea=data4sum.*RasterAreaGrid*1E6.*Merra2WorkingMask2;
-        data5sumArea=data5sum.*RasterAreaGrid*1E6.*Merra2WorkingMask2;
-        data1sumT=sum(sum(data1sumArea));
-        data2sumT=sum(sum(data2sumArea));
-        data3sumT=sum(sum(data3sumArea));        
-        data4sumT=sum(sum(data4sumArea));
-        data5sumT=sum(sum(data5sumArea));
-        DUEMSum2(framecounter,1)=(data1sumT+data2sumT+data3sumT+data4sumT+data5sumT)*(1E3/1E12);
-        data1sumArea=data1sum.*RasterAreaGrid*1E6.*Merra2WorkingMask3;
-        data2sumArea=data2sum.*RasterAreaGrid*1E6.*Merra2WorkingMask3;
-        data3sumArea=data3sum.*RasterAreaGrid*1E6.*Merra2WorkingMask3;
-        data4sumArea=data4sum.*RasterAreaGrid*1E6.*Merra2WorkingMask3;
-        data5sumArea=data5sum.*RasterAreaGrid*1E6.*Merra2WorkingMask3;
-        data1sumT=sum(sum(data1sumArea));
-        data2sumT=sum(sum(data2sumArea));
-        data3sumT=sum(sum(data3sumArea));        
-        data4sumT=sum(sum(data4sumArea));
-        data5sumT=sum(sum(data5sumArea));
-        DUEMSum3(framecounter,1)=(data1sumT+data2sumT+data3sumT+data4sumT+data5sumT)*(1E3/1E12);
-        data1sumArea=data1sum.*RasterAreaGrid*1E6.*Merra2WorkingMask4;
-        data2sumArea=data2sum.*RasterAreaGrid*1E6.*Merra2WorkingMask4;
-        data3sumArea=data3sum.*RasterAreaGrid*1E6.*Merra2WorkingMask4;
-        data4sumArea=data4sum.*RasterAreaGrid*1E6.*Merra2WorkingMask4;
-        data5sumArea=data5sum.*RasterAreaGrid*1E6.*Merra2WorkingMask4;
-        data1sumT=sum(sum(data1sumArea));
-        data2sumT=sum(sum(data2sumArea));
-        data3sumT=sum(sum(data3sumArea));        
-        data4sumT=sum(sum(data4sumArea));
-        data5sumT=sum(sum(data5sumArea));
-        DUEMSum4(framecounter,1)=(data1sumT+data2sumT+data3sumT+data4sumT+data5sumT)*(1E3/1E12);
-        data1sumArea=data1sum.*RasterAreaGrid*1E6.*Merra2WorkingMask5;
-        data2sumArea=data2sum.*RasterAreaGrid*1E6.*Merra2WorkingMask5;
-        data3sumArea=data3sum.*RasterAreaGrid*1E6.*Merra2WorkingMask5;
-        data4sumArea=data4sum.*RasterAreaGrid*1E6.*Merra2WorkingMask5;
-        data5sumArea=data5sum.*RasterAreaGrid*1E6.*Merra2WorkingMask5;
-        data1sumT=sum(sum(data1sumArea));
-        data2sumT=sum(sum(data2sumArea));
-        data3sumT=sum(sum(data3sumArea));        
-        data4sumT=sum(sum(data4sumArea));
-        data5sumT=sum(sum(data5sumArea));
-        DUEMSum5(framecounter,1)=(data1sumT+data2sumT+data3sumT+data4sumT+data5sumT)*(1E3/1E12);
-% This section is for the summed DustDeposition
-        data11sumArea=data11sum.*RasterAreaGrid*1E6;
-        data12sumArea=data12sum.*RasterAreaGrid*1E6;
-        data13sumArea=data13sum.*RasterAreaGrid*1E6;
-        data14sumArea=data14sum.*RasterAreaGrid*1E6;
-        data15sumArea=data15sum.*RasterAreaGrid*1E6;
-        data11sumT=sum(sum(data11sumArea));
-        data12sumT=sum(sum(data12sumArea));
-        data13sumT=sum(sum(data13sumArea));        
-        data14sumT=sum(sum(data14sumArea));
-        data15sumT=sum(sum(data15sumArea));
-        DUDPSum(framecounter,1)=(data11sumT+data12sumT+data13sumT+data14sumT+data15sumT)*(1E3/1E12);
-        data11sumArea=data11sum.*RasterAreaGrid*1E6.*Merra2WorkingMask1;
-        data12sumArea=data12sum.*RasterAreaGrid*1E6.*Merra2WorkingMask1;
-        data13sumArea=data13sum.*RasterAreaGrid*1E6.*Merra2WorkingMask1;
-        data14sumArea=data14sum.*RasterAreaGrid*1E6.*Merra2WorkingMask1;
-        data15sumArea=data15sum.*RasterAreaGrid*1E6.*Merra2WorkingMask1;
-        data11sumT=sum(sum(data11sumArea));
-        data12sumT=sum(sum(data12sumArea));
-        data13sumT=sum(sum(data13sumArea));        
-        data14sumT=sum(sum(data14sumArea));
-        data15sumT=sum(sum(data15sumArea));
-        DUDPSum1(framecounter,1)=(data11sumT+data12sumT+data13sumT+data14sumT+data15sumT)*(1E3/1E12);
-        data11sumArea=data11sum.*RasterAreaGrid*1E6.*Merra2WorkingMask2;
-        data12sumArea=data12sum.*RasterAreaGrid*1E6.*Merra2WorkingMask2;
-        data13sumArea=data13sum.*RasterAreaGrid*1E6.*Merra2WorkingMask2;
-        data14sumArea=data14sum.*RasterAreaGrid*1E6.*Merra2WorkingMask2;
-        data15sumArea=data15sum.*RasterAreaGrid*1E6.*Merra2WorkingMask2;
-        data11sumT=sum(sum(data11sumArea));
-        data12sumT=sum(sum(data12sumArea));
-        data13sumT=sum(sum(data13sumArea));        
-        data14sumT=sum(sum(data14sumArea));
-        data15sumT=sum(sum(data15sumArea));
-        DUDPSum2(framecounter,1)=(data11sumT+data12sumT+data13sumT+data14sumT+data15sumT)*(1E3/1E12);
-        data11sumArea=data11sum.*RasterAreaGrid*1E6.*Merra2WorkingMask3;
-        data12sumArea=data12sum.*RasterAreaGrid*1E6.*Merra2WorkingMask3;
-        data13sumArea=data13sum.*RasterAreaGrid*1E6.*Merra2WorkingMask3;
-        data14sumArea=data14sum.*RasterAreaGrid*1E6.*Merra2WorkingMask3;
-        data15sumArea=data15sum.*RasterAreaGrid*1E6.*Merra2WorkingMask3;
-        data11sumT=sum(sum(data11sumArea));
-        data12sumT=sum(sum(data12sumArea));
-        data13sumT=sum(sum(data13sumArea));        
-        data14sumT=sum(sum(data14sumArea));
-        data15sumT=sum(sum(data15sumArea));
-        DUDPSum3(framecounter,1)=(data11sumT+data12sumT+data13sumT+data14sumT+data15sumT)*(1E3/1E12);
-        data11sumArea=data11sum.*RasterAreaGrid*1E6.*Merra2WorkingMask4;
-        data12sumArea=data12sum.*RasterAreaGrid*1E6.*Merra2WorkingMask4;
-        data13sumArea=data13sum.*RasterAreaGrid*1E6.*Merra2WorkingMask4;
-        data14sumArea=data14sum.*RasterAreaGrid*1E6.*Merra2WorkingMask4;
-        data15sumArea=data15sum.*RasterAreaGrid*1E6.*Merra2WorkingMask4;
-        data11sumT=sum(sum(data11sumArea));
-        data12sumT=sum(sum(data12sumArea));
-        data13sumT=sum(sum(data13sumArea));        
-        data14sumT=sum(sum(data14sumArea));
-        data15sumT=sum(sum(data15sumArea));
-        DUDPSum4(framecounter,1)=(data11sumT+data12sumT+data13sumT+data14sumT+data15sumT)*(1E3/1E12);
-        data11sumArea=data11sum.*RasterAreaGrid*1E6.*Merra2WorkingMask5;
-        data12sumArea=data12sum.*RasterAreaGrid*1E6.*Merra2WorkingMask5;
-        data13sumArea=data13sum.*RasterAreaGrid*1E6.*Merra2WorkingMask5;
-        data14sumArea=data14sum.*RasterAreaGrid*1E6.*Merra2WorkingMask5;
-        data15sumArea=data15sum.*RasterAreaGrid*1E6.*Merra2WorkingMask5;
-        data11sumT=sum(sum(data11sumArea));
-        data12sumT=sum(sum(data12sumArea));
-        data13sumT=sum(sum(data13sumArea));        
-        data14sumT=sum(sum(data14sumArea));
-        data15sumT=sum(sum(data15sumArea));
-        DUDPSum5(framecounter,1)=(data11sumT+data12sumT+data13sumT+data14sumT+data15sumT)*(1E3/1E12);
-    end
+
 
     if(framecounter==numSelectedFiles)
         eval(['cd ' savepath(1:length(savepath)-1)]);
@@ -13794,6 +13635,26 @@ if(framecounter==numSelectedFiles)
              fprintf(fid,'%s\n',dustemisstr);
        end
    end
+if((iSeaSalt>0) && (iSeaSaltCalc>0))
+%% Create a Table for the cumilative Daily Deposiion of Sea Salt in All Bins
+  
+SSDPSumTable=table(WSeaSaltDryDepAllBins(:,1),SeaSaltDryDepAllBins(:,1),...
+      SeaSaltDryDepAllBins(:,2),SeaSaltDryDepAllBins(:,3),...
+      SeaSaltDryDepAllBins(:,4),SeaSaltDryDepAllBins(:,5),...
+      'VariableNames',{'World','ROIName6','RPOName7',...
+      'ROIName8','ROIName9','ROIName10'});
+SSDPSumTT = table2timetable(SSDPSumTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='SSDPSumTable SSDPSumTT YearMonthStr numtimeslice SelectedSeaMaskData';
+MatFileName=strcat('SSDPSumTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+blackcar01str=strcat('Created SSDPSumTT-','Contains Sum Of Sea Salt Dry Dep-',num2str(1));
+fprintf(fid,'%s\n',blackcar01str);
+
+end
 %% Create the Black Carbon Dry Deposition Table For Bin 001 ikind=1
   BCDP001Table=table(BCDP00150(:,1),BCDP00175(:,1),BCDP00190(:,1),BCDP00195(:,1),...
       BCDP00198(:,1),BCDP001100(:,1),...
@@ -16507,5 +16368,9 @@ if(framecounter==numSelectedFiles)
    iNewChapter=0;
    iCloseChapter=1;
    PlotAccumilatedDustTables(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+   %% Plot the New Sea Salt Cumilative Tables
+   if((iSeaSalt>0) && (iSeaSaltCalc>0))
+
+   end
 end
 

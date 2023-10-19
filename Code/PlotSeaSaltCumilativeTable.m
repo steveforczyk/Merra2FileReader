@@ -64,212 +64,20 @@ end
 eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
 movie_figure1=figure('position',[hor1 vert1 widd lend]);
 set(gcf,'MenuBar','none');
-if(ikind==65)
-    plot(SSAERIDXTT.Time,SSAERIDXTT.SSAERIDX75,'b',SSAERIDXTT.Time,SSAERIDXTT.SSAERIDX90,'g',...
-        SSAERIDXTT.Time,SSAERIDXTT.SSAERIDX95,'k',SSAERIDXTT.Time,SSAERIDXTT.SSAERIDX98,'r');
-    hl=legend('SSAERIDX 75 ptile','SSAERIDX 90 ptile','SSAERIDX 95 ptile','SSAERIDX 98 ptile');
-    ylabel('SSAERIDX-scalar','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSAERIDX','-Map');
-    pdftxtstr=strcat(' SSAERIDX Map For File-',Merra2ShortFileName);
-elseif(ikind==66)
-    plot(SSDP001TT.Time,SSDP001TT.SSDP00175,'b',SSDP001TT.Time,SSDP001TT.SSDP00190,'g',...
-        SSDP001TT.Time,SSDP001TT.SSDP00195,'k',SSDP001TT.Time,SSDP001TT.SSDP00198,'r');
-    hl=legend('SSDP001 75 ptile','SSDP001 90 ptile','SSDP001 95 ptile','SSDP001 98 ptile');
-    ylabel('SSDP001-femtograms/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSDP001','-Map');
-    pdftxtstr=strcat(' SSDP001 Map For File-',Merra2ShortFileName);
-elseif(ikind==67)
-    plot(SSDP002TT.Time,SSDP002TT.SSDP00275,'b',SSDP002TT.Time,SSDP002TT.SSDP00290,'g',...
-        SSDP002TT.Time,SSDP002TT.SSDP00295,'k',SSDP002TT.Time,SSDP002TT.SSDP00298,'r');
-    hl=legend('SSDP002 75 ptile','SSDP002 90 ptile','SSDP002 95 ptile','SSDP002 98 ptile');
-    ylabel('SSDP002-femtograms/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSDP002','-Map');
-    pdftxtstr=strcat(' SSDP002 Map For File-',Merra2ShortFileName);
- elseif(ikind==68)
-    plot(SSDP003TT.Time,SSDP003TT.SSDP00375,'b',SSDP003TT.Time,SSDP003TT.SSDP00390,'g',...
-        SSDP003TT.Time,SSDP003TT.SSDP00395,'k',SSDP003TT.Time,SSDP003TT.SSDP00398,'r');
-    hl=legend('SSDP003 75 ptile','SSDP003 90 ptile','SSDP003 95 ptile','SSDP003 98 ptile');
-    ylabel('SSDP003-femtograms/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSDP003','-Map');
-    pdftxtstr=strcat(' SSDP003 Map For File-',Merra2ShortFileName);
- elseif(ikind==69)
-    plot(SSDP004TT.Time,SSDP004TT.SSDP00475,'b',SSDP004TT.Time,SSDP004TT.SSDP00490,'g',...
-        SSDP004TT.Time,SSDP004TT.SSDP00495,'k',SSDP004TT.Time,SSDP004TT.SSDP00498,'r');
-    hl=legend('SSDP004 75 ptile','SSDP004 90 ptile','SSDP004 95 ptile','SSDP004 98 ptile');
-    ylabel('SSDP004-femtograms/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSDP004','-Map');
-    pdftxtstr=strcat(' SSDP004 Map For File-',Merra2ShortFileName);
- elseif(ikind==70)
-    plot(SSDP005TT.Time,SSDP005TT.SSDP00575,'b',SSDP005TT.Time,SSDP005TT.SSDP00590,'g',...
-        SSDP005TT.Time,SSDP005TT.SSDP00595,'k',SSDP005TT.Time,SSDP005TT.SSDP00598,'r');
-    hl=legend('SSDP005 75 ptile','SSDP005 90 ptile','SSDP005 95 ptile','SSDP005 98 ptile');
-    ylabel('SSDP005-femtograms/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSDP005','-Map');
-    pdftxtstr=strcat(' SSDP005 Map For File-',Merra2ShortFileName);
- elseif(ikind==71)
-    plot(SSEM001TT.Time,SSEM001TT.SSEM00175,'b',SSEM001TT.Time,SSEM001TT.SSEM00190,'g',...
-        SSEM001TT.Time,SSEM001TT.SSEM00195,'k',SSEM001TT.Time,SSEM001TT.SSEM00198,'r');
-    hl=legend('SSEM001 75 ptile','SSEM001 90 ptile','SSEM001 95 ptile','SSEM001 98 ptile');
-    ylabel('SSEM001-femtograms/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSEM001','-Map');
-    pdftxtstr=strcat(' SSEM001 Map For File-',Merra2ShortFileName);
- elseif(ikind==72)
-    plot(SSEM002TT.Time,SSEM002TT.SSEM00275,'b',SSEM002TT.Time,SSEM002TT.SSEM00290,'g',...
-        SSEM002TT.Time,SSEM002TT.SSEM00295,'k',SSEM002TT.Time,SSEM002TT.SSEM00298,'r');
-    hl=legend('SSEM002 75 ptile','SSEM002 90 ptile','SSEM002 95 ptile','SSEM002 98 ptile');
-    ylabel('SSEM002-femtograms/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSEM002','-Map');
-    pdftxtstr=strcat(' SSEM002 Map For File-',Merra2ShortFileName);
- elseif(ikind==73)
-    plot(SSEM003TT.Time,SSEM003TT.SSEM00375,'b',SSEM003TT.Time,SSEM003TT.SSEM00390,'g',...
-        SSEM003TT.Time,SSEM003TT.SSEM00395,'k',SSEM003TT.Time,SSEM003TT.SSEM00398,'r');
-    hl=legend('SSEM003 75 ptile','SSEM003 90 ptile','SSEM003 95 ptile','SSEM003 98 ptile');
-    ylabel('SSEM003-femtograms/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSEM003','-Map');
-    pdftxtstr=strcat(' SSEM003 Map For File-',Merra2ShortFileName);
- elseif(ikind==74)
-    plot(SSEM004TT.Time,SSEM004TT.SSEM00475,'b',SSEM004TT.Time,SSEM004TT.SSEM00490,'g',...
-        SSEM004TT.Time,SSEM004TT.SSEM00495,'k',SSEM004TT.Time,SSEM004TT.SSEM00498,'r');
-    hl=legend('SSEM004 75 ptile','SSEM004 90 ptile','SSEM004 95 ptile','SSEM004 98 ptile');
-    ylabel('SSEM004-femtograms/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSEM004','-Map');
-    pdftxtstr=strcat(' SSEM004 Map For File-',Merra2ShortFileName);
- elseif(ikind==75)
-    plot(SSEM005TT.Time,SSEM005TT.SSEM00575,'b',SSEM005TT.Time,SSEM005TT.SSEM00590,'g',...
-        SSEM005TT.Time,SSEM005TT.SSEM00595,'k',SSEM005TT.Time,SSEM005TT.SSEM00598,'r');
-    hl=legend('SSEM005 75 ptile','SSEM005 90 ptile','SSEM005 95 ptile','SSEM005 98 ptile');
-    ylabel('SSEM005-femtograms/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSEM005','-Map');
-    pdftxtstr=strcat(' SSEM005 Map For File-',Merra2ShortFileName);
- elseif(ikind==76)
-    plot(SSEXTTFMTT.Time,SSEXTTFMTT.SSEXTTFM75,'b',SSEXTTFMTT.Time,SSEXTTFMTT.SSEXTTFM90,'g',...
-        SSEXTTFMTT.Time,SSEXTTFMTT.SSEXTTFM95,'k',SSEXTTFMTT.Time,SSEXTTFMTT.SSEXTTFM98,'r');
-    hl=legend('SSEXTTFM 75 ptile','SSEXTTFM 90 ptile','SSEXTTFM 95 ptile','SSEXTTFM 98 ptile');
-    ylabel('SSEXTTFM-dimensionless','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSEXTTFM','-Map');
-    pdftxtstr=strcat(' SSEXTTFM Map For File-',Merra2ShortFileName);
- elseif(ikind==77)
-    plot(SSSCATFMTT.Time,SSSCATFMTT.SSSCATFM75,'b',SSSCATFMTT.Time,SSSCATFMTT.SSSCATFM90,'g',...
-        SSSCATFMTT.Time,SSSCATFMTT.SSSCATFM95,'k',SSSCATFMTT.Time,SSSCATFMTT.SSSCATFM98,'r');
-    hl=legend('SSSCATFM 75 ptile','SSSCATFM 90 ptile','SSSCATFM 95 ptile','SSSCATFM 98 ptile');
-    ylabel('SSSCATFM-dimensionless','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSCATFM','-Map');
-    pdftxtstr=strcat(' SSSCATFM Map For File-',Merra2ShortFileName);
- elseif(ikind==78)
-    plot(SSSD001TT.Time,SSSD001TT.SSSD00175,'b',SSSD001TT.Time,SSSD001TT.SSSD00190,'g',...
-        SSSD001TT.Time,SSSD001TT.SSSD00195,'k',SSSD001TT.Time,SSSD001TT.SSSD00198,'r');
-    hl=legend('SSSD001 75 ptile','SSSD001 90 ptile','SSSD001 95 ptile','SSSD001 98 ptile');
-    ylabel('SSSD001-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSD001','-Map');
-    pdftxtstr=strcat(' SSSD001 Map For File-',Merra2ShortFileName);
- elseif(ikind==79)
-    plot(SSSD002TT.Time,SSSD002TT.SSSD00275,'b',SSSD002TT.Time,SSSD002TT.SSSD00290,'g',...
-        SSSD002TT.Time,SSSD002TT.SSSD00295,'k',SSSD002TT.Time,SSSD002TT.SSSD00298,'r');
-    hl=legend('SSSD002 75 ptile','SSSD002 90 ptile','SSSD002 95 ptile','SSSD002 98 ptile');
-    ylabel('SSSD002-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSD002','-Map');
-    pdftxtstr=strcat(' SSSD002 Map For File-',Merra2ShortFileName);
- elseif(ikind==80)
-    plot(SSSD003TT.Time,SSSD003TT.SSSD00375,'b',SSSD003TT.Time,SSSD003TT.SSSD00390,'g',...
-        SSSD003TT.Time,SSSD003TT.SSSD00395,'k',SSSD003TT.Time,SSSD003TT.SSSD00398,'r');
-    hl=legend('SSSD003 75 ptile','SSSD003 90 ptile','SSSD003 95 ptile','SSSD003 98 ptile');
-    ylabel('SSSD003-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSD003','-Map');
-    pdftxtstr=strcat(' SSSD003 Map For File-',Merra2ShortFileName);
- elseif(ikind==81)
-    plot(SSSD004TT.Time,SSSD004TT.SSSD00475,'b',SSSD004TT.Time,SSSD004TT.SSSD00490,'g',...
-        SSSD004TT.Time,SSSD004TT.SSSD00495,'k',SSSD004TT.Time,SSSD004TT.SSSD00498,'r');
-    hl=legend('SSSD004 75 ptile','SSSD004 90 ptile','SSSD004 95 ptile','SSSD004 98 ptile');
-    ylabel('SSSD004-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSD004','-Map');
-    pdftxtstr=strcat(' SSSD004 Map For File-',Merra2ShortFileName);
- elseif(ikind==82)
-    plot(SSSD005TT.Time,SSSD005TT.SSSD00575,'b',SSSD005TT.Time,SSSD005TT.SSSD00590,'g',...
-        SSSD005TT.Time,SSSD005TT.SSSD00595,'k',SSSD005TT.Time,SSSD005TT.SSSD00598,'r');
-    hl=legend('SSSD005 75 ptile','SSSD005 90 ptile','SSSD005 95 ptile','SSSD005 98 ptile');
-    ylabel('SSSD005-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSD005','-Map');
-    pdftxtstr=strcat(' SSSD005 Map For File-',Merra2ShortFileName);
- elseif(ikind==83)
-    plot(SSSV001TT.Time,SSSV001TT.SSSV00175,'b',SSSV001TT.Time,SSSV001TT.SSSV00190,'g',...
-        SSSV001TT.Time,SSSV001TT.SSSV00195,'k',SSSV001TT.Time,SSSV001TT.SSSV00198,'r');
-    hl=legend('SSSV001 75 ptile','SSSV001 90 ptile','SSSV001 95 ptile','SSSV001 98 ptile');
-    ylabel('SSSV001-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSV001','-Map');
-    pdftxtstr=strcat(' SSSV001 Map For File-',Merra2ShortFileName);
- elseif(ikind==84)
-    plot(SSSV002TT.Time,SSSV002TT.SSSV00275,'b',SSSV002TT.Time,SSSV002TT.SSSV00290,'g',...
-        SSSV002TT.Time,SSSV002TT.SSSV00295,'k',SSSV002TT.Time,SSSV002TT.SSSV00298,'r');
-    hl=legend('SSSV002 75 ptile','SSSV002 90 ptile','SSSV002 95 ptile','SSSV002 98 ptile');
-    ylabel('SSSV002-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSV002','-Map');
-    pdftxtstr=strcat(' SSSV002 Map For File-',Merra2ShortFileName);
- elseif(ikind==85)
-    plot(SSSV003TT.Time,SSSV003TT.SSSV00375,'b',SSSV003TT.Time,SSSV003TT.SSSV00390,'g',...
-        SSSV003TT.Time,SSSV003TT.SSSV00395,'k',SSSV003TT.Time,SSSV003TT.SSSV00398,'r');
-    hl=legend('SSSV003 75 ptile','SSSV003 90 ptile','SSSV003 95 ptile','SSSV003 98 ptile');
-    ylabel('SSSV003-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSV003','-Map');
-    pdftxtstr=strcat(' SSSV003 Map For File-',Merra2ShortFileName);
- elseif(ikind==86)
-    plot(SSSV004TT.Time,SSSV004TT.SSSV00475,'b',SSSV004TT.Time,SSSV004TT.SSSV00490,'g',...
-        SSSV004TT.Time,SSSV004TT.SSSV00495,'k',SSSV004TT.Time,SSSV004TT.SSSV00498,'r');
-    hl=legend('SSSV004 75 ptile','SSSV004 90 ptile','SSSV004 95 ptile','SSSV004 98 ptile');
-    ylabel('SSSV004-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSV004','-Map');
-    pdftxtstr=strcat(' SSSV004 Map For File-',Merra2ShortFileName);
- elseif(ikind==87)
-    plot(SSSV005TT.Time,SSSV005TT.SSSV00575,'b',SSSV005TT.Time,SSSV005TT.SSSV00590,'g',...
-        SSSV005TT.Time,SSSV005TT.SSSV00595,'k',SSSV005TT.Time,SSSV005TT.SSSV00598,'r');
-    hl=legend('SSSV005 75 ptile','SSSV005 90 ptile','SSSV005 95 ptile','SSSV005 98 ptile');
-    ylabel('SSSV005-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSSV005','-Map');
-    pdftxtstr=strcat(' SSSV005 Map For File-',Merra2ShortFileName);
-elseif(ikind==88)
-    plot(SSWT001TT.Time,SSWT001TT.SSWT00175,'b',SSWT001TT.Time,SSWT001TT.SSWT00190,'g',...
-        SSWT001TT.Time,SSWT001TT.SSWT00195,'k',SSWT001TT.Time,SSWT001TT.SSWT00198,'r');
-    hl=legend('SSWT001 75 ptile','SSWT001 90 ptile','SSWT001 95 ptile','SSWT001 98 ptile');
-    ylabel('SSWT001-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSWT001','-Map');
-    pdftxtstr=strcat(' SSWT001 Map For File-',Merra2ShortFileName);
-elseif(ikind==89)
-    plot(SSWT002TT.Time,SSWT002TT.SSWT00275,'b',SSWT002TT.Time,SSWT002TT.SSWT00290,'g',...
-        SSWT002TT.Time,SSWT002TT.SSWT00295,'k',SSWT002TT.Time,SSWT002TT.SSWT00298,'r');
-    hl=legend('SSWT002 75 ptile','SSWT002 90 ptile','SSWT002 95 ptile','SSWT002 98 ptile');
-    ylabel('SSWT002-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSWT002','-Map');
-    pdftxtstr=strcat(' SSWT002 Map For File-',Merra2ShortFileName);
-elseif(ikind==90)
-    plot(SSWT003TT.Time,SSWT003TT.SSWT00375,'b',SSWT003TT.Time,SSWT003TT.SSWT00390,'g',...
-        SSWT003TT.Time,SSWT003TT.SSWT00395,'k',SSWT003TT.Time,SSWT003TT.SSWT00398,'r');
-    hl=legend('SSWT003 75 ptile','SSWT003 90 ptile','SSWT003 95 ptile','SSWT003 98 ptile');
-    ylabel('SSWT003-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSWT003','-Map');
-    pdftxtstr=strcat(' SSWT003 Map For File-',Merra2ShortFileName);
-elseif(ikind==91)
-    plot(SSWT004TT.Time,SSWT004TT.SSWT00475,'b',SSWT004TT.Time,SSWT004TT.SSWT00490,'g',...
-        SSWT004TT.Time,SSWT004TT.SSWT00495,'k',SSWT004TT.Time,SSWT004TT.SSWT00498,'r');
-    hl=legend('SSWT004 75 ptile','SSWT004 90 ptile','SSWT004 95 ptile','SSWT004 98 ptile');
-    ylabel('SSWT004-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSWT004','-Map');
-    pdftxtstr=strcat(' SSWT004 Map For File-',Merra2ShortFileName);
-elseif(ikind==92)
-    plot(SSWT005TT.Time,SSWT005TT.SSWT00575,'b',SSWT005TT.Time,SSWT005TT.SSWT00590,'g',...
-        SSWT005TT.Time,SSWT005TT.SSWT00595,'k',SSWT005TT.Time,SSWT005TT.SSWT00598,'r');
-    hl=legend('SSWT005 75 ptile','SSWT005 90 ptile','SSWT005 95 ptile','SSWT005 98 ptile');
-    ylabel('SSWT005-nanogm/m^2/sec','FontWeight','bold','FontSize',12);
-    sectionstr=strcat('SSWT005','-Map');
-    pdftxtstr=strcat(' SSWT005 Map For File-',Merra2ShortFileName);
-
+if(ikind==66)
+    plot(SSDPSumTT.Time,SSDPSumTT.World,'b',SSDPSumTT.Time,SSDPSumTT.ROIName6,'g',...
+        SSDPSumTT.Time,SSDPSumTT.ROIName7,'k',SSDPSumTT.Time,SSDPSumTT.ROIName8,'r',...
+        SSDPSumTT.Time,SSDPSumTT.ROIName9,'c',SSDPSumTT.Time,SSDPSumTT.ROIName10,'r+');
+    hl=legend('World','ROIName6','ROIName7','ROIName8','ROIName9','ROIName10');
+    ylabel('Sea Salt Deposition TG/Day','FontWeight','bold','FontSize',12);
+    sectionstr=strcat('SSDP','-Map');
+    pdftxtstr=strcat(' SSDP Map For File-',Merra2ShortFileName);
 end
 set(gcf,'Position',[hor1 vert1 widd lend])
 set(gca,'FontWeight','bold');
 set(gca,'XGrid','on','YGrid','on');
-
 ht=title(titlestr);
 xlabel('Date','FontWeight','bold','FontSize',12);
-
-
 % Add a logo
 if(iLogo==1)
     eval(['cd ' govjpegpath(1:length(govjpegpath)-1)]);
@@ -285,6 +93,7 @@ end
 figstr=strcat(titlestr,'.jpg');
 actionstr='print';
 typestr='-djpeg';
+
 [cmdString]=MyStrcat2(actionstr,typestr,figstr);
 eval(cmdString);
 if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
