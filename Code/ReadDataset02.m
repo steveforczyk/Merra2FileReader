@@ -13446,7 +13446,7 @@ if(iSeaSaltCalc>0)
         SeaSaltDryDepAllBins(framecounter,3)=sum(sum(data3sum));
         SeaSaltDryDepAllBins(framecounter,4)=sum(sum(data4sum));
         SeaSaltDryDepAllBins(framecounter,5)=sum(sum(data4sum));
-        WSeaSaltDryDepAllBins(framecounter,1)=sum(sum(data0sum));
+        WSeaSaltDryDepAllBins(framecounter,1)=sum(sum(data0sum))/100;
         summask1=sum(sum(Merra2WorkingSeaMask1));
         summask2=sum(sum(Merra2WorkingSeaMask2));
         summask3=sum(sum(Merra2WorkingSeaMask3));

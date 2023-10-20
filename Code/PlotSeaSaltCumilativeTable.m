@@ -25,6 +25,8 @@ global SeaSaltSumDepROI8 WSeaSaltSumDepROI8;
 global SeaSaltSumDepROI9 WSeaSaltSumDepROI9;
 global SeaSaltSumDepROI10 WSeaSaltSumDepROI10;
 global SSDPSumTable SSDPSumTT;
+global ROIName1 ROIName2 ROIName3 ROIName4 ROIName5;
+global ROIName6 ROIName7 ROIName8 ROIName9 ROIName10;
 
 global iLogo LogoFileName1 LogoFileName2;
 global numtimeslice;
@@ -77,7 +79,7 @@ if(ikind2==1066)
     plot(SSDPSumTT.Time,SSDPSumTT.World,'b',SSDPSumTT.Time,SSDPSumTT.ROIName6,'g',...
         SSDPSumTT.Time,SSDPSumTT.ROIName7,'k',SSDPSumTT.Time,SSDPSumTT.ROIName8,'r',...
         SSDPSumTT.Time,SSDPSumTT.ROIName9,'c',SSDPSumTT.Time,SSDPSumTT.ROIName10,'r+');
-    hl=legend('World','ROIName6','ROIName7','ROIName8','ROIName9','ROIName10');
+    hl=legend('World/100','ROIName6','ROIName7','ROIName8','ROIName9','ROIName10');
     ylabel('Sea Salt Deposition TG/Day','FontWeight','bold','FontSize',12);
     sectionstr=strcat('SSDP','-Map');
     pdftxtstr=strcat(' SSDP Map For File-',Merra2ShortFileName);
@@ -192,7 +194,7 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         T1=[Hdrs;myCellArray];
         tbl1=Table(T1);
         tbl1.Style = [tbl1.Style {Border('solid','black','3px'),...
-            NumberFormat("%3.2f")}];
+            NumberFormat("%5.3f")}];
         tbl1.TableEntriesHAlign = 'center';
         tbl1.HAlign='center';
         tbl1.ColSep = 'single';
@@ -209,10 +211,11 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         add(chapter,bt1);
         parastr601='The table above cumiliative daily deposition of Sea Salt.';
         parastr602=' Quoted Desposition if for Combined 5 size bins each day';
-%         parastr603=' Since these originate in fires these particulates tend to get distributed evenly in the planetary boundary layer .';
-%         parastr604=' A diurnal cycle is generally observed for these emissions.';
-%        parastr605=strcat(' The current table is for-',timeslicestr,'-hours');
-        parastr609=strcat(parastr601,parastr602);
+        parastr603=strcat('ROIName6=',ROIName6,'-ROIName7=','ROIName7');
+        parastr604=strcat('ROIName8=',ROIName8,'-ROIName9=','ROIName9',...
+            '-ROIName10=',ROIName10);
+        parastr605='Note that the World Cumilative values were reduced by 100 for plot purposes';
+        parastr609=strcat(parastr601,parastr602,parastr603,parastr604,parastr605);
         p609= Paragraph(parastr609);
         p609.Style = {OuterMargin("0pt", "0pt","20pt","10pt")};
         add(chapter,p609);
