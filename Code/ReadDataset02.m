@@ -13641,7 +13641,7 @@ if((iSeaSalt>0) && (iSeaSaltCalc>0))
 SSDPSumTable=table(WSeaSaltDryDepAllBins(:,1),SeaSaltDryDepAllBins(:,1),...
       SeaSaltDryDepAllBins(:,2),SeaSaltDryDepAllBins(:,3),...
       SeaSaltDryDepAllBins(:,4),SeaSaltDryDepAllBins(:,5),...
-      'VariableNames',{'World','ROIName6','RPOName7',...
+      'VariableNames',{'World','ROIName6','ROIName7',...
       'ROIName8','ROIName9','ROIName10'});
 SSDPSumTT = table2timetable(SSDPSumTable,'TimeStep',timestep,'StartTime',stime);
 eval(['cd ' tablepath(1:length(tablepath)-1)]);
@@ -16368,9 +16368,14 @@ end
    iNewChapter=0;
    iCloseChapter=1;
    PlotAccumilatedDustTables(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-   %% Plot the New Sea Salt Cumilative Tables
    if((iSeaSalt>0) && (iSeaSaltCalc>0))
-
+   %% Plot the New Sea Salt Cumilative Tables
+   titlestr=strcat('SeaSaltCumilDepo-',num2str(yd),'-PerDay');
+   ikind2=1066;
+   iAddToReport=1;
+   iNewChapter=1;
+   iCloseChapter=1; 
+   PlotSeaSaltCumilativeTable(titlestr,ikind2,iAddToReport,iNewChapter,iCloseChapter)
    end
 end
 
