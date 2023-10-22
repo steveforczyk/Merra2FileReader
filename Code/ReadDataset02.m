@@ -454,6 +454,13 @@ global SeaSaltSumDepROI8 WSeaSaltSumDepROI8;
 global SeaSaltSumDepROI9 WSeaSaltSumDepROI9;
 global SeaSaltSumDepROI10 WSeaSaltSumDepROI10;
 global SSDPSumTable SSDPSumTT;
+global SeaSaltEmisAllBins WSeaSaltEmisAllBins;
+global SeaSaltSumEmisROI6 WSeaSaltSumEmisROI6;
+global SeaSaltSumEmisROI7 WSeaSaltSumEmisROI7;
+global SeaSaltSumEmisROI8 WSeaSaltSumEmisROI8;
+global SeaSaltSumEmisROI9 WSeaSaltSumEmisROI9;
+global SeaSaltSumEmisROI10 WSeaSaltSumEmisROI10;
+global SSEMSumTable SSEMSumTT;
 
 
 
@@ -12850,6 +12857,18 @@ if(framecounter==1)
     WSeaSaltSumDepROI9=zeros(numSelectedFiles,1);
     SeaSaltSumDepROI10=zeros(numSelectedFiles,1);
     WSeaSaltSumDepROI10=zeros(numSelectedFiles,1);
+    SeaSaltEmisAllBins=zeros(numSelectedFiles,5);
+    WSeaSaltEmisAllBins=zeros(numSelectedFiles,1);
+    SeaSaltSumEmisROI6=zeros(numSelectedFiles,1);
+    WSeaSaltSumEmisROI6=zeros(numSelectedFiles,1);
+    SeaSaltSumEmisROI7=zeros(numSelectedFiles,1);
+    WSeaSaltSumEmisROI7=zeros(numSelectedFiles,1);
+    SeaSaltSumEmisROI8=zeros(numSelectedFiles,1);
+    WSeaSaltSumEmisROI8=zeros(numSelectedFiles,1);
+    SeaSaltSumEmisROI9=zeros(numSelectedFiles,1);
+    WSeaSaltSumEmisROI9=zeros(numSelectedFiles,1);
+    SeaSaltSumEmisROI10=zeros(numSelectedFiles,1);
+    WSeaSaltSumEmisROI10=zeros(numSelectedFiles,1);
 end
 %% Add in Data for this frame and time for the selected country for each frame of data
 if(iDustCalc>0)
@@ -13206,211 +13225,10 @@ end
         data15sumT=sum(sum(data15sumArea));
         DUDPSum5(framecounter,1)=(data11sumT+data12sumT+data13sumT+data14sumT+data15sumT)*(1E3/1E12);
     end
-%% Add in Data for this frame and time for the selected country for each frame of data-old way
-if(iSeaSaltCalc>100)
-        datas1sum=zeros(576,361);
-        datas2sum=zeros(576,361);
-        datas3sum=zeros(576,361);
-        datas4sum=zeros(576,361);
-        datas5sum=zeros(576,361);
-        datas11sum=zeros(576,361);
-        datas12sum=zeros(576,361);
-        datas13sum=zeros(576,361);
-        datas14sum=zeros(576,361);
-        datas15sum=zeros(576,361);
-    for kk=1:24 % Loop over the hourly data
-        datas1=SSDP001S.values(:,:,kk);% Sea Salt Deposition for one grid point at one time
-        datas2=SSDP002S.values(:,:,kk);
-        datas3=SSDP003S.values(:,:,kk);
-        datas4=SSDP004S.values(:,:,kk);
-        datas5=SSDP005S.values(:,:,kk);
-        datas1sum=datas1sum+data1*3600;
-        datas2sum=datas2sum+data2*3600;
-        datas3sum=datas3sum+data3*3600;
-        datas4sum=datas4sum+data4*3600;
-        datas5sum=datas5sum+data5*3600;
-        data1a=(1E3/1E12)*data1.*Merra2WorkingSeaMask1;% Use the mask to limit it to the target country and convert to Tgm
-        data2a=(1E3/1E12)*data2.*Merra2WorkingSeaMask2;
-        data3a=(1E3/1E12)*data3.*Merra2WorkingSeaMask3;
-        data4a=(1E3/1E12)*data4.*Merra2WorkingSeaMask4;
-        data5a=(1E3/1E12)*data5.*Merra2WorkingSeaMask5;
-        data11a=(1E3/1E12)*data11.*Merra2WorkingMask;% Use the mask to limit it to the target country and convert to Tgm
-        data12a=(1E3/1E12)*data12.*Merra2WorkingMask;
-        data13a=(1E3/1E12)*data13.*Merra2WorkingMask;
-        data14a=(1E3/1E12)*data14.*Merra2WorkingMask;
-        data15a=(1E3/1E12)*data15.*Merra2WorkingMask;
-        data21a=(1E3/1E12)*data21.*Merra2WorkingMask;% Use the mask to limit it to the target country and convert to Tgm
-        data22a=(1E3/1E12)*data22.*Merra2WorkingMask;
-        data23a=(1E3/1E12)*data23.*Merra2WorkingMask;
-        data24a=(1E3/1E12)*data24.*Merra2WorkingMask;
-        data25a=(1E3/1E12)*data25.*Merra2WorkingMask;
-        data1aw=(1E3/1E12)*data1;% Convert from Kg to Tgm-terra grams w stand for entire world
-        data2aw=(1E3/1E12)*data2;
-        data3aw=(1E3/1E12)*data3;
-        data4aw=1E3*data4/1E12;
-        data5aw=1E3*data5/1E12;
-        data11aw=(1E3/1E12)*data11;% Convert from Kg to Tgm-terra grams w stand for entire world
-        data12aw=(1E3/1E12)*data12;
-        data13aw=(1E3/1E12)*data13;
-        data14aw=(1E3/1E12)*data14;
-        data15aw=(1E3/1E12)*data15;
-        data21aw=(1E3/1E12)*data21;% Convert from Kg to Tgm-terra grams w stand for entire world
-        data22aw=(1E3/1E12)*data22;
-        data23aw=(1E3/1E12)*data23;
-        data24aw=(1E3/1E12)*data24;
-        data25aw=(1E3/1E12)*data25;
-        data1b=zeros(576,361);
-        data2b=zeros(576,361);
-        data3b=zeros(576,361);
-        data4b=zeros(576,361);
-        data5b=zeros(576,361);
-        data11b=zeros(576,361);% ROI Country
-        data12b=zeros(576,361);
-        data13b=zeros(576,361);
-        data14b=zeros(576,361);
-        data15b=zeros(576,361);
-        data21b=zeros(576,361);% ROI Country
-        data22b=zeros(576,361);
-        data23b=zeros(576,361);
-        data24b=zeros(576,361);
-        data25b=zeros(576,361);
-        data1bw=zeros(576,361);% Whole World
-        data2bw=zeros(576,361);
-        data3bw=zeros(576,361);
-        data4bw=zeros(576,361);
-        data5bw=zeros(576,361);
-        data11bw=zeros(576,361);% Whole World
-        data12bw=zeros(576,361);
-        data13bw=zeros(576,361);
-        data14bw=zeros(576,361);
-        data15bw=zeros(576,361);
-        data21bw=zeros(576,361);% Whole World
-        data22bw=zeros(576,361);
-        data23bw=zeros(576,361);
-        data24bw=zeros(576,361);
-        data25bw=zeros(576,361);
-        sumarea=0;
-        ihits=0;
-        for jj=1:361
-            nowArea=1E6*RasterAreas(jj,1);% convert km^2 to m^2
-            for ii=1:576
-                if(Merra2WorkingMask(ii,jj)>0)
-                    sumarea=sumarea+nowArea;
-                    ihits=ihits+1;
-                end
-                data1b(ii,jj)=data1a(ii,jj)*nowArea;
-                data2b(ii,jj)=data2a(ii,jj)*nowArea;
-                data3b(ii,jj)=data3a(ii,jj)*nowArea;
-                data4b(ii,jj)=data4a(ii,jj)*nowArea;
-                data5b(ii,jj)=data5a(ii,jj)*nowArea;
-                data1bw(ii,jj)=data1aw(ii,jj)*nowArea;
-                data2bw(ii,jj)=data2aw(ii,jj)*nowArea;
-                data3bw(ii,jj)=data3aw(ii,jj)*nowArea;
-                data4bw(ii,jj)=data4aw(ii,jj)*nowArea;
-                data5bw(ii,jj)=data5aw(ii,jj)*nowArea;
-                data11b(ii,jj)=data11a(ii,jj)*nowArea;
-                data12b(ii,jj)=data12a(ii,jj)*nowArea;
-                data13b(ii,jj)=data13a(ii,jj)*nowArea;
-                data14b(ii,jj)=data14a(ii,jj)*nowArea;
-                data15b(ii,jj)=data15a(ii,jj)*nowArea;
-                data11bw(ii,jj)=data11aw(ii,jj)*nowArea;
-                data12bw(ii,jj)=data12aw(ii,jj)*nowArea;
-                data13bw(ii,jj)=data13aw(ii,jj)*nowArea;
-                data14bw(ii,jj)=data14aw(ii,jj)*nowArea;
-                data15bw(ii,jj)=data15aw(ii,jj)*nowArea;
-                data21b(ii,jj)=data21a(ii,jj)*nowArea;
-                data22b(ii,jj)=data22a(ii,jj)*nowArea;
-                data23b(ii,jj)=data23a(ii,jj)*nowArea;
-                data24b(ii,jj)=data24a(ii,jj)*nowArea;
-                data25b(ii,jj)=data25a(ii,jj)*nowArea;
-                data21bw(ii,jj)=data21aw(ii,jj)*nowArea;
-                data22bw(ii,jj)=data22aw(ii,jj)*nowArea;
-                data23bw(ii,jj)=data23aw(ii,jj)*nowArea;
-                data24bw(ii,jj)=data24aw(ii,jj)*nowArea;
-                data25bw(ii,jj)=data25aw(ii,jj)*nowArea;
-            end
 
-        end
-        data1c=sum(sum(data1b));
-        data2c=sum(sum(data2b));
-        data3c=sum(sum(data3b));
-        data4c=sum(sum(data4b));
-        data5c=sum(sum(data5b));
-        data1cw=sum(sum(data1bw));
-        data2cw=sum(sum(data2bw));
-        data3cw=sum(sum(data3bw));
-        data4cw=sum(sum(data4bw));
-        data5cw=sum(sum(data5bw));
-        data11c=sum(sum(data11b));
-        data12c=sum(sum(data12b));
-        data13c=sum(sum(data13b));
-        data14c=sum(sum(data14b));
-        data15c=sum(sum(data15b));
-        data11cw=sum(sum(data11bw));
-        data12cw=sum(sum(data12bw));
-        data13cw=sum(sum(data13bw));
-        data14cw=sum(sum(data14bw));
-        data15cw=sum(sum(data15bw));
-        data21c=sum(sum(data21b));
-        data22c=sum(sum(data22b));
-        data23c=sum(sum(data23b));
-        data24c=sum(sum(data24b));
-        data25c=sum(sum(data25b));
-        data21cw=sum(sum(data21bw));
-        data22cw=sum(sum(data22bw));
-        data23cw=sum(sum(data23bw));
-        data24cw=sum(sum(data24bw));
-        data25cw=sum(sum(data25bw));
-        DustEmissionAllBins(framecounter,1)=DustEmissionAllBins(framecounter,1)+3600*data1c;% Sum up the rate for 1 hr for target country
-        DustEmissionAllBins(framecounter,2)=DustEmissionAllBins(framecounter,2)+3600*data2c;
-        DustEmissionAllBins(framecounter,3)=DustEmissionAllBins(framecounter,3)+3600*data3c;
-        DustEmissionAllBins(framecounter,4)=DustEmissionAllBins(framecounter,4)+3600*data4c;
-        DustEmissionAllBins(framecounter,5)=DustEmissionAllBins(framecounter,5)+3600*data5c;
-        WDustEmissionAllBins(framecounter,1)=WDustEmissionAllBins(framecounter,1)+3600*data1cw;% Sum up the rate for 1 hr for entire world
-        WDustEmissionAllBins(framecounter,2)=WDustEmissionAllBins(framecounter,2)+3600*data2cw;
-        WDustEmissionAllBins(framecounter,3)=WDustEmissionAllBins(framecounter,3)+3600*data3cw;
-        WDustEmissionAllBins(framecounter,4)=WDustEmissionAllBins(framecounter,4)+3600*data4cw;
-        WDustEmissionAllBins(framecounter,5)=WDustEmissionAllBins(framecounter,5)+3600*data5cw;
-        ROIArea=sumarea;
-        ROIPts=ihits;
-        SumDEmiss(framecounter,1)=DustEmissionAllBins(framecounter,1)+DustEmissionAllBins(framecounter,2)+DustEmissionAllBins(framecounter,3);
-        SumDEmiss(framecounter,1)=SumDEmiss(framecounter,1)+DustEmissionAllBins(framecounter,4)+DustEmissionAllBins(framecounter,5);
-        SumWEmiss(framecounter,1)=WDustEmissionAllBins(framecounter,1)+WDustEmissionAllBins(framecounter,2)+WDustEmissionAllBins(framecounter,3);
-        SumWEmiss(framecounter,1)=SumWEmiss(framecounter,1)+WDustEmissionAllBins(framecounter,4)+WDustEmissionAllBins(framecounter,5);
-        DustDepositionAllBins(framecounter,1)=DustDepositionAllBins(framecounter,1)+3600*data11c; % Sum up the rate for 1 hr for target country
-        DustDepositionAllBins(framecounter,2)=DustDepositionAllBins(framecounter,2)+3600*data12c;
-        DustDepositionAllBins(framecounter,3)=DustDepositionAllBins(framecounter,3)+3600*data13c;
-        DustDepositionAllBins(framecounter,4)=DustDepositionAllBins(framecounter,4)+3600*data14c;
-        DustDepositionAllBins(framecounter,5)=DustDepositionAllBins(framecounter,5)+3600*data15c;
-        WDustDepositionAllBins(framecounter,1)=WDustDepositionAllBins(framecounter,1)+3600*data11cw; % Sum up the rate for 1 hr for target country
-        WDustDepositionAllBins(framecounter,2)=WDustDepositionAllBins(framecounter,2)+3600*data12cw;
-        WDustDepositionAllBins(framecounter,3)=WDustDepositionAllBins(framecounter,3)+3600*data13cw;
-        WDustDepositionAllBins(framecounter,4)=WDustDepositionAllBins(framecounter,4)+3600*data14cw;
-        WDustDepositionAllBins(framecounter,5)=WDustDepositionAllBins(framecounter,5)+3600*data15cw;
-        SumDDepo(framecounter,1)=DustDepositionAllBins(framecounter,1)+DustDepositionAllBins(framecounter,2)+DustDepositionAllBins(framecounter,3);
-        SumDDepo(framecounter,1)=SumDDepo(framecounter,1)+DustDepositionAllBins(framecounter,4)+DustDepositionAllBins(framecounter,5);
-        SumWDepo(framecounter,1)=WDustDepositionAllBins(framecounter,1)+WDustDepositionAllBins(framecounter,2)+WDustDepositionAllBins(framecounter,3);
-        SumWDepo(framecounter,1)=SumWDepo(framecounter,1)+WDustDepositionAllBins(framecounter,4)+WDustDepositionAllBins(framecounter,5);
-        DustSedimentationAllBins(framecounter,1)=DustSedimentationAllBins(framecounter,1)+3600*data21c; % Sum up the rate for 1 hr for target country
-        DustSedimentationAllBins(framecounter,2)=DustSedimentationAllBins(framecounter,2)+3600*data22c;
-        DustSedimentationAllBins(framecounter,3)=DustSedimentationAllBins(framecounter,3)+3600*data23c;
-        DustSedimentationAllBins(framecounter,4)=DustSedimentationAllBins(framecounter,4)+3600*data24c;
-        DustSedimentationAllBins(framecounter,5)=DustSedimentationAllBins(framecounter,5)+3600*data25c;
-        WDustSedimentationAllBins(framecounter,1)=WDustSedimentationAllBins(framecounter,1)+3600*data21cw; % Sum up the rate for 1 hr for target country
-        WDustSedimentationAllBins(framecounter,2)=WDustSedimentationAllBins(framecounter,2)+3600*data22cw;
-        WDustSedimentationAllBins(framecounter,3)=WDustSedimentationAllBins(framecounter,3)+3600*data23cw;
-        WDustSedimentationAllBins(framecounter,4)=WDustSedimentationAllBins(framecounter,4)+3600*data24cw;
-        WDustSedimentationAllBins(framecounter,5)=WDustSedimentationAllBins(framecounter,5)+3600*data25cw;
-        SumDSed(framecounter,1)=DustSedimentationAllBins(framecounter,1)+DustSedimentationAllBins(framecounter,2)+DustSedimentationAllBins(framecounter,3);
-        SumDSed(framecounter,1)=SumDSed(framecounter,1)+DustSedimentationAllBins(framecounter,4)+DustSedimentationAllBins(framecounter,5);
-        SumWSed(framecounter,1)=WDustSedimentationAllBins(framecounter,1)+WDustSedimentationAllBins(framecounter,2)+WDustSedimentationAllBins(framecounter,3);
-        SumWSed(framecounter,1)=SumWSed(framecounter,1)+WDustSedimentationAllBins(framecounter,4)+WDustSedimentationAllBins(framecounter,5);
-        ab=1;
-    end
-
-end
 %% Add in Data for this frame and time for the selected country for each frame of data-new way
 if(iSeaSaltCalc>0)
+%% Start with the Sea Salt Dry Deposition
         datas1sum=zeros(576,361);
         datas2sum=zeros(576,361);
         datas3sum=zeros(576,361);
@@ -13432,7 +13250,6 @@ if(iSeaSaltCalc>0)
         datas3sum=datas3sum+datas3*3600;
         datas4sum=datas4sum+datas4*3600;        
         datas5sum=datas5sum+datas5*3600;
-
     end
         data0sum=(1E3/1E12)*(data1sum + data2sum + data3sum + data4sum + data5sum).*RasterAreaGrid*1E6;
 % Use the mask to limit it to the target country and convert to Tgm        
@@ -13464,7 +13281,47 @@ if(iSeaSaltCalc>0)
         fprintf(fid,'%s\n',sumstr4);
         fprintf(fid,'%s\n',sumstr5);
         fprintf(fid,'\n');
-
+%% Continue with the Sea Salt Emission
+        datas1sum=zeros(576,361);
+        datas2sum=zeros(576,361);
+        datas3sum=zeros(576,361);
+        datas4sum=zeros(576,361);
+        datas5sum=zeros(576,361);
+        datas11sum=zeros(576,361);
+        datas12sum=zeros(576,361);
+        datas13sum=zeros(576,361);
+        datas14sum=zeros(576,361);
+        datas15sum=zeros(576,361);
+    for kk=1:24 % Loop over the hourly data in gridded format for each particle bin
+        datas1=SSEM001S.values(:,:,kk);% Sea Salt Emission for one grid point at one time
+        datas2=SSEM002S.values(:,:,kk);
+        datas3=SSEM003S.values(:,:,kk);
+        datas4=SSEM004S.values(:,:,kk);
+        datas5=SSEM005S.values(:,:,kk);
+        datas1sum=datas1sum+datas1*3600;
+        datas2sum=datas2sum+datas2*3600;
+        datas3sum=datas3sum+datas3*3600;
+        datas4sum=datas4sum+datas4*3600;        
+        datas5sum=datas5sum+datas5*3600;
+    end
+        data0sum=(1E3/1E12)*(data1sum + data2sum + data3sum + data4sum + data5sum).*RasterAreaGrid*1E6;
+% Use the mask to limit it to the target country and convert to Tgm        
+        data1sum=data0sum.*Merra2WorkingSeaMask1;
+        data2sum=data0sum.*Merra2WorkingSeaMask2;
+        data3sum=data0sum.*Merra2WorkingSeaMask3;
+        data4sum=data0sum.*Merra2WorkingSeaMask4;
+        data5sum=data0sum.*Merra2WorkingSeaMask5;
+        SeaSaltEmisAllBins(framecounter,1)=sum(sum(data1sum));
+        SeaSaltEmisAllBins(framecounter,2)=sum(sum(data2sum));
+        SeaSaltEmisAllBins(framecounter,3)=sum(sum(data3sum));
+        SeaSaltEmisAllBins(framecounter,4)=sum(sum(data4sum));
+        SeaSaltEmisAllBins(framecounter,5)=sum(sum(data4sum));
+        WSeaSaltEmisAllBins(framecounter,1)=sum(sum(data0sum))/100;
+        summask1=sum(sum(Merra2WorkingSeaMask1));
+        summask2=sum(sum(Merra2WorkingSeaMask2));
+        summask3=sum(sum(Merra2WorkingSeaMask3));
+        summask4=sum(sum(Merra2WorkingSeaMask4));
+        summask5=sum(sum(Merra2WorkingSeaMask5));
 
 
 end
@@ -13637,22 +13494,38 @@ if(framecounter==numSelectedFiles)
    end
 if((iSeaSalt>0) && (iSeaSaltCalc>0))
 %% Create a Table for the cumilative Daily Deposiion of Sea Salt in All Bins
-  
-SSDPSumTable=table(WSeaSaltDryDepAllBins(:,1),SeaSaltDryDepAllBins(:,1),...
-      SeaSaltDryDepAllBins(:,2),SeaSaltDryDepAllBins(:,3),...
-      SeaSaltDryDepAllBins(:,4),SeaSaltDryDepAllBins(:,5),...
-      'VariableNames',{'World','ROIName6','ROIName7',...
-      'ROIName8','ROIName9','ROIName10'});
-SSDPSumTT = table2timetable(SSDPSumTable,'TimeStep',timestep,'StartTime',stime);
-eval(['cd ' tablepath(1:length(tablepath)-1)]);
-actionstr='save';
-varstr1='SSDPSumTable SSDPSumTT YearMonthStr numtimeslice SelectedSeaMaskData';
-MatFileName=strcat('SSDPSumTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-qualstr='-v7.3';
-[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-eval(cmdString)
-blackcar01str=strcat('Created SSDPSumTT-','Contains Sum Of Sea Salt Dry Dep-',num2str(1));
-fprintf(fid,'%s\n',blackcar01str);
+     SSDPSumTable=table(WSeaSaltDryDepAllBins(:,1),SeaSaltDryDepAllBins(:,1),...
+          SeaSaltDryDepAllBins(:,2),SeaSaltDryDepAllBins(:,3),...
+          SeaSaltDryDepAllBins(:,4),SeaSaltDryDepAllBins(:,5),...
+          'VariableNames',{'World','ROIName6','ROIName7',...
+          'ROIName8','ROIName9','ROIName10'});
+    SSDPSumTT = table2timetable(SSDPSumTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='SSDPSumTable SSDPSumTT YearMonthStr numtimeslice SelectedSeaMaskData';
+    MatFileName=strcat('SSDPSumTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    dep01str=strcat('Created SSDPSumTT-','Contains Sum Of Sea Salt Dry Dep-',num2str(1));
+    fprintf(fid,'%s\n',dep01str);
+
+%% Create a Table for the cumilative Daily Emission of Sea Salt in All Bins
+    SSEMSumTable=table(WSeaSaltEmisAllBins(:,1),SeaSaltEmisAllBins(:,1),...
+          SeaSaltEmisAllBins(:,2),SeaSaltEmisAllBins(:,3),...
+          SeaSaltEmisAllBins(:,4),SeaSaltEmisAllBins(:,5),...
+          'VariableNames',{'World','ROIName6','ROIName7',...
+          'ROIName8','ROIName9','ROIName10'});
+    SSEMSumTT = table2timetable(SSEMSumTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='SSEMSumTable SSEMSumTT YearMonthStr numtimeslice SelectedSeaMaskData';
+    MatFileName=strcat('SSEMSumTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    dep02str=strcat('Created SSEMSumTT-','Contains Sum Of Sea Salt Emissions-',num2str(1));
+    fprintf(fid,'%s\n',dep02str);
 
 end
 %% Create the Black Carbon Dry Deposition Table For Bin 001 ikind=1
@@ -16374,6 +16247,13 @@ end
    ikind2=1066;
    iAddToReport=1;
    iNewChapter=1;
+   iCloseChapter=0; 
+   PlotSeaSaltCumilativeTable(titlestr,ikind2,iAddToReport,iNewChapter,iCloseChapter)
+   %% Plot the Sea Salt Cumilative Emission Tables
+   titlestr=strcat('SeaSaltCumilEmis-',num2str(yd),'-PerDay');
+   ikind2=1067;
+   iAddToReport=1;
+   iNewChapter=0;
    iCloseChapter=1; 
    PlotSeaSaltCumilativeTable(titlestr,ikind2,iAddToReport,iNewChapter,iCloseChapter)
    end

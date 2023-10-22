@@ -13,7 +13,7 @@
 % fixed
 % Classification: Unclassified/Public Domain
 %% Set Up Globals
-global Datasets  ;
+global Datasets;
 global BandDataS MetaDataS;
 global LatSpacing LonSpacing RasterAreas;
 global RasterLats RasterLons COThighlimit;
