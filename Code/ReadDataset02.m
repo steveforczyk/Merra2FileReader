@@ -461,6 +461,13 @@ global SeaSaltSumEmisROI8 WSeaSaltSumEmisROI8;
 global SeaSaltSumEmisROI9 WSeaSaltSumEmisROI9;
 global SeaSaltSumEmisROI10 WSeaSaltSumEmisROI10;
 global SSEMSumTable SSEMSumTT;
+global SeaSaltSedAllBins WSeaSaltSedAllBins;
+global SeaSaltSumSedROI6 WSeaSaltSumSedROI6;
+global SeaSaltSumSedROI7 WSeaSaltSumSedROI7;
+global SeaSaltSumSedROI8 WSeaSaltSumSedROI8;
+global SeaSaltSumSedROI9 WSeaSaltSumSedROI9;
+global SeaSaltSumSedROI10 WSeaSaltSumSedROI10;
+global SSSDSumTable SSSDSumTT;
 
 
 
@@ -475,6 +482,8 @@ global westEdge eastEdge southEdge northEdge;
 global yd md dd hd mind secd;
 global iCityPlot iSkipReportFrames;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
+global ROIName1 ROIName2 ROIName3 ROIName4 ROIName5;
+global ROIName6 ROIName7 ROIName8 ROIName9 ROIName10;
 
 % additional paths needed for mapping
 global matpath1 mappath maskpath;
@@ -9379,7 +9388,7 @@ for i = 0:numvars-1
        if(a810==1)
           SSSD001S.values= SSSD001;
        end
-
+       
        if(a820==1)
           SSSD002S.values= SSSD002;
        end
@@ -12839,7 +12848,7 @@ if(framecounter==1)
     DUDPSum5=zeros(numSelectedFiles,1);
 % Now load the desired mask and make it the working mask
     Merra2WorkingMask=Merra2WorkingMask1;
-    duststr=strcat('Cumilitive Dust Emission Will Be Calculated For-',DustROICountry);
+    duststr=strcat('Cumilative Dust Emission Will Be Calculated For-',DustROICountry);
     fprintf(fid,'\n');
     fprintf(fid,'%s\n',duststr);
     fprintf(fid,'\n');
@@ -12869,6 +12878,18 @@ if(framecounter==1)
     WSeaSaltSumEmisROI9=zeros(numSelectedFiles,1);
     SeaSaltSumEmisROI10=zeros(numSelectedFiles,1);
     WSeaSaltSumEmisROI10=zeros(numSelectedFiles,1);
+    SeaSaltSedAllBins=zeros(numSelectedFiles,5);
+    WSeaSaltSedAllBins=zeros(numSelectedFiles,1);
+    SeaSaltSumSedROI6=zeros(numSelectedFiles,1);
+    WSeaSaltSumSedROI6=zeros(numSelectedFiles,1);
+    SeaSaltSumSedROI7=zeros(numSelectedFiles,1);
+    WSeaSaltSumSedROI7=zeros(numSelectedFiles,1);
+    SeaSaltSumSedROI8=zeros(numSelectedFiles,1);
+    WSeaSaltSumSedROI8=zeros(numSelectedFiles,1);
+    SeaSaltSumSedROI9=zeros(numSelectedFiles,1);
+    WSeaSaltSumSedROI9=zeros(numSelectedFiles,1);
+    SeaSaltSumSedROI10=zeros(numSelectedFiles,1);
+    WSeaSaltSumSedROI10=zeros(numSelectedFiles,1);
 end
 %% Add in Data for this frame and time for the selected country for each frame of data
 if(iDustCalc>0)
@@ -13234,11 +13255,11 @@ if(iSeaSaltCalc>0)
         datas3sum=zeros(576,361);
         datas4sum=zeros(576,361);
         datas5sum=zeros(576,361);
-        datas11sum=zeros(576,361);
-        datas12sum=zeros(576,361);
-        datas13sum=zeros(576,361);
-        datas14sum=zeros(576,361);
-        datas15sum=zeros(576,361);
+%         datas11sum=zeros(576,361);
+%         datas12sum=zeros(576,361);
+%         datas13sum=zeros(576,361);
+%         datas14sum=zeros(576,361);
+%         datas15sum=zeros(576,361);
     for kk=1:24 % Loop over the hourly data in gridded format for each particle bin
         datas1=SSDP001S.values(:,:,kk);% Sea Salt Deposition for one grid point at one time
         datas2=SSDP002S.values(:,:,kk);
@@ -13250,79 +13271,204 @@ if(iSeaSaltCalc>0)
         datas3sum=datas3sum+datas3*3600;
         datas4sum=datas4sum+datas4*3600;        
         datas5sum=datas5sum+datas5*3600;
-    end
+    end 
+        SSDP3=SSDP003S.values(:,:,12);
         data0sum=(1E3/1E12)*(data1sum + data2sum + data3sum + data4sum + data5sum).*RasterAreaGrid*1E6;
+        x1=data0sum;
+        datadep0sum=sum(sum(data0sum));
 % Use the mask to limit it to the target country and convert to Tgm        
-        data1sum=data0sum.*Merra2WorkingSeaMask1;
-        data2sum=data0sum.*Merra2WorkingSeaMask2;
-        data3sum=data0sum.*Merra2WorkingSeaMask3;
-        data4sum=data0sum.*Merra2WorkingSeaMask4;
-        data5sum=data0sum.*Merra2WorkingSeaMask5;
-        SeaSaltDryDepAllBins(framecounter,1)=sum(sum(data1sum));
-        SeaSaltDryDepAllBins(framecounter,2)=sum(sum(data2sum));
-        SeaSaltDryDepAllBins(framecounter,3)=sum(sum(data3sum));
-        SeaSaltDryDepAllBins(framecounter,4)=sum(sum(data4sum));
-        SeaSaltDryDepAllBins(framecounter,5)=sum(sum(data4sum));
-        WSeaSaltDryDepAllBins(framecounter,1)=sum(sum(data0sum))/100;
+        roi6deparray=data0sum.*Merra2WorkingSeaMask1;
+        roi7deparray=data0sum.*Merra2WorkingSeaMask2;
+        roi8deparray=data0sum.*Merra2WorkingSeaMask3;
+        roi9deparray=data0sum.*Merra2WorkingSeaMask4;
+        roi10deparray=data0sum.*Merra2WorkingSeaMask5;
+        roi6sum=sum(sum(roi6deparray));
+        roi7sum=sum(sum(roi7deparray));
+        roi8sum=sum(sum(roi8deparray));
+        roi9sum=sum(sum(roi9deparray));
+        roi10sum=sum(sum(roi10deparray));
+        SeaSaltDryDepAllBins(framecounter,1)=roi6sum;
+        SeaSaltDryDepAllBins(framecounter,2)=roi7sum;
+        SeaSaltDryDepAllBins(framecounter,3)=roi8sum;
+        SeaSaltDryDepAllBins(framecounter,4)=roi9sum;
+        SeaSaltDryDepAllBins(framecounter,5)=roi10sum;
+        WSeaSaltDryDepAllBins(framecounter,1)=datadep0sum/100;
         summask1=sum(sum(Merra2WorkingSeaMask1));
         summask2=sum(sum(Merra2WorkingSeaMask2));
         summask3=sum(sum(Merra2WorkingSeaMask3));
         summask4=sum(sum(Merra2WorkingSeaMask4));
         summask5=sum(sum(Merra2WorkingSeaMask5));
         fprintf(fid,'\n');
+        sumdepstr='Sum Of all Sea Salt Depositions Print Statements';
+        fprintf(fid,'%s\n',sumdepstr);
         sumstr1=strcat('Mask 1 Sum=',num2str(summask1));
         sumstr2=strcat('Mask 2 Sum=',num2str(summask2));
         sumstr3=strcat('Mask 3 Sum=',num2str(summask3));
         sumstr4=strcat('Mask 4 Sum=',num2str(summask4));
         sumstr5=strcat('Mask 5 Sum=',num2str(summask5));
-        fprintf(fid,'%s\n',sumstr1);
-        fprintf(fid,'%s\n',sumstr2);
-        fprintf(fid,'%s\n',sumstr3);
-        fprintf(fid,'%s\n',sumstr4);
-        fprintf(fid,'%s\n',sumstr5);
+        sumstr6=strcat('World Sum=',num2str(summask5));
+        fprintf(fid,'%s %10.3e\n',sumstr1,roi6sum);
+        fprintf(fid,'%s %10.3e\n',sumstr2,roi7sum);
+        fprintf(fid,'%s %10.3e\n',sumstr3,roi8sum);
+        fprintf(fid,'%s %10.3e\n',sumstr4,roi9sum);
+        fprintf(fid,'%s %10.3e\n',sumstr6,datadep0sum);
         fprintf(fid,'\n');
+        ab=1;
 %% Continue with the Sea Salt Emission
-        datas1sum=zeros(576,361);
-        datas2sum=zeros(576,361);
-        datas3sum=zeros(576,361);
-        datas4sum=zeros(576,361);
-        datas5sum=zeros(576,361);
-        datas11sum=zeros(576,361);
-        datas12sum=zeros(576,361);
-        datas13sum=zeros(576,361);
-        datas14sum=zeros(576,361);
-        datas15sum=zeros(576,361);
+        datas1bsum=zeros(576,361);
+        datas2bsum=zeros(576,361);
+        datas3bsum=zeros(576,361);
+        datas4bsum=zeros(576,361);
+        datas5bsum=zeros(576,361); 
     for kk=1:24 % Loop over the hourly data in gridded format for each particle bin
         datas1=SSEM001S.values(:,:,kk);% Sea Salt Emission for one grid point at one time
         datas2=SSEM002S.values(:,:,kk);
         datas3=SSEM003S.values(:,:,kk);
         datas4=SSEM004S.values(:,:,kk);
         datas5=SSEM005S.values(:,:,kk);
-        datas1sum=datas1sum+datas1*3600;
-        datas2sum=datas2sum+datas2*3600;
-        datas3sum=datas3sum+datas3*3600;
-        datas4sum=datas4sum+datas4*3600;        
-        datas5sum=datas5sum+datas5*3600;
+        datas1bsum=datas1bsum+datas1*3600;
+        datas2bsum=datas2bsum+datas2*3600;
+        datas3bsum=datas3bsum+datas3*3600;
+        datas4bsum=datas4bsum+datas4*3600;        
+        datas5bsum=datas5bsum+datas5*3600;
     end
-        data0sum=(1E3/1E12)*(data1sum + data2sum + data3sum + data4sum + data5sum).*RasterAreaGrid*1E6;
+    SSEM3=SSEM003S.values(:,:,12);
+        data0bsum=(1E3/1E12)*(datas1bsum + datas2bsum + datas3bsum + datas4bsum + datas5bsum).*RasterAreaGrid*1E6;
+        x2=data0bsum;
+        dataemis0sum=sum(sum(data0bsum));
 % Use the mask to limit it to the target country and convert to Tgm        
-        data1sum=data0sum.*Merra2WorkingSeaMask1;
-        data2sum=data0sum.*Merra2WorkingSeaMask2;
-        data3sum=data0sum.*Merra2WorkingSeaMask3;
-        data4sum=data0sum.*Merra2WorkingSeaMask4;
-        data5sum=data0sum.*Merra2WorkingSeaMask5;
-        SeaSaltEmisAllBins(framecounter,1)=sum(sum(data1sum));
-        SeaSaltEmisAllBins(framecounter,2)=sum(sum(data2sum));
-        SeaSaltEmisAllBins(framecounter,3)=sum(sum(data3sum));
-        SeaSaltEmisAllBins(framecounter,4)=sum(sum(data4sum));
-        SeaSaltEmisAllBins(framecounter,5)=sum(sum(data4sum));
-        WSeaSaltEmisAllBins(framecounter,1)=sum(sum(data0sum))/100;
+        roi6emarray=data0bsum.*Merra2WorkingSeaMask1;
+        roi7emarray=data0bsum.*Merra2WorkingSeaMask2;
+        roi8emarray=data0bsum.*Merra2WorkingSeaMask3;
+        roi9emarray=data0bsum.*Merra2WorkingSeaMask4;
+        roi10emarray=data0bsum.*Merra2WorkingSeaMask5;
+        roi6emsum=sum(sum(roi6emarray));
+        roi7emsum=sum(sum(roi7emarray));
+        roi8emsum=sum(sum(roi8emarray));
+        roi9emsum=sum(sum(roi9emarray));
+        roi10emsum=sum(sum(roi10emarray));
+        SeaSaltEmisAllBins(framecounter,1)=roi6emsum;
+        SeaSaltEmisAllBins(framecounter,2)=roi7emsum;
+        SeaSaltEmisAllBins(framecounter,3)=roi8emsum;
+        SeaSaltEmisAllBins(framecounter,4)=roi9emsum;
+        SeaSaltEmisAllBins(framecounter,5)=roi10emsum;
+        WSeaSaltEmisAllBins(framecounter,1)=dataemis0sum/100;
         summask1=sum(sum(Merra2WorkingSeaMask1));
         summask2=sum(sum(Merra2WorkingSeaMask2));
         summask3=sum(sum(Merra2WorkingSeaMask3));
         summask4=sum(sum(Merra2WorkingSeaMask4));
         summask5=sum(sum(Merra2WorkingSeaMask5));
-
+        diff=datadep0sum-dataemis0sum;
+        sumemistsr='Sum Of all Sea Salt Emissions Print Statements';
+        diffstr='Difference Between Deposition-Emission=';
+        fprintf(fid,'%s\n',sumemistsr);
+        sumstr1=strcat('Mask 1 Sum=',num2str(summask1));
+        sumstr2=strcat('Mask 2 Sum=',num2str(summask2));
+        sumstr3=strcat('Mask 3 Sum=',num2str(summask3));
+        sumstr4=strcat('Mask 4 Sum=',num2str(summask4));
+        sumstr5=strcat('Mask 5 Sum=',num2str(summask5));
+        sumstr6=strcat('World Sum=',num2str(summask5));
+        fprintf(fid,'%s %10.3e\n',sumstr1,roi6emsum);
+        fprintf(fid,'%s %10.3e\n',sumstr2,roi7emsum);
+        fprintf(fid,'%s %10.3e\n',sumstr3,roi8emsum);
+        fprintf(fid,'%s %10.3e\n',sumstr4,roi9emsum);
+        fprintf(fid,'%s %10.3e\n',sumstr6,dataemis0sum);
+        fprintf(fid,'%s %10.3e\n',diffstr,diff);
+        fprintf(fid,'\n');
+% Get the correlation between the deposited data and the emitted data
+        R12=corr2(x1,x2);
+        corrstr='Correlation between deposition and emission=';
+        fprintf(fid,'%s %10.5f\n',corrstr,R12);
+%% Continue with the Sea Salt Sedimentation
+        datas1csum=zeros(576,361);
+        datas2csum=zeros(576,361);
+        datas3csum=zeros(576,361);
+        datas4csum=zeros(576,361);
+        datas5csum=zeros(576,361);
+%         datas11sum=zeros(576,361);
+%         datas12sum=zeros(576,361);
+%         datas13sum=zeros(576,361);
+%         datas14sum=zeros(576,361);
+%         datas15sum=zeros(576,361);
+    for kk=1:24 % Loop over the hourly data in gridded format for each particle bin
+        datas1=SSSD001S.values(:,:,kk);% Sea Salt Emission for one grid point at one time
+        datas2=SSSD002S.values(:,:,kk);
+        datas3=SSSD003S.values(:,:,kk);
+        datas4=SSSD004S.values(:,:,kk);
+        datas5=SSSD001S.values(:,:,kk);
+        datas1csum=datas1csum+datas1*3600;
+        datas2csum=datas2csum+datas2*3600;
+        datas3csum=datas3csum+datas3*3600;
+        datas4csum=datas4csum+datas4*3600;        
+        datas5csum=datas5csum+datas5*3600;
+    end
+        SSSD3=SSSD003S.values(:,:,12);
+        Set1Set2Corr=corr2(SSDP3,SSEM3);
+        Set1Set3Corr=corr2(SSDP3,SSSD3);
+        Set2Set3Corr=corr2(SSEM3,SSSD3);      
+        data0csum=(1E3/1E12)*(datas1csum + datas2csum + datas3csum + datas4csum + datas5csum).*RasterAreaGrid*1E6;
+        x3=data0csum;
+        datased0csum=sum(sum(data0csum));
+% Use the mask to limit it to the target country and convert to Tgm        
+        roi6sedarray=data0csum.*Merra2WorkingSeaMask1;
+        roi7sedarray=data0csum.*Merra2WorkingSeaMask2;
+        roi8sedarray=data0csum.*Merra2WorkingSeaMask3;
+        roi9sedarray=data0csum.*Merra2WorkingSeaMask4;
+        roi10sedarray=data0csum.*Merra2WorkingSeaMask5;
+        roi6sedsum=sum(sum(roi6sedarray));
+        roi7sedsum=sum(sum(roi7sedarray));
+        roi8sedsum=sum(sum(roi8sedarray));
+        roi9sedsum=sum(sum(roi9sedarray));
+        roi10sedsum=sum(sum(roi10sedarray));
+        SeaSaltSedAllBins(framecounter,1)=roi6sedsum;
+        SeaSaltSedAllBins(framecounter,2)=roi7sedsum;
+        SeaSaltSedAllBins(framecounter,3)=roi8sedsum;
+        SeaSaltSedAllBins(framecounter,4)=roi9sedsum;
+        SeaSaltSedAllBins(framecounter,5)=roi10sedsum;
+        WSeaSaltEmisAllBins(framecounter,1)=datased0sum/100;
+        summask1=sum(sum(Merra2WorkingSeaMask1));
+        summask2=sum(sum(Merra2WorkingSeaMask2));
+        summask3=sum(sum(Merra2WorkingSeaMask3));
+        summask4=sum(sum(Merra2WorkingSeaMask4));
+        summask5=sum(sum(Merra2WorkingSeaMask5));
+        sumsedstr='Sum Of all Sea Salt Sedimentation Print Statements';
+        fprintf(fid,'%s\n',sumsedstr);
+        sumstr1=strcat('Mask 1 Sum=',num2str(summask1));
+        sumstr2=strcat('Mask 2 Sum=',num2str(summask2));
+        sumstr3=strcat('Mask 3 Sum=',num2str(summask3));
+        sumstr4=strcat('Mask 4 Sum=',num2str(summask4));
+        sumstr5=strcat('Mask 5 Sum=',num2str(summask5));
+        sumstr6=strcat('World Sum=',num2str(summask5));
+        fprintf(fid,'%s %10.3e\n',sumstr1,roi6sedsum);
+        fprintf(fid,'%s %10.3e\n',sumstr2,roi7sedsum);
+        fprintf(fid,'%s %10.3e\n',sumstr3,roi8sedsum);
+        fprintf(fid,'%s %10.3e\n',sumstr4,roi9sedsum);
+        fprintf(fid,'%s %10.3e\n',sumstr6,datased0sum);
+        fprintf(fid,'\n');
+% Get the correlation between the deposited data and the emitted data
+        R13=corr2(x1,x3);
+        corrstr='Correlation between deposition and sedimentation=';
+        fprintf(fid,'%s %10.5f\n',corrstr,R13);
+%         eval(['cd ' savepath(1:length(savepath)-1)]);
+%         actionstr='save';
+%         varstr1='SSDP001S SSEM001S SSSD001S x1 x2 x3 R12 R13';
+%         varstr2=' Merra2WorkingSeaMask1 Merra2WorkingSeaMask2 Merra2WorkingSeaMask3';
+%         varstr3=' Merra2WorkingSeaMask4 Merra2WorkingSeaMask5';
+%         varstr4=' roi6deparray roi7deparray roi8deparray roi9deparray roi10deparray';
+%         varstr5=' roi6sum roi7sum roi8sum roi9sum roi10sum';
+%         varstr6= ' ROIName6 ROIName7 ROIName8 ROIName9 ROIName10';
+%         varstr7= ' roi6emarray roi7emarray roi8emarray roi9emarray roi10emarray';
+%         varstr8= ' roi6emsum roi7emsum roi8emsum roi9emsum roi10emsum';
+%         varstr9=' roi6sedarray roi7sedarray roi8sedarray roi9sedarray roi10sedarray';
+%         varstr10=' roi6sedsum roi7sedsum roi8sedsum roi9sedsum roi10sedsum';
+%         varstr11=' Set1Set2Corr Set1Set3Corr Set2Set3Corr';
+%         varstr=strcat(varstr1,varstr2,varstr3,varstr4,varstr5,varstr6);
+%         varstr=strcat(varstr,varstr7,varstr8,varstr9,varstr10,varstr11);
+%         MatFileName=strcat('FrameCounter',num2str(framecounter),'.mat');
+%         qualstr='-v7.3';
+%         [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+%         eval(cmdString)
+        ab=2;
 
 end
 
@@ -13330,17 +13476,17 @@ end
     if(framecounter==numSelectedFiles)
         eval(['cd ' savepath(1:length(savepath)-1)]);
         %save CalculatedDustEmissionRev1.mat DustEmissionAllBins WDustEmissionAllBins DustROICountry ROIArea ROIPts DUDPSum DUDPSum1 DUDPSum2
-        actionstr='save';
-        varstr1='DustEmissionAllBins WDustEmissionAllBins DUDPSum DUDPSum1';
-        varstr2=' DUDPSum2 DUDPSum3 DUDPSum4 DUDPSum5 SelectedMaskData';
-        varstr3=' DUEMSum DUEMSum1 DUEMSum2 DUEMSum3 DUEMSum4 DUEMSum5';
-        varstr=strcat(varstr1,varstr2,varstr3);
-        MatFileName='CalculatedDustEmissionRev4.mat';
-        qualstr='-v7.3';
-        [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
-        eval(cmdString)
-        dispstr=strcat('Wrote Merra2 Dust Data To File -',MatFileName);
-        disp(dispstr)
+%         actionstr='save';
+%         varstr1='DustEmissionAllBins WDustEmissionAllBins DUDPSum DUDPSum1';
+%         varstr2=' DUDPSum2 DUDPSum3 DUDPSum4 DUDPSum5 SelectedMaskData';
+%         varstr3=' DUEMSum DUEMSum1 DUEMSum2 DUEMSum3 DUEMSum4 DUEMSum5';
+%         varstr=strcat(varstr1,varstr2,varstr3);
+%         MatFileName='CalculatedDustEmissionRev4.mat';
+%         qualstr='-v7.3';
+%         [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+%         eval(cmdString)
+%         dispstr=strcat('Wrote Merra2 Dust Data To File -',MatFileName);
+%         disp(dispstr)
     end
 
 %% Create a series of timetables
@@ -13526,6 +13672,22 @@ if((iSeaSalt>0) && (iSeaSaltCalc>0))
     eval(cmdString)
     dep02str=strcat('Created SSEMSumTT-','Contains Sum Of Sea Salt Emissions-',num2str(1));
     fprintf(fid,'%s\n',dep02str);
+ %% Create a Table for the cumilative Daily Sedimentation of Sea Salt in All Bins
+    SSSDSumTable=table(WSeaSaltSedAllBins(:,1),SeaSaltSedAllBins(:,1),...
+          SeaSaltSedAllBins(:,2),SeaSaltSedAllBins(:,3),...
+          SeaSaltSedAllBins(:,4),SeaSaltSedAllBins(:,5),...
+          'VariableNames',{'World','ROIName6','ROIName7',...
+          'ROIName8','ROIName9','ROIName10'});
+    SSSDSumTT = table2timetable(SSSDSumTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='SSSDSumTable SSSDSumTT YearMonthStr numtimeslice SelectedSeaMaskData';
+    MatFileName=strcat('SSSDSumTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    dep03str=strcat('Created SSSDSumTT-','Contains Sum Of Sea Salt Sedimentation-',num2str(1));
+    fprintf(fid,'%s\n',dep03str);
 
 end
 %% Create the Black Carbon Dry Deposition Table For Bin 001 ikind=1
@@ -16252,6 +16414,13 @@ end
    %% Plot the Sea Salt Cumilative Emission Tables
    titlestr=strcat('SeaSaltCumilEmis-',num2str(yd),'-PerDay');
    ikind2=1067;
+   iAddToReport=1;
+   iNewChapter=0;
+   iCloseChapter=0; 
+   PlotSeaSaltCumilativeTable(titlestr,ikind2,iAddToReport,iNewChapter,iCloseChapter)
+   %% Plot the Sea Salt Cumilative Sedimentation Tables
+   titlestr=strcat('SeaSaltCumilSed-',num2str(yd),'-PerDay');
+   ikind2=1068;
    iAddToReport=1;
    iNewChapter=0;
    iCloseChapter=1; 

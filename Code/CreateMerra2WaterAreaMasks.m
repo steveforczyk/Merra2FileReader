@@ -725,7 +725,7 @@ end
 % flags(35,1)=1;
 % flags(36,1)=1;
 % flags(37,1)=1;
-% flags(38,1)=1;
+  flags(38,1)=1;
 % flags(39,1)=1;
 % flags(40,1)=1;
 % flags(41,1)=1;
@@ -784,11 +784,11 @@ end
 % flags(94,1)=1;
 % flags(95,1)=1;
 % flags(96,1)=1;
-flags(97,1)=1;
-flags(98,1)=1;
-flags(99,1)=1;
-flags(100,1)=1;
-flags(101,1)=1;
+% flags(97,1)=1;
+% flags(98,1)=1;
+% flags(99,1)=1;
+% flags(100,1)=1;
+% flags(101,1)=1;
 
 
 %% Call some routines that will create nice plot window sizes and locations
@@ -2232,7 +2232,6 @@ if(flags(38,1)>0)
             yq(2,1)=Merra2DataRasterLat(j,1)-.25;
             yq(3,1)=Merra2DataRasterLat(j,1)+.25;
             yq(4,1)=Merra2DataRasterLat(j,1)+.25;
-            
             yq(5,1)=Merra2DataRasterLat(j,1)-.25;
             yqq=Merra2DataRasterLat(j,1);
             [in,on]=inpolygon(xqq,yqq,seaLon,seaLat);
@@ -2241,15 +2240,17 @@ if(flags(38,1)>0)
         dispstr=strcat('finished with lon#',num2str(i),'-for-',waterName);
         disp(dispstr)
     end
+    masksum=sum(sum( Merra2GulfOfAqabaMask));
     eval(['cd ' maskpath(1:length(maskpath)-1)]);
     actionstr='save';
-    varstr=' Merra2GulfOfAqabaMask seaArea ';
+    varstr=' Merra2GulfOfAqabaMask seaArea masksum';
     MatFileName='GulfOfAqabaMask';
     qualstr='-v7.3';
     [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
     eval(cmdString)
     dispstr=strcat('Wrote Gulf Ok Aqaba Mask File-',MatFileName);
     disp(dispstr)
+    ab=1;
 end
 %% Water Area 39 Persian Gulf
 if(flags(39,1)>0)
