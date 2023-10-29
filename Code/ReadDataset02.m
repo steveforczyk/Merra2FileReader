@@ -257,7 +257,7 @@ global SO4EMANTable SO4EMANTT;
 global SSAERIDX10 SSAERIDX25 SSAERIDX50 SSAERIDX75 SSAERIDX90 SSAERIDX95 SSAERIDX98 SSAERIDX100;
 global SSAERIDXLow SSAERIDXHigh SSAERIDXNaN SSAERIDXValues;
 global SSAERIDXTable SSAERIDXTT;
-
+global SeaSaltVarCorr;
 global SSDP001S SSDP002S SSDP003S SSDP004S SSDP005S;
 global SSDP00110 SSDP00125 SSDP00150 SSDP00175 SSDP00190 SSDP00195 SSDP00198 SSDP001100;
 global SSDP001Low SSDP001High SSDP001NaN SSDP001Values;
@@ -13255,11 +13255,7 @@ if(iSeaSaltCalc>0)
         datas3sum=zeros(576,361);
         datas4sum=zeros(576,361);
         datas5sum=zeros(576,361);
-%         datas11sum=zeros(576,361);
-%         datas12sum=zeros(576,361);
-%         datas13sum=zeros(576,361);
-%         datas14sum=zeros(576,361);
-%         datas15sum=zeros(576,361);
+
     for kk=1:24 % Loop over the hourly data in gridded format for each particle bin
         datas1=SSDP001S.values(:,:,kk);% Sea Salt Deposition for one grid point at one time
         datas2=SSDP002S.values(:,:,kk);
@@ -13385,11 +13381,7 @@ if(iSeaSaltCalc>0)
         datas3csum=zeros(576,361);
         datas4csum=zeros(576,361);
         datas5csum=zeros(576,361);
-%         datas11sum=zeros(576,361);
-%         datas12sum=zeros(576,361);
-%         datas13sum=zeros(576,361);
-%         datas14sum=zeros(576,361);
-%         datas15sum=zeros(576,361);
+
     for kk=1:24 % Loop over the hourly data in gridded format for each particle bin
         datas1=SSSD001S.values(:,:,kk);% Sea Salt Emission for one grid point at one time
         datas2=SSSD002S.values(:,:,kk);
@@ -13405,7 +13397,11 @@ if(iSeaSaltCalc>0)
         SSSD3=SSSD003S.values(:,:,12);
         Set1Set2Corr=corr2(SSDP3,SSEM3);
         Set1Set3Corr=corr2(SSDP3,SSSD3);
-        Set2Set3Corr=corr2(SSEM3,SSSD3);      
+        Set2Set3Corr=corr2(SSEM3,SSSD3);  
+        SeaSaltVarCorr{1+framecounter,1}=framecounter;
+        SeaSaltVarCorr{1+framecounter,2}=Set1Set2Corr;
+        SeaSaltVarCorr{1+framecounter,3}=Set1Set3Corr;
+        SeaSaltVarCorr{1+framecounter,4}=Set2Set3Corr;
         data0csum=(1E3/1E12)*(datas1csum + datas2csum + datas3csum + datas4csum + datas5csum).*RasterAreaGrid*1E6;
         x3=data0csum;
         datased0csum=sum(sum(data0csum));
@@ -13425,7 +13421,7 @@ if(iSeaSaltCalc>0)
         SeaSaltSedAllBins(framecounter,3)=roi8sedsum;
         SeaSaltSedAllBins(framecounter,4)=roi9sedsum;
         SeaSaltSedAllBins(framecounter,5)=roi10sedsum;
-        WSeaSaltEmisAllBins(framecounter,1)=datased0sum/100;
+        WSeaSaltEmisAllBins(framecounter,1)= datased0csum/100;
         summask1=sum(sum(Merra2WorkingSeaMask1));
         summask2=sum(sum(Merra2WorkingSeaMask2));
         summask3=sum(sum(Merra2WorkingSeaMask3));
@@ -13443,7 +13439,7 @@ if(iSeaSaltCalc>0)
         fprintf(fid,'%s %10.3e\n',sumstr2,roi7sedsum);
         fprintf(fid,'%s %10.3e\n',sumstr3,roi8sedsum);
         fprintf(fid,'%s %10.3e\n',sumstr4,roi9sedsum);
-        fprintf(fid,'%s %10.3e\n',sumstr6,datased0sum);
+        fprintf(fid,'%s %10.3e\n',sumstr6,datased0csum);
         fprintf(fid,'\n');
 % Get the correlation between the deposited data and the emitted data
         R13=corr2(x1,x3);

@@ -3405,7 +3405,7 @@ elseif(ikind==19)
         maxval=50;
         maxval2=maxval+10;
      elseif(ikind==66)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSDP001=',num2str(val01,6));
             fprintf(fid,'%s\n',ptc1str);
@@ -3430,7 +3430,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==67)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSDP002=',num2str(val01,6));
             fprintf(fid,'%s\n',ptc1str);
@@ -3455,7 +3455,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==68)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSDP003=',num2str(val01,6));
             fprintf(fid,'%s\n',ptc1str);
@@ -3480,7 +3480,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==69)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSDP004=',num2str(val01,6));
             fprintf(fid,'%s\n',ptc1str);
@@ -3505,7 +3505,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==70)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSDP005=',num2str(val01,6));
             fprintf(fid,'%s\n',ptc1str);
@@ -3530,7 +3530,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==71)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSEM001=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3555,7 +3555,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000;
      elseif(ikind==72)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSEM002=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3580,7 +3580,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
       elseif(ikind==73)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSEM003=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3605,7 +3605,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==74)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSEM004=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3630,7 +3630,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==75)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSEM005=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3655,7 +3655,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000;
       elseif(ikind==76)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSEXTTFM=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3680,7 +3680,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==77)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSCATFM=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3705,7 +3705,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==78)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSD001=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3730,7 +3730,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==79)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSD002=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3755,7 +3755,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==80)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSD003=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3780,7 +3780,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==81)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSD004=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3805,7 +3805,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000;
      elseif(ikind==82)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSD005=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3830,7 +3830,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==83)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSV001=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3855,7 +3855,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
       elseif(ikind==84)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSV002=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3880,7 +3880,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
       elseif(ikind==85)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSV003=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3905,7 +3905,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
       elseif(ikind==86)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSV004=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3930,7 +3930,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==87)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSSV005=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3955,7 +3955,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==88)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSWT001=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -3980,7 +3980,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==89)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSWT002=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -4005,7 +4005,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==90)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSWT003=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -4030,7 +4030,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000;
      elseif(ikind==91)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSWT004=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -4055,7 +4055,7 @@ elseif(ikind==19)
         maxval=15000000;
         maxval2=maxval+1000; 
      elseif(ikind==92)
-        if(framecounter==1)
+        if(framecounter==-1)
             fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
             ptc1str= strcat('01 % Ptile SSWT005=',num2str(val01,5));
             fprintf(fid,'%s\n',ptc1str);
@@ -4708,7 +4708,7 @@ end
 
 %% Fetch the map limits
 
-if(framecounter==1)
+if(framecounter==-1)
     maplimitstr1='****Map Limits Follow*****';
     fprintf(fid,'%s\n',maplimitstr1);
     maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));

@@ -40,6 +40,7 @@ global Merra2WorkingSeaBoundary2Lat Merra2WorkingSeaBoundary2Lon Merra2WorkingSe
 global Merra2WorkingSeaBoundary3Lat Merra2WorkingSeaBoundary3Lon Merra2WorkingSeaBoundary3Area;
 global Merra2WorkingSeaBoundary4Lat Merra2WorkingSeaBoundary4Lon Merra2WorkingSeaBoundary4Area;
 global Merra2WorkingSeaBoundary5Lat Merra2WorkingSeaBoundary5Lon Merra2WorkingSeaBoundary5Area;
+global SeaSaltVarCorr;
 
 global Merra2DataPaths Merra2Path MerraDataCollectionTimes;
 global CountyBoundaryFile;
@@ -376,6 +377,11 @@ SelectedSeaMaskData{4,3}='NorthAtlanticOcean';
 SelectedSeaMaskData{5,1}='ArcticOceanMask.mat';
 SelectedSeaMaskData{5,2}='Merra2ArcticOceanMask';
 SelectedSeaMaskData{5,3}='ArticOcean';
+SeaSaltVarCorr=cell(1,4);
+SeaSaltVarCorr{1,1}='FrameCounter';
+SeaSaltVarCorr{1,2}='SSDP Vs SSEM';
+SeaSaltVarCorr{1,3}='SSDP Vs SSSD';
+SeaSaltVarCorr{1,4}='SSEM Vs SSSD';
 %% Control Flags-Dataset 02
 iBlackCarbon=0;
 iDust=0;
@@ -1697,3 +1703,6 @@ else
 end
 % Set current directory back to the code folder
 eval(['cd ' codepath(1:length(codepath)-1)]);
+
+
+ab=2;
