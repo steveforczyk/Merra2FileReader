@@ -148,7 +148,7 @@ gridpath='D:\Goes16\Grids\';
 oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
 %% Set Flags and default values
 % Set some flags to control program execution
-iCreatePDFReport=1;
+iCreatePDFReport=0;
 iSkipReportFrames=8;
 JpegCounter=0;
 isavefiles=0;
@@ -467,7 +467,7 @@ MapFormFactor=[];
 Datasets=cell(1,1);
 Datasets{1,1}='Dataset01-Monthly Diurnal M2IUNXASM';
 Datasets{2,1}='Dataset02-Hourly Time Averaged M2T1NXADG';
-Datasets{3,1}='Dataset03';
+Datasets{3,1}='Dataset03-Instantaneous M2IUNPANA';
 Datasets{4,1}='Dataset04';
 Datasets{5,1}='Dataset05';
 Datasets{6,1}='Dataset06';
@@ -1210,7 +1210,22 @@ end
         end
         igo=0;
     elseif(indx==3)% M2IUNPANA_5.12.4
-        ReadCloudTopTempRev1()
+        [Merra2FileNames,nowpath] = uigetfile('*.nc4','Select Multiple Files', ...
+        'MultiSelect', 'on');
+        Merra2FileNames=Merra2FileNames';
+        numSelectedFiles=length(Merra2FileNames);
+        [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
+        Merra2FileNames=NewFileList;
+        fprintf(fid,'\n');
+        fprintf(fid,'%s\n','----- List of Files to Be processed-----');
+        for nn=1:numSelectedFiles
+            nowFile=Merra2FileNames{nn,1};
+            filestr='File Num';            
+            fprintf(fid,'%s\n',nowFile);
+            ReadDataset03(nowFile,nowpath)
+        end
+        fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
+       
     elseif(indx==4)
         ReadDataset04()  
     elseif(indx==7)
