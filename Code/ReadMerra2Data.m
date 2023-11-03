@@ -10,6 +10,7 @@
 % Revised: Sept 19,2023 problems with CreateMerra2Aerosol Diagnostic Report
 % Revised: Oct 10,2023 Brought under Git Control Using Remote Repo
 % Revised: Oct 10,2023 Add Sea Mask Files
+% Revised: Oct 27-Oct 30 added ReadDatatset03 code
 % fixed
 % Classification: Unclassified/Public Domain
 %% Set Up Globals
@@ -17,11 +18,11 @@ global Datasets;
 global BandDataS MetaDataS;
 global LatSpacing LonSpacing RasterAreas;
 global RasterLats RasterLons COThighlimit;
-global minTauValue PressureLevel42 PressureLevel72;
-global PressureLevelUsed framecounter;
+global minTauValue PressureLevel42 PressureLevel72 iPress42 iPress72;
+global PressureLevelUsed PressureLabels42 PressureLabels72 framecounter;
 global TauCliMeansArray MeansTable MeansTimeTable;
 global VariableTableBC VariableTableHdr;
-global DataSetLinks TimeSlices;
+global DataSetLinks TimeSlices iTimeSlice;
 global PascalsToMilliBars PascalsToPsi;
 global DustSizeGroups BlackCarbonSizeGroups SeaSaltSizeGroups;
 global DustROICountry MaskList MaskChoices  MaskFileName ;
@@ -47,21 +48,21 @@ global CountyBoundaryFile;
 global CountyBoundaries StateFIPSFile;
 global StateFIPSCodes NationalCountiesShp;
 global USAStatesShapeFileList USAStatesFileName;
-global UrbanAreasShapeFile NorthAmericaLakes FireSummaryFile;
-global idebug isavefiles iDemFlag;
+global UrbanAreasShapeFile NorthAmericaLakes ;
+global idebug isavefiles ;
 global iPrimeRoads iCountyRoads iCommonRoads iStateRecRoads iUSRoads iStateRoads;
 global iLakes;
 global NumProcFiles ProcFileList iPrintTimingInfo iSkipReportFrames;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
 global JpegCounter JpegFileList;
-global ImageProcessPresent iGOES;
+global ImageProcessPresent ;
 global iReport ifixedImagePaths;
 global iSubMean iCheckConfig isaveJpeg;
 global MovieFlags;
 global MonthDayStr MonthDayYearStr YearMonthStr YearMonthStrStart YearMonthStrEnd;
 global WorldCityFileName World200TopCities;
 global iCityPlot maxCities;
-global PressureFileName;
+global PressureFileName ;
 global SelectedFiles numSelectedFiles path1;
 global iLogo LogoFileName1 LogoFileName2;
 global numtimeslice;
@@ -171,8 +172,12 @@ COThighlimit=3;
 framecounter=0;
 iCheckConfig=1;
 iLogo=1;
+iPress42=1;
+iPress72=1;
 PascalsToMilliBars=1/1000;
 PascalsToPsi=14.696/101325;
+% Select a Time Slice
+iTimeSlice=2;
 LogoFileName1='Merra2-LogoB.jpg';
 PressureLevelUsed=cell(5,4);
 PressureLevelUsed{1,1}='Index';
@@ -717,6 +722,36 @@ while igo>0 % This setup up a loop to processing various file until user decides
         moviepath='K:\Merra-2\netCDF\Dataset03\Movies\';
         savepath='K:\Merra-2\netCDF\Dataset03\Matlab_Files\';  
         logfilename=strcat('Merra2LogFileIndx3-',logfilename,'.txt');
+        TimeSlices=cell(4,1);
+        TimeSlices{1,1}='0 HRS GMT';
+        TimeSlices{2,1}='6 HRS GMT';
+        TimeSlices{3,1}='12 HRS GMT';
+        TimeSlices{4,1}='18 HRS GMT';
+ % Select a pressure level for 3 and 4 arrays
+        PressureLabels42=cell(41,1);
+        for ii=1:42
+            htkm=PressureLevel42(ii,3);
+            PressureLabels42{ii,1}=strcat('Level-',num2str(ii),'-Alt-km-',num2str(htkm));
+        end
+        [iPress,~] = listdlg('PromptString',{'Select one pressure level to process'},...
+        'SelectionMode','single','ListString',PressureLabels42,'ListSize',[360,300]);
+        a1=isempty(iPress);
+        if(a1==1)
+            iPress42=6;
+        else
+            iPress42=iPress;
+        end        
+        ab=2;
+  % Select a Time Slice  for 3 and 4 d arrays
+         [iTimeS,~] = listdlg('PromptString',{'Select one time slice to process'},...
+        'SelectionMode','single','ListString',TimeSlices,'ListSize',[360,300]);
+         a1=isempty(iTimeS);
+         if(a1==1)
+            iTimeSlice=2;
+         else
+            iTimeSlice=iTimeS;
+         end
+         ab=2;
      elseif(indx==4)
         jpegpath='K:\Merra-2\netCDF\Dataset04\Jpeg_Files\';
         pdfpath='K:\Merra-2\netCDF\Dataset04\PDF_Files\';
@@ -1216,16 +1251,28 @@ end
         numSelectedFiles=length(Merra2FileNames);
         [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
         Merra2FileNames=NewFileList;
+        numSelectedFiles=length(Merra2FileNames);
         fprintf(fid,'\n');
         fprintf(fid,'%s\n','----- List of Files to Be processed-----');
         for nn=1:numSelectedFiles
             nowFile=Merra2FileNames{nn,1};
             filestr='File Num';            
             fprintf(fid,'%s\n',nowFile);
+        end
+
+        fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
+        tpstr=strcat('Process time-',TimeSlices{iTimeSlice,1});
+        pslice=iPress42;
+        heightkm=PressureLevel42(iPress42,3);
+        prslevlstr=strcat('Pressure Level-',num2str(iPress),'-Height Km=',num2str(heightkm));
+        fprintf(fid,'%s\n',tpstr);
+        fprintf(fid,'%s\n',prslevlstr);
+        fprintf(fid,'\n');
+        for nn=1:numSelectedFiles
+            nowFile=Merra2FileNames{nn,1}; 
+            framecounter=framecounter+1;
             ReadDataset03(nowFile,nowpath)
         end
-        fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
-       
     elseif(indx==4)
         ReadDataset04()  
     elseif(indx==7)
