@@ -1272,6 +1272,9 @@ end
             nowFile=Merra2FileNames{nn,1}; 
             framecounter=framecounter+1;
             ReadDataset03(nowFile,nowpath)
+            dispstr=strcat('Finished Processing File-',nowFile,'-which is file-',num2str(nn),...
+                '-of-',num2str(numSelectedFiles),'-Files');
+            disp(dispstr)
         end
     elseif(indx==4)
         ReadDataset04()  

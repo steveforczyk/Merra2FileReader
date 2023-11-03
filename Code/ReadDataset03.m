@@ -18,6 +18,7 @@ global LatitudesS LongitudesS LevS;
 global O3S PSS QVS HS QV2MS SLPS TS T2MS;
 global timeS US VS;
 global HS10 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
+global O3S10 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
 global TROPPBS TROPPTS TROPPVS TROPQS TROPTS;
 global U10MS U2MS U50MS V10MS V2MS V50MS;
 global numtimeslice framecounter;
@@ -800,6 +801,15 @@ iCityPlot=0;
 varname='HS';
 iAddToReport=1;
 iNewChapter=1;
+iCloseChapter=0;
+DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+% Ozone Mixing Ratio
+ikind=2;
+itype=3;
+iCityPlot=0;
+varname='O3S';
+iAddToReport=1;
+iNewChapter=0;
 iCloseChapter=1;
 DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
 ab=1;
@@ -895,6 +905,15 @@ if(framecounter==1)
     HSLow=zeros(numSelectedFiles,1);
     HSHigh=zeros(numSelectedFiles,1);
     HSNaN=zeros(numSelectedFiles,1);
+    O3S10=zeros(numSelectedFiles,1);
+    O3S25=zeros(numSelectedFiles,1);
+    O3S50=zeros(numSelectedFiles,1);
+    O3S75=zeros(numSelectedFiles,1);
+    O3S90=zeros(numSelectedFiles,1);
+    O3S100=zeros(numSelectedFiles,1);
+    O3SLow=zeros(numSelectedFiles,1);
+    O3SHigh=zeros(numSelectedFiles,1);
+    O3SNaN=zeros(numSelectedFiles,1);
 end
 %% Capture Selected Statistics to Holding Arrays
 if(framecounter<=numSelectedFiles)
@@ -915,8 +934,22 @@ if(framecounter<=numSelectedFiles)
     HSLow(framecounter,1)=fraclow;
     HSHigh(framecounter,1)=frachigh;
     HSNaN(framecounter,1)=fracNaN;
-
-
+% Continue with the mixing ratio
+    O3SValues=O3S.values(:,:,iPress42,iTimeSlice);
+    fillvalue=O3S.FillValue;
+    O3SValues(O3SValues==fillvalue)=NaN;
+    lowcutoff=1E-9;
+    highcutoff=1E-5;
+    [val10,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev1(O3SValues,lowcutoff,highcutoff);
+    O3S10(framecounter,1)=val10;
+    O3S25(framecounter,1)=val25;
+    O3S50(framecounter,1)=val50;
+    O3S75(framecounter,1)=val75;
+    O3S90(framecounter,1)=val90;
+    O3S100(framecounter,1)=val100;
+    O3SLow(framecounter,1)=fraclow;
+    O3SHigh(framecounter,1)=frachigh;
+    O3SNaN(framecounter,1)=fracNaN;
 
 end
 if(framecounter==1)

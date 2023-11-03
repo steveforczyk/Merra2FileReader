@@ -139,17 +139,18 @@ if(ikind==1)
     descstr=strcat('Average Monthly Value follows for-',titlestr);
     ab=2;
 elseif(ikind==2)
-    data=BCDP002S.values(:,:,numtimeslice);
-    fillvalue=BCDP002S.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-15;
-    labelstr='Black Carbon Deposition-femtogram/m^2/sec';
+    data=O3S.values(:,:,iPress42,iTimeSlice);
+    heightkm=PressureLevel42(iPress42,3);
+    fillvalue=O3S.FillValue;
+%    data(data==fillvalue)=NaN;
+    PlotArray=data;
+    labelstr='Ozone Mixing Ratio';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
-    desc='Black Carbon Dry Deposition Bin 02';
-    units='femtogram/m2/sec';
-    titlestr=strcat('BCDP002-',Merra2FileName);
-    descstr=strcat('Basic hourly stats  follow for-',titlestr);
+    desc='Ozone Mixing Ratio';
+    units='kg/kg';
+    titlestr=strcat('O3-',Merra2ShortFileName,'-Heightkm=',num2str(heightkm),TimeStr);
+    descstr=strcat('Average Monthly stats follow for-',titlestr);
 elseif(ikind==3)
     data=BCEM001S.values(:,:,numtimeslice);
     fillvalue=BCEM001S.FillValue;
@@ -302,7 +303,19 @@ end
 
 
 
-
+    numpts=nrows*ncols;
+    PlotArray1D=reshape(PlotArray,nrows*ncols,1);
+    PlotArray1DS=sort(PlotArray1D);
+    num01=floor(.01*numpts);
+    num25=floor(.25*numpts);
+    num50=floor(.50*numpts);
+    num75=floor(.75*numpts);
+    num99=floor(.99*numpts);
+    val01=PlotArray1DS(num01,1);
+    val25=PlotArray1DS(num25,1);
+    val50=PlotArray1DS(num50,1);
+    val75=PlotArray1DS(num75,1);
+    val99=PlotArray1DS(num99,1);
 %% Plot the Cloud Optical Thickness 
 
 % Calculate some stats
@@ -366,8 +379,8 @@ elseif(ikind==2)
         endstr=strcat('End stats for-',desc);
         fprintf(fid,'%s\n',endstr);
     end
-    maxval2=20;
-    [ihigh]=find(PlotArray1DS>100000);
+    maxval2=val99;
+    [ihigh]=find(PlotArray1DS>1E-5);
     a1=isempty(ihigh);
     if(a1==1)
         frachigh=0;
@@ -375,6 +388,7 @@ elseif(ikind==2)
         numhigh=length(ihigh);
         frachigh=numhigh/(nrows*ncols);
     end
+    minval=val01;
   elseif(ikind==3)
 
     if(framecounter==1)
@@ -729,7 +743,7 @@ set(gcf,'Position',[hor1 vert1 widd lend])
 set(gca,'FontWeight','bold');
 colormap jet
 %% Plot the cloud area fraction on the map
-if((ikind>1) && (ikind<=15))
+if((ikind>2) && (ikind<=14))
     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     hc = colorbar;
     hc.Label.String = units;
@@ -748,6 +762,18 @@ elseif(ikind==1)
     ylabel(hc,units,'FontWeight','bold');
     tightmap
     hold on
+elseif(ikind==2)
+    geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    maxplotval99=val99;
+    minplotval01=val01;
+    plotstep=(maxplotval99-minplotval01)/40;
+    demcmap('inc',[maxplotval99 minplotval01],plotstep);
+    hc = colorbar;
+    hc.Label.String = labelstr;
+    ylabel(hc,units,'FontWeight','bold');
+    tightmap
+    hold on
+
 elseif((ikind>=16) && (ikind<=50))
     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     hc = colorbar;
@@ -768,7 +794,7 @@ end
 % load the country borders and plot them
 eval(['cd ' mappath(1:length(mappath)-1)]);
 load('USAHiResBoundaries.mat','USALat','USALon');
-plot3m(USALat,USALon,maxval2,'r');
+plot3m(USALat,USALon,maxval2,'w');
 try
     load('CanadaBoundaries.mat','CanadaLat','CanadaLon');
 catch
@@ -888,7 +914,7 @@ newaxesh=axes('Position',[0 0 1 1]);
 set(newaxesh,'XLim',[0 1],'YLim',[0 1]);
 tx1=.07;
 ty1=.18;
-if(ikind==1)
+if(ikind<3)
     txtstr1=strcat('Date-',MonthYearStr,'-Press Level-km=',num2str(heightkm),'-Time=',TimeStr);
 % elseif((ikind>=28) && (ikind<43))
 %     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID,'-Size Bin-',binstr);
@@ -904,7 +930,7 @@ end
 txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',12);
 tx2=.07;
 ty2=.14;
-if(ikind==1)
+if(ikind<3)
     txtstr2=strcat('1 ptile-',desc,'-',num2str(val01,6),'-50 ptile =',num2str(val50,6),...
         '-75 ptile=',num2str(val75,6),'-99 ptile=',num2str(val99,6),'-frac pix over max range=',num2str(frachigh,6));
     txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
