@@ -100,6 +100,8 @@ global mappath gridpath countyshapepath nationalshapepath codepath;
 global DayMonthNonLeapYear DayMonthLeapYear CalendarFileName;
 global yd md dd;
 global pwd;
+global HS10 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
+global O3S10 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
 %% Control Flags DataSet 2
 global iBlackCarbon iDust iOrganicCarbon iSeaSalt iSulfate iAllAerosols;
 global iSeaSaltCalc iDustCalc;
@@ -1271,11 +1273,12 @@ end
         for nn=1:numSelectedFiles
             nowFile=Merra2FileNames{nn,1}; 
             framecounter=framecounter+1;
-            ReadDataset03(nowFile,nowpath)
+            ReadDataset03Rev1(nowFile,nowpath)
             dispstr=strcat('Finished Processing File-',nowFile,'-which is file-',num2str(nn),...
                 '-of-',num2str(numSelectedFiles),'-Files');
             disp(dispstr)
         end
+        igo=0;
     elseif(indx==4)
         ReadDataset04()  
     elseif(indx==7)
