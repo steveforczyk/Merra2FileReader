@@ -1,10 +1,12 @@
-function ReadDataset03(nowFile,nowpath)
+function ReadDataset03Rev1(nowFile,nowpath)
 % Modified: This function will read in the the Merra-2 data set 03
 % This dataset is of the item M2IUNXASM_5.12.4
+% This Rev 1 version was created to shift the order in which image
+% statistics are calculated and to remove NaN values from statistical
+% calculations
 % Written By: Stephen Forczyk
-% Created: Oct 30,2023
-% Revised: Nov 1-5,2023 added variables for Geopotential Height,
-% Oxygen Mixing Ration and Surface Pressure
+% Created: Nov 6,2023
+% Revised: 
 
 % Classification: Unclassified
 
@@ -19,9 +21,10 @@ global idebug;
 global LatitudesS LongitudesS LevS;
 global O3S PSS QVS HS QV2MS SLPS TS T2MS;
 global timeS US VS;
-global HS10 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
-global O3S10 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
-global PSS10 PSS25 PSS50 PSS75 PSS90 PSS100 PSSLow PSSHigh PSSNaN;
+global HS01 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
+global O3S01 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
+global PSS01 PSS25 PSS50 PSS75 PSS90 PSS100 PSSLow PSSHigh PSSNaN;
+global HSValues O3SValues PSSValues;
 global TROPPBS TROPPTS TROPPVS TROPQS TROPTS;
 global U10MS U2MS U50MS V10MS V2MS V50MS;
 global numtimeslice framecounter;
@@ -793,6 +796,89 @@ westEdge=-180;
 eastEdge=180;
 southEdge=-90;
 northEdge=90;
+%% Initialize statistics holding arrays
+if(framecounter==1)
+% Initialize Statistic Hold Arrays for HS the geopotential height
+    HS01=zeros(numSelectedFiles,1);
+    HS25=zeros(numSelectedFiles,1);
+    HS50=zeros(numSelectedFiles,1);
+    HS75=zeros(numSelectedFiles,1);
+    HS90=zeros(numSelectedFiles,1);
+    HS100=zeros(numSelectedFiles,1);
+    HSLow=zeros(numSelectedFiles,1);
+    HSHigh=zeros(numSelectedFiles,1);
+    HSNaN=zeros(numSelectedFiles,1);
+    O3S01=zeros(numSelectedFiles,1);
+    O3S25=zeros(numSelectedFiles,1);
+    O3S50=zeros(numSelectedFiles,1);
+    O3S75=zeros(numSelectedFiles,1);
+    O3S90=zeros(numSelectedFiles,1);
+    O3S100=zeros(numSelectedFiles,1);    
+    O3SLow=zeros(numSelectedFiles,1);
+    O3SHigh=zeros(numSelectedFiles,1);
+    O3SNaN=zeros(numSelectedFiles,1);
+    PSS01=zeros(numSelectedFiles,1);
+    PSS25=zeros(numSelectedFiles,1);
+    PSS50=zeros(numSelectedFiles,1);
+    PSS75=zeros(numSelectedFiles,1);
+    PSS90=zeros(numSelectedFiles,1);
+    PSS100=zeros(numSelectedFiles,1);
+    PSSLow=zeros(numSelectedFiles,1);
+    PSSHigh=zeros(numSelectedFiles,1);
+    PSSNaN=zeros(numSelectedFiles,1);
+end
+%% Capture Selected Statistics to Holding Arrays
+if(framecounter<=numSelectedFiles)
+% Start with the The Geopotential Height in m
+    HSValues=HS.values(:,:,iPress42,iTimeSlice);
+    fillvalue=HS.FillValue;
+    HSValues(HSValues==fillvalue)=NaN;
+    lowcutoff=0;
+    highcutoff=50000;
+    [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(HSValues,lowcutoff,highcutoff);
+    HS01(framecounter,1)=val01;
+    HS25(framecounter,1)=val25;
+    HS50(framecounter,1)=val50;
+    HS75(framecounter,1)=val75;
+    HS90(framecounter,1)=val90;
+    HS100(framecounter,1)=val100;
+    HSLow(framecounter,1)=fraclow;
+    HSHigh(framecounter,1)=frachigh;
+    HSNaN(framecounter,1)=fracNaN;
+% Continue with the mixing ratio
+    O3SValues=O3S.values(:,:,iPress42,iTimeSlice);
+    fillvalue=O3S.FillValue;
+    O3SValues(O3SValues==fillvalue)=NaN;
+    lowcutoff=1E-9;
+    highcutoff=1E-5;
+    [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(O3SValues,lowcutoff,highcutoff);
+    O3S01(framecounter,1)=val01;
+    O3S25(framecounter,1)=val25;
+    O3S50(framecounter,1)=val50;
+    O3S75(framecounter,1)=val75;
+    O3S90(framecounter,1)=val90;
+    O3S100(framecounter,1)=val100;
+    O3SLow(framecounter,1)=fraclow;
+    O3SHigh(framecounter,1)=frachigh;
+    O3SNaN(framecounter,1)=fracNaN;
+ % Continue with the SurfacePressure in kPa
+    PSSValues=PSS.values(:,:,iTimeSlice)/1000;
+    fillvalue=PSS.FillValue;
+    PSSValues(PSSValues==fillvalue)=NaN;
+    lowcutoff=1;
+    highcutoff=120;
+    [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(PSSValues,lowcutoff,highcutoff);
+    PSS01(framecounter,1)=val01;
+    PSS25(framecounter,1)=val25;
+    PSS50(framecounter,1)=val50;
+    PSS75(framecounter,1)=val75;
+    PSS90(framecounter,1)=val90;
+    PSS100(framecounter,1)=val100;
+    PSSLow(framecounter,1)=fraclow;
+    PSSHigh(framecounter,1)=frachigh;
+    PSSNaN(framecounter,1)=fracNaN; 
+    ab=2;
+end
 %% Display the selected data  on a map of the earth
 % This dataset has 4 timeslices-only data from a single pre selected
 % time slice will be plotted.
@@ -896,89 +982,89 @@ DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapte
 % iNewChapter=0;
 % iCloseChapter=0;
 % DisplayMerra2Dataset01(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
-if(framecounter==1)
+%if(framecounter==1)
 % Initialize Statistic Hold Arrays for HS the geopotential height
-    HS10=zeros(numSelectedFiles,1);
-    HS25=zeros(numSelectedFiles,1);
-    HS50=zeros(numSelectedFiles,1);
-    HS75=zeros(numSelectedFiles,1);
-    HS90=zeros(numSelectedFiles,1);
-    HS100=zeros(numSelectedFiles,1);
-    HSLow=zeros(numSelectedFiles,1);
-    HSHigh=zeros(numSelectedFiles,1);
-    HSNaN=zeros(numSelectedFiles,1);
-    O3S10=zeros(numSelectedFiles,1);
-    O3S25=zeros(numSelectedFiles,1);
-    O3S50=zeros(numSelectedFiles,1);
-    O3S75=zeros(numSelectedFiles,1);
-    O3S90=zeros(numSelectedFiles,1);
-    O3S100=zeros(numSelectedFiles,1);
-    O3SLow=zeros(numSelectedFiles,1);
-    O3SHigh=zeros(numSelectedFiles,1);
-    O3SNaN=zeros(numSelectedFiles,1);
-    PSS10=zeros(numSelectedFiles,1);
-    PSS25=zeros(numSelectedFiles,1);
-    PSS50=zeros(numSelectedFiles,1);
-    PSS75=zeros(numSelectedFiles,1);
-    PSS90=zeros(numSelectedFiles,1);
-    PSS100=zeros(numSelectedFiles,1);
-    PSSLow=zeros(numSelectedFiles,1);
-    PSSHigh=zeros(numSelectedFiles,1);
-    PSSNaN=zeros(numSelectedFiles,1);
-end
+%     HS10=zeros(numSelectedFiles,1);
+%     HS25=zeros(numSelectedFiles,1);
+%     HS50=zeros(numSelectedFiles,1);
+%     HS75=zeros(numSelectedFiles,1);
+%     HS90=zeros(numSelectedFiles,1);
+%     HS100=zeros(numSelectedFiles,1);
+%     HSLow=zeros(numSelectedFiles,1);
+%     HSHigh=zeros(numSelectedFiles,1);
+%     HSNaN=zeros(numSelectedFiles,1);
+%     O3S10=zeros(numSelectedFiles,1);
+%     O3S25=zeros(numSelectedFiles,1);
+%     O3S50=zeros(numSelectedFiles,1);
+%     O3S75=zeros(numSelectedFiles,1);
+%     O3S90=zeros(numSelectedFiles,1);
+%     O3S100=zeros(numSelectedFiles,1);
+%     O3SLow=zeros(numSelectedFiles,1);
+%     O3SHigh=zeros(numSelectedFiles,1);
+%     O3SNaN=zeros(numSelectedFiles,1);
+%     PSS10=zeros(numSelectedFiles,1);
+%     PSS25=zeros(numSelectedFiles,1);
+%     PSS50=zeros(numSelectedFiles,1);
+%     PSS75=zeros(numSelectedFiles,1);
+%     PSS90=zeros(numSelectedFiles,1);
+%     PSS100=zeros(numSelectedFiles,1);
+%     PSSLow=zeros(numSelectedFiles,1);
+%     PSSHigh=zeros(numSelectedFiles,1);
+%     PSSNaN=zeros(numSelectedFiles,1);
+%end
 %% Capture Selected Statistics to Holding Arrays
-if(framecounter<=numSelectedFiles)
-% Start with the The Geopotential Height in m
-    HSValues=HS.values(:,:,iPress42,iTimeSlice);
-    fillvalue=HS.FillValue;
-    HSValues(HSValues==fillvalue)=NaN;
-    lowcutoff=0;
-    highcutoff=50000;
-    [val10,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev1(HSValues,lowcutoff,highcutoff);
-    HS10(framecounter,1)=val10;
-    HS25(framecounter,1)=val25;
-    HS50(framecounter,1)=val50;
-    HS75(framecounter,1)=val75;
-    HS90(framecounter,1)=val90;
-    HS100(framecounter,1)=val100;
-    HSLow(framecounter,1)=fraclow;
-    HSHigh(framecounter,1)=frachigh;
-    HSNaN(framecounter,1)=fracNaN;
-% Continue with the mixing ratio
-    O3SValues=O3S.values(:,:,iPress42,iTimeSlice);
-    fillvalue=O3S.FillValue;
-    O3SValues(O3SValues==fillvalue)=NaN;
-    lowcutoff=1E-9;
-    highcutoff=1E-5;
-    [val10,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev1(O3SValues,lowcutoff,highcutoff);
-    O3S10(framecounter,1)=val10;
-    O3S25(framecounter,1)=val25;
-    O3S50(framecounter,1)=val50;
-    O3S75(framecounter,1)=val75;
-    O3S90(framecounter,1)=val90;
-    O3S100(framecounter,1)=val100;
-    O3SLow(framecounter,1)=fraclow;
-    O3SHigh(framecounter,1)=frachigh;
-    O3SNaN(framecounter,1)=fracNaN;
- % Continue with the SurfacePressure in kPa
-    
- ab=1;
-    PSSValues=PSS.values(:,:,iTimeSlice)/1000;
-    fillvalue=PSS.FillValue;
-    lowcutoff=1;
-    highcutoff=120;
-    [val10,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev1(PSSValues,lowcutoff,highcutoff);
-    PSS10(framecounter,1)=val10;
-    PSS25(framecounter,1)=val25;
-    PSS50(framecounter,1)=val50;
-    PSS75(framecounter,1)=val75;
-    PSS90(framecounter,1)=val90;
-    PSS100(framecounter,1)=val100;
-    PSSLow(framecounter,1)=fraclow;
-    PSSHigh(framecounter,1)=frachigh;
-    PSSNaN(framecounter,1)=fracNaN; 
-    ab=2;
-end
+% if(framecounter<=numSelectedFiles)
+% % Start with the The Geopotential Height in m
+%     HSValues=HS.values(:,:,iPress42,iTimeSlice);
+%     fillvalue=HS.FillValue;
+%     HSValues(HSValues==fillvalue)=NaN;
+%     lowcutoff=0;
+%     highcutoff=50000;
+%     [val10,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev1(HSValues,lowcutoff,highcutoff);
+%     HS10(framecounter,1)=val10;
+%     HS25(framecounter,1)=val25;
+%     HS50(framecounter,1)=val50;
+%     HS75(framecounter,1)=val75;
+%     HS90(framecounter,1)=val90;
+%     HS100(framecounter,1)=val100;
+%     HSLow(framecounter,1)=fraclow;
+%     HSHigh(framecounter,1)=frachigh;
+%     HSNaN(framecounter,1)=fracNaN;
+% % Continue with the mixing ratio
+%     O3SValues=O3S.values(:,:,iPress42,iTimeSlice);
+%     fillvalue=O3S.FillValue;
+%     O3SValues(O3SValues==fillvalue)=NaN;
+%     lowcutoff=1E-9;
+%     highcutoff=1E-5;
+%     [val10,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev1(O3SValues,lowcutoff,highcutoff);
+%     O3S10(framecounter,1)=val10;
+%     O3S25(framecounter,1)=val25;
+%     O3S50(framecounter,1)=val50;
+%     O3S75(framecounter,1)=val75;
+%     O3S90(framecounter,1)=val90;
+%     O3S100(framecounter,1)=val100;
+%     O3SLow(framecounter,1)=fraclow;
+%     O3SHigh(framecounter,1)=frachigh;
+%     O3SNaN(framecounter,1)=fracNaN;
+%  % Continue with the SurfacePressure in kPa
+%     
+%  ab=1;
+%     PSSValues=PSS.values(:,:,iTimeSlice)/1000;
+%     fillvalue=PSS.FillValue;
+%     lowcutoff=1;
+%     highcutoff=120;
+%     [val10,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev1(PSSValues,lowcutoff,highcutoff);
+%     PSS10(framecounter,1)=val10;
+%     PSS25(framecounter,1)=val25;
+%     PSS50(framecounter,1)=val50;
+%     PSS75(framecounter,1)=val75;
+%     PSS90(framecounter,1)=val90;
+%     PSS100(framecounter,1)=val100;
+%     PSSLow(framecounter,1)=fraclow;
+%     PSSHigh(framecounter,1)=frachigh;
+%     PSSNaN(framecounter,1)=fracNaN; 
+%     ab=2;
+% end
 if(framecounter==1)
     yd=str2double(YearMonthStr(1:4));
     md=str2double(YearMonthStr(5:6));

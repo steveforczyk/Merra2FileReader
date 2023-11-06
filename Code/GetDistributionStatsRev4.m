@@ -1,4 +1,4 @@
-function [val10,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev1(inArray,lowcutoff,highcutoff)
+function [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(inArray,lowcutoff,highcutoff)
 % This function will return some crude statistics of the 2 D array
 % distribution and a count of values that are below and above the valid
 % ranges. Remove out of range or NaN values from the calculations
@@ -78,13 +78,13 @@ else
     ntotal=ipack;
     ab=1;
 end
-num10=round(.10*ntotal);
+num01=round(.01*ntotal);
 num25=round(.25*ntotal);
 num50=round(.50*ntotal);
 num75=round(.75*ntotal);
 num90=round(.90*ntotal);
 num100=ntotal;
-val10=Fixed1DSortArray(num10,1);
+val01=Fixed1DSortArray(num01,1);
 val25=Fixed1DSortArray(num25,1);
 val50=Fixed1DSortArray(num50,1);
 val75=Fixed1DSortArray(num75,1);

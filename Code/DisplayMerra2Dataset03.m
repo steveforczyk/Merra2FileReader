@@ -5,7 +5,8 @@ function  DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iC
 % variables int it
 % Written By: Stephen Forczyk
 % Created: Nov 1,2023
-% Revised: 
+% Revised: Nov 2-5 Added O3 and PS
+% Revised: Nov 6,2023 take advantage of stats previously computed
 
 % Classification: Unclassified
 global minTauValue PressureLevel42 PressureLevel72 iPress42 iPress72;
@@ -16,6 +17,10 @@ global Merra2FileName Merra2Dat Merra2ShortFileName numSelectedFiles;
 global idebug;
 global LatitudesS LongitudesS LevS;
 global O3S PSS QVS HS QV2MS SLPS TS T2MS;
+global HS01 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
+global O3S01 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
+global PSS01 PSS25 PSS50 PSS75 PSS90 PSS100 PSSLow PSSHigh PSSNaN;
+global HSValues O3SValues PSSValues;
 global timeS US VS;
 global LatitudesS LongitudesS ;
 global YearMonthDayStr1 YearMonthDayStr2;
@@ -50,7 +55,7 @@ global SeaMaskFileName SeaBoundaryFiles SeaMaskChoices numSelectedSeaMasks;
 global SelectedSeaMaskData SortedSBF indexSBF;
 global SelectedMaskData numSelectedMasks numUserSelectedSeaMasks;
 
-global PascalsToMilliBars PascalsToPsi;
+
 global numtimeslice TimeSlices;
 global Merra2FileName Merra2ShortFileName Merra2Dat;
 global numlat numlon Rpix latlim lonlim rasterSize;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
@@ -128,8 +133,8 @@ end
 if(ikind==1)
     data=HS.values(:,:,iPress42,iTimeSlice);
     heightkm=PressureLevel42(iPress42,3);
-    fillvalue=HS.FillValue;
-    PlotArray=data;
+%    fillvalue=HS.FillValue;
+    PlotArray=HSValues;
     labelstr='Geopotential Height-m';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
@@ -137,13 +142,11 @@ if(ikind==1)
     units='m';
     titlestr=strcat('HS-',Merra2ShortFileName,'-Heightkm=',num2str(heightkm),TimeStr);
     descstr=strcat('Average Monthly Value follows for-',titlestr);
-    ab=2;
 elseif(ikind==2)
-    data=O3S.values(:,:,iPress42,iTimeSlice);
     heightkm=PressureLevel42(iPress42,3);
-    fillvalue=O3S.FillValue;
-%    data(data==fillvalue)=NaN;
-    PlotArray=data;
+%     fillvalue=O3S.FillValue;
+%     data(data==fillvalue)=NaN;
+    PlotArray=O3SValues;
     labelstr='Ozone Mixing Ratio';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
@@ -152,17 +155,17 @@ elseif(ikind==2)
     titlestr=strcat('O3-',Merra2ShortFileName,'-Heightkm=',num2str(heightkm),TimeStr);
     descstr=strcat('Average Monthly stats follow for-',titlestr);
 elseif(ikind==3)
-    data=BCEM001S.values(:,:,numtimeslice);
-    fillvalue=BCEM001S.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-12;
-    labelstr='Black Carbon Emission Bin 1-nanogram/m^2/sec';
+%     data=PSS.values(:,:,iTimeSlice)/1000;
+%     fillvalue=PSS.FillValue;
+%     data(data==fillvalue)=NaN;
+    PlotArray=PSSValues;
+    labelstr='Surface Pressure';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
-    desc='Black Carbon Emission Bin 01';
-    units='nanogram/m2/sec';
-    titlestr=strcat('BCEM001-',Merra2FileName);
-    descstr=strcat('Basic hourly stats  follow for-',titlestr);
+    desc='Surface Pressure';
+    units='kPa';
+    titlestr=strcat('PSS-',Merra2ShortFileName,TimeStr);
+    descstr=strcat('Average Monthly stats follow for-',titlestr);
 elseif(ikind==4)
     data=BCEM002S.values(:,:,numtimeslice);
     fillvalue=BCEM002S.FillValue;
@@ -299,40 +302,38 @@ elseif(ikind==8)
 end
 [nrows,ncols]=size(PlotArray);
 
-%% Set Up titles and units
-
-
-
-    numpts=nrows*ncols;
-    PlotArray1D=reshape(PlotArray,nrows*ncols,1);
-    PlotArray1DS=sort(PlotArray1D);
-    num01=floor(.01*numpts);
-    num25=floor(.25*numpts);
-    num50=floor(.50*numpts);
-    num75=floor(.75*numpts);
-    num99=floor(.99*numpts);
-    val01=PlotArray1DS(num01,1);
-    val25=PlotArray1DS(num25,1);
-    val50=PlotArray1DS(num50,1);
-    val75=PlotArray1DS(num75,1);
-    val99=PlotArray1DS(num99,1);
-%% Plot the Cloud Optical Thickness 
-
+%% Set Calculate a few basic stats
+[nrows,ncols]=size(PlotArray);
+numpts=nrows*ncols;
+% PlotArray1D=reshape(PlotArray,nrows*ncols,1);
+% PlotArray1DS=sort(PlotArray1D);
+% num01=floor(.01*numpts);
+% num25=floor(.25*numpts);
+% num50=floor(.50*numpts);
+% num75=floor(.75*numpts);
+% num99=floor(.99*numpts);
+% val01=PlotArray1DS(num01,1);
+% val25=PlotArray1DS(num25,1);
+% val50=PlotArray1DS(num50,1);
+% val75=PlotArray1DS(num75,1);
+% val99=PlotArray1DS(num99,1);
+%% Plot the Geopotential Height
 % Calculate some stats
 if((ikind==1))
     numpts=nrows*ncols;
     PlotArray1D=reshape(PlotArray,nrows*ncols,1);
     PlotArray1DS=sort(PlotArray1D);
-    num01=floor(.01*numpts);
-    num25=floor(.25*numpts);
-    num50=floor(.50*numpts);
-    num75=floor(.75*numpts);
-    num99=floor(.99*numpts);
-    val01=PlotArray1DS(num01,1);
-    val25=PlotArray1DS(num25,1);
-    val50=PlotArray1DS(num50,1);
-    val75=PlotArray1DS(num75,1);
-    val99=PlotArray1DS(num99,1);
+%     num01=floor(.01*numpts);
+%     num25=floor(.25*numpts);
+%     num50=floor(.50*numpts);
+%     num75=floor(.75*numpts);
+%     num90=floor(.99*numpts);
+    val01=HS01(framecounter,1);
+    val25=HS25(framecounter,1);
+    val50=HS50(framecounter,1);
+    val75=HS75(framecounter,1);
+    val90=HS90(framecounter,1);
+    val100=HS100(framecounter,1);
     if(framecounter==1)
         descstr=strcat('Basic hourly stats follow for-',titlestr);
         fprintf(fid,'%s\n',descstr);
@@ -344,7 +345,7 @@ if((ikind==1))
         fprintf(fid,'%s\n',ptc50str);
         ptc75str=strcat('75 % Ptile-',desc,'=',num2str(val75,5));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile -',desc,'=',num2str(val99,5));
+        ptc99str=strcat('90 % Ptile -',desc,'=',num2str(val90,5));
         fprintf(fid,'%s\n',ptc99str);
         endstr=strcat('End stats for-',desc);
         fprintf(fid,'%s\n',endstr);
@@ -363,6 +364,31 @@ if((ikind==1))
         minval=0;
     end
 elseif(ikind==2)
+    PlotArray1D=reshape(PlotArray,nrows*ncols,1);
+    PlotArray1DS=sort(PlotArray1D);
+    val01=O3S01(framecounter,1);
+    val25=O3S25(framecounter,1);
+    val50=O3S50(framecounter,1);
+    val75=O3S75(framecounter,1);
+    val90=O3S90(framecounter,1);
+    val100=O3S100(framecounter,1);
+    if(framecounter==1)
+
+%         descstr=strcat('Basic hourly stats follow for-',titlestr);
+%         fprintf(fid,'%s\n',descstr);
+%         ptc1str= strcat('01 % Ptile-',desc,'=',num2str(val01,6));
+%         fprintf(fid,'%s\n',ptc1str);
+%         ptc25str=strcat('25 % Ptile-',desc,'=',num2str(val25,6));
+%         fprintf(fid,'%s\n',ptc25str);
+%         ptc50str=strcat('50 % Ptile-',desc,'=',num2str(val50,6));
+%         fprintf(fid,'%s\n',ptc50str);
+%         ptc75str=strcat('75 % Ptile-',desc,'=',num2str(val75,6));
+%         fprintf(fid,'%s\n',ptc75str);
+%         ptc99str=strcat('99 % Ptile -',desc,'=',num2str(val99,6));
+%         fprintf(fid,'%s\n',ptc99str);
+%         endstr=strcat('End stats for-',desc);
+%         fprintf(fid,'%s\n',endstr);
+    end
     if(framecounter==1)
         descstr=strcat('Basic hourly stats follow for-',titlestr);
         fprintf(fid,'%s\n',descstr);
@@ -374,12 +400,12 @@ elseif(ikind==2)
         fprintf(fid,'%s\n',ptc50str);
         ptc75str=strcat('75 % Ptile-',desc,'=',num2str(val75,6));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile -',desc,'=',num2str(val99,6));
+        ptc99str=strcat('90 % Ptile -',desc,'=',num2str(val90,6));
         fprintf(fid,'%s\n',ptc99str);
         endstr=strcat('End stats for-',desc);
         fprintf(fid,'%s\n',endstr);
     end
-    maxval2=val99;
+    maxval2=val100;
     [ihigh]=find(PlotArray1DS>1E-5);
     a1=isempty(ihigh);
     if(a1==1)
@@ -390,7 +416,14 @@ elseif(ikind==2)
     end
     minval=val01;
   elseif(ikind==3)
-
+    PlotArray1D=reshape(PlotArray,nrows*ncols,1);
+    PlotArray1DS=sort(PlotArray1D);
+    val01=PSS01(framecounter,1);
+    val25=PSS25(framecounter,1);
+    val50=PSS50(framecounter,1);
+    val75=PSS75(framecounter,1);
+    val90=PSS90(framecounter,1);
+    val100=PSS100(framecounter,1);
     if(framecounter==1)
         descstr=strcat('Basic hourly stats follow for-',titlestr);
         fprintf(fid,'%s\n',descstr);
@@ -402,13 +435,13 @@ elseif(ikind==2)
         fprintf(fid,'%s\n',ptc50str);
         ptc75str=strcat('75 % Ptile-',desc,'=',num2str(val75,6));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile -',desc,'=',num2str(val99,6));
+        ptc99str=strcat('90 % Ptile -',desc,'=',num2str(val90,6));
         fprintf(fid,'%s\n',ptc99str);
         endstr=strcat('End stats for-',desc);
         fprintf(fid,'%s\n',endstr);
     end
-    maxval2=20;
-    [ihigh]=find(PlotArray1DS>100000);
+    maxval2=120;
+    [ihigh]=find(PlotArray1DS>120);
     a1=isempty(ihigh);
     if(a1==1)
         frachigh=0;
@@ -416,6 +449,7 @@ elseif(ikind==2)
         numhigh=length(ihigh);
         frachigh=numhigh/(nrows*ncols);
     end
+    minval=val01;
   elseif(ikind==4)
 
     if(framecounter==1)
@@ -753,27 +787,49 @@ if((ikind>2) && (ikind<=14))
     hold on
 elseif(ikind==1)
     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-    maxplotval99=100*(ceil(val99/100));
+    maxplotval100=100*(ceil(val100/100));
     minplotval01=100*(floor(val01/100));
-    plotstep=(maxplotval99-minplotval01)/40;
-    demcmap('inc',[maxplotval99 minplotval01],plotstep);
+    plotstep=(maxplotval100-minplotval01)/40;
+    demcmap('inc',[maxplotval100 minplotval01],plotstep);
     hc = colorbar;
     hc.Label.String = labelstr;
     ylabel(hc,units,'FontWeight','bold');
     tightmap
     hold on
-elseif(ikind==2)
+% elseif(ikind==2)
+%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+%     maxplotval99=val99;
+%     minplotval01=val01;
+%     plotstep=(maxplotval99-minplotval01)/40;
+%     demcmap('inc',[maxplotval99 minplotval01],plotstep);
+%     hc = colorbar;
+%     hc.Label.String = labelstr;
+%     ylabel(hc,units,'FontWeight','bold');
+%     tightmap
+%     hold on
+elseif(ikind==2) % This is a test to make NaN values transparent
+    geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
+    geoimg.FaceAlpha = 'texturemap';
+    alpha (geoimg,double (~isnan (PlotArray)))
+    hc = colorbar;
+    hc.Label.String = labelstr;
+    ylabel(hc,units,'FontWeight','bold');
+    tightmap
+    hold on
+    ab=1;
+elseif(ikind==3)
     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-    maxplotval99=val99;
+    maxplotval100=maxval2;
     minplotval01=val01;
-    plotstep=(maxplotval99-minplotval01)/40;
-    demcmap('inc',[maxplotval99 minplotval01],plotstep);
+    
+    plotstep=(maxplotval100-minplotval01)/40;
+    demcmap('inc',[maxplotval100 minplotval01],plotstep);
     hc = colorbar;
     hc.Label.String = labelstr;
     ylabel(hc,units,'FontWeight','bold');
     tightmap
-    hold on
-
+    hold on    
 elseif((ikind>=16) && (ikind<=50))
     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     hc = colorbar;
@@ -790,18 +846,21 @@ elseif(ikind>50)
     hold on
 else
 
+
 end
 % load the country borders and plot them
 eval(['cd ' mappath(1:length(mappath)-1)]);
 load('USAHiResBoundaries.mat','USALat','USALon');
 plot3m(USALat,USALon,maxval2,'w');
-try
-    load('CanadaBoundaries.mat','CanadaLat','CanadaLon');
-catch
-    load('CanadaBoundariesRed.mat','CanadaLat','CanadaLon');
-    disp('Failed to load Hi Res Canada data use low rest data')
-end
+load('CanadaBoundaries.mat','CanadaLat','CanadaLon');
 plot3m(CanadaLat,CanadaLon,maxval2,'w');
+% try
+%     load('CanadaBoundaries.mat','CanadaLat','CanadaLon');
+% catch
+%     load('CanadaBoundariesRed.mat','CanadaLat','CanadaLon');
+%     disp('Failed to load Hi Res Canada data use low rest data')
+% end
+% plot3m(CanadaLat,CanadaLon,maxval2,'w');
 load('MexicoBoundaries.mat','MexicoLat','MexicoLon');
 plot3m(MexicoLat,MexicoLon,maxval2,'w');
 load('CubaBoundaries.mat','CubaLat','CubaLon');
@@ -926,17 +985,19 @@ if(ikind<3)
 %     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID);
 % else
 %     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID);
+elseif(ikind==3)
+    txtstr1=strcat('Date-',MonthYearStr,'-Time=',TimeStr);
 end
 txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',12);
 tx2=.07;
 ty2=.14;
 if(ikind<3)
     txtstr2=strcat('1 ptile-',desc,'-',num2str(val01,6),'-50 ptile =',num2str(val50,6),...
-        '-75 ptile=',num2str(val75,6),'-99 ptile=',num2str(val99,6),'-frac pix over max range=',num2str(frachigh,6));
+        '-75 ptile=',num2str(val75,6),'-90 ptile=',num2str(val90,6),'-frac pix over max range=',num2str(frachigh,6));
     txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
 else
     txtstr2=strcat('1 ptile-',desc,'-',num2str(val01,6),'-50 ptile =',num2str(val50,6),...
-        '-75 ptile=',num2str(val75,6),'-99 ptile=',num2str(val99,6),'-frac pix over max range=',num2str(frachigh,6));
+        '-75 ptile=',num2str(val75,6),'-90 ptile=',num2str(val90,6),'-frac pix over max range=',num2str(frachigh,6));
     txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
 end
 set(newaxesh,'Visible','Off');
