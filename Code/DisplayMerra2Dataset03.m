@@ -20,7 +20,9 @@ global O3S PSS QVS HS QV2MS SLPS TS T2MS;
 global HS01 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
 global O3S01 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
 global PSS01 PSS25 PSS50 PSS75 PSS90 PSS100 PSSLow PSSHigh PSSNaN;
-global HSValues O3SValues PSSValues;
+global QVS01 QVS25 QVS50 QVS75 QVS90 QVS100 QVSLow QVSHigh QVSNaN;
+global SLPS01 SLPS25 SLPS50 SLPS75 SLPS90 SLPS100 SLPSLow SLPSHigh SLPSNaN;
+global HSValues O3SValues PSSValues QVSValues SLPSValues;
 global timeS US VS;
 global LatitudesS LongitudesS ;
 global YearMonthDayStr1 YearMonthDayStr2;
@@ -54,7 +56,7 @@ global Merra2WorkingSeaBoundary5Lat Merra2WorkingSeaBoundary5Lon Merra2WorkingSe
 global SeaMaskFileName SeaBoundaryFiles SeaMaskChoices numSelectedSeaMasks;
 global SelectedSeaMaskData SortedSBF indexSBF;
 global SelectedMaskData numSelectedMasks numUserSelectedSeaMasks;
-
+global heightkm;
 
 global numtimeslice TimeSlices;
 global Merra2FileName Merra2ShortFileName Merra2Dat;
@@ -133,7 +135,7 @@ end
 if(ikind==1)
     data=HS.values(:,:,iPress42,iTimeSlice);
     heightkm=PressureLevel42(iPress42,3);
-%    fillvalue=HS.FillValue;
+    fillvalue=HS.FillValue;
     PlotArray=HSValues;
     labelstr='Geopotential Height-m';
     [nrows,ncols]=size(PlotArray);
@@ -144,8 +146,6 @@ if(ikind==1)
     descstr=strcat('Average Monthly Value follows for-',titlestr);
 elseif(ikind==2)
     heightkm=PressureLevel42(iPress42,3);
-%     fillvalue=O3S.FillValue;
-%     data(data==fillvalue)=NaN;
     PlotArray=O3SValues;
     labelstr='Ozone Mixing Ratio';
     [nrows,ncols]=size(PlotArray);
@@ -155,9 +155,7 @@ elseif(ikind==2)
     titlestr=strcat('O3-',Merra2ShortFileName,'-Heightkm=',num2str(heightkm),TimeStr);
     descstr=strcat('Average Monthly stats follow for-',titlestr);
 elseif(ikind==3)
-%     data=PSS.values(:,:,iTimeSlice)/1000;
-%     fillvalue=PSS.FillValue;
-%     data(data==fillvalue)=NaN;
+    heightkm=PressureLevel42(iPress42,3);
     PlotArray=PSSValues;
     labelstr='Surface Pressure';
     [nrows,ncols]=size(PlotArray);
@@ -167,28 +165,24 @@ elseif(ikind==3)
     titlestr=strcat('PSS-',Merra2ShortFileName,TimeStr);
     descstr=strcat('Average Monthly stats follow for-',titlestr);
 elseif(ikind==4)
-    data=BCEM002S.values(:,:,numtimeslice);
-    fillvalue=BCEM002S.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-12;
-    labelstr='Black Carbon Emission Bin 2 -nanogram/m^2/sec';
+    heightkm=PressureLevel42(iPress42,3);
+    PlotArray=QVSValues;
+    labelstr='Specific Humidity (kg/kg)';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
-    desc='Black Carbon Emission Bin 02';
-    units='nanogram/m2/sec';
-    titlestr=strcat('BCEM002-',Merra2FileName);
-    descstr=strcat('Basic hourly stats  follow for-',titlestr);
+    desc='Specific Humidity';
+    units='kg/kg';
+    titlestr=strcat('QVS-',Merra2FileName);
+    descstr=strcat('Average Monthly Stats follow for-',titlestr);
 elseif(ikind==5)
-    data=BCEMANS.values(:,:,numtimeslice);
-    fillvalue=BCEMANS.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-15;
-    labelstr='Black Carbon Anthro Emissions-femtogram/m^2/sec';
+    heightkm=0;
+    PlotArray=SLPSValues;
+    labelstr='Surface Level Press kPa';
     [nrows,ncols]=size(PlotArray);
-    desc='Black Carbon Anthro Emissions';
-    units='femtogram/m2/sec';
-    titlestr=strcat('BCEMAN-',Merra2FileName);
-    descstr=strcat('Basic hourly stats  follow for-',titlestr);
+    desc='SLP';
+    units='kPA';
+    titlestr=strcat('SLPS-',Merra2FileName);
+    descstr=strcat('Average monthly stats  follow for-',titlestr);
     FullTimeStr=YearMonthStr;
 elseif(ikind==6)
     data=BCEMBBS.values(:,:,numtimeslice);
@@ -305,29 +299,13 @@ end
 %% Set Calculate a few basic stats
 [nrows,ncols]=size(PlotArray);
 numpts=nrows*ncols;
-% PlotArray1D=reshape(PlotArray,nrows*ncols,1);
-% PlotArray1DS=sort(PlotArray1D);
-% num01=floor(.01*numpts);
-% num25=floor(.25*numpts);
-% num50=floor(.50*numpts);
-% num75=floor(.75*numpts);
-% num99=floor(.99*numpts);
-% val01=PlotArray1DS(num01,1);
-% val25=PlotArray1DS(num25,1);
-% val50=PlotArray1DS(num50,1);
-% val75=PlotArray1DS(num75,1);
-% val99=PlotArray1DS(num99,1);
+
 %% Plot the Geopotential Height
 % Calculate some stats
 if((ikind==1))
     numpts=nrows*ncols;
     PlotArray1D=reshape(PlotArray,nrows*ncols,1);
     PlotArray1DS=sort(PlotArray1D);
-%     num01=floor(.01*numpts);
-%     num25=floor(.25*numpts);
-%     num50=floor(.50*numpts);
-%     num75=floor(.75*numpts);
-%     num90=floor(.99*numpts);
     val01=HS01(framecounter,1);
     val25=HS25(framecounter,1);
     val50=HS50(framecounter,1);
@@ -345,8 +323,8 @@ if((ikind==1))
         fprintf(fid,'%s\n',ptc50str);
         ptc75str=strcat('75 % Ptile-',desc,'=',num2str(val75,5));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('90 % Ptile -',desc,'=',num2str(val90,5));
-        fprintf(fid,'%s\n',ptc99str);
+        ptc90str=strcat('90 % Ptile -',desc,'=',num2str(val90,5));
+        fprintf(fid,'%s\n',ptc90str);
         endstr=strcat('End stats for-',desc);
         fprintf(fid,'%s\n',endstr);
     end
@@ -374,23 +352,9 @@ elseif(ikind==2)
     val100=O3S100(framecounter,1);
     if(framecounter==1)
 
-%         descstr=strcat('Basic hourly stats follow for-',titlestr);
-%         fprintf(fid,'%s\n',descstr);
-%         ptc1str= strcat('01 % Ptile-',desc,'=',num2str(val01,6));
-%         fprintf(fid,'%s\n',ptc1str);
-%         ptc25str=strcat('25 % Ptile-',desc,'=',num2str(val25,6));
-%         fprintf(fid,'%s\n',ptc25str);
-%         ptc50str=strcat('50 % Ptile-',desc,'=',num2str(val50,6));
-%         fprintf(fid,'%s\n',ptc50str);
-%         ptc75str=strcat('75 % Ptile-',desc,'=',num2str(val75,6));
-%         fprintf(fid,'%s\n',ptc75str);
-%         ptc99str=strcat('99 % Ptile -',desc,'=',num2str(val99,6));
-%         fprintf(fid,'%s\n',ptc99str);
-%         endstr=strcat('End stats for-',desc);
-%         fprintf(fid,'%s\n',endstr);
     end
     if(framecounter==1)
-        descstr=strcat('Basic hourly stats follow for-',titlestr);
+        descstr=strcat('Basic monthly stats follow for-',titlestr);
         fprintf(fid,'%s\n',descstr);
         ptc1str= strcat('01 % Ptile-',desc,'=',num2str(val01,6));
         fprintf(fid,'%s\n',ptc1str);
@@ -400,8 +364,8 @@ elseif(ikind==2)
         fprintf(fid,'%s\n',ptc50str);
         ptc75str=strcat('75 % Ptile-',desc,'=',num2str(val75,6));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('90 % Ptile -',desc,'=',num2str(val90,6));
-        fprintf(fid,'%s\n',ptc99str);
+        ptc90str=strcat('90 % Ptile -',desc,'=',num2str(val90,6));
+        fprintf(fid,'%s\n',ptc90str);
         endstr=strcat('End stats for-',desc);
         fprintf(fid,'%s\n',endstr);
     end
@@ -425,7 +389,7 @@ elseif(ikind==2)
     val90=PSS90(framecounter,1);
     val100=PSS100(framecounter,1);
     if(framecounter==1)
-        descstr=strcat('Basic hourly stats follow for-',titlestr);
+        descstr=strcat('Basic monthly stats follow for-',titlestr);
         fprintf(fid,'%s\n',descstr);
         ptc1str= strcat('01 % Ptile-',desc,'=',num2str(val01,6));
         fprintf(fid,'%s\n',ptc1str);
@@ -435,8 +399,8 @@ elseif(ikind==2)
         fprintf(fid,'%s\n',ptc50str);
         ptc75str=strcat('75 % Ptile-',desc,'=',num2str(val75,6));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('90 % Ptile -',desc,'=',num2str(val90,6));
-        fprintf(fid,'%s\n',ptc99str);
+        ptc90str=strcat('90 % Ptile -',desc,'=',num2str(val90,6));
+        fprintf(fid,'%s\n',ptc90str);
         endstr=strcat('End stats for-',desc);
         fprintf(fid,'%s\n',endstr);
     end
@@ -451,6 +415,15 @@ elseif(ikind==2)
     end
     minval=val01;
   elseif(ikind==4)
+    numpts=nrows*ncols;
+    PlotArray1D=reshape(PlotArray,nrows*ncols,1);
+    PlotArray1DS=sort(PlotArray1D);
+    val01=QVS01(framecounter,1);
+    val25=QVS25(framecounter,1);
+    val50=QVS50(framecounter,1);
+    val75=QVS75(framecounter,1);
+    val90=QVS90(framecounter,1);
+    val100=QVS100(framecounter,1);
 
     if(framecounter==1)
         descstr=strcat('Basic hourly stats follow for-',titlestr);
@@ -463,13 +436,14 @@ elseif(ikind==2)
         fprintf(fid,'%s\n',ptc50str);
         ptc75str=strcat('75 % Ptile-',desc,'=',num2str(val75,6));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile -',desc,'=',num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
+        ptc90str=strcat('90 % Ptile -',desc,'=',num2str(val90,6));
+        fprintf(fid,'%s\n',ptc90str);
         endstr=strcat('End stats for-',desc);
         fprintf(fid,'%s\n',endstr);
     end
-    maxval=100000;
-    maxval2=maxval+1000; 
+    maxval=1;
+    maxval2=1.05;
+    minval=1E-9;
     [ihigh]=find(PlotArray1DS>10000);
     a1=isempty(ihigh);
     if(a1==1)
@@ -479,22 +453,30 @@ elseif(ikind==2)
         frachigh=numhigh/(nrows*ncols);
     end
  elseif(ikind==5)
-
+    numpts=nrows*ncols;
+    PlotArray1D=reshape(PlotArray,nrows*ncols,1);
+    PlotArray1DS=sort(PlotArray1D);
+    val01=SLPS01(framecounter,1);
+    val25=SLPS25(framecounter,1);
+    val50=SLPS50(framecounter,1);
+    val75=SLPS75(framecounter,1);
+    val90=SLPS90(framecounter,1);
+    val100=SLPS100(framecounter,1);
     if(framecounter==1)
-        fprintf(fid,'%s\n',' Basic Stats follow for 1 Daily Data Average ');
-        ptc1str= strcat('01 % Ptile BCEMAN=',num2str(val01,6));
+        fprintf(fid,'%s\n',' Basic monthly stats follow ');
+        ptc1str= strcat('01 % Ptile SLP=',num2str(val01,6));
         fprintf(fid,'%s\n',ptc1str);
-        ptc25str=strcat('25 % Ptile BCEMAN=',num2str(val25,6));
+        ptc25str=strcat('25 % Ptile SLP=',num2str(val25,6));
         fprintf(fid,'%s\n',ptc25str);
-        ptc50str=strcat('50 % Ptile BCEMAN=',num2str(val50,6));
+        ptc50str=strcat('50 % Ptile SLP=',num2str(val50,6));
         fprintf(fid,'%s\n',ptc50str);
-        ptc75str=strcat('75 % Ptile BCEMAN=',num2str(val75,6));
+        ptc75str=strcat('75 % Ptile SLP=',num2str(val75,6));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile V=',num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
+        ptc90str=strcat('99 % Ptile SLP=',num2str(val90,6));
+        fprintf(fid,'%s\n',ptc90str);
         fprintf(fid,'%s\n',' End Stats follow for BCEMAN');
     end
-    [ihigh]=find(PlotArray1DS>100000);
+    [ihigh]=find(PlotArray1DS>120);
     a1=isempty(ihigh);
     if(a1==1)
         frachigh=0;
@@ -503,7 +485,8 @@ elseif(ikind==2)
         frachigh=numhigh/(nrows*ncols);
     end
     maxval=100000;
-    maxval2=maxval+1000; 
+    maxval2=maxval+1000;
+    minval=0;
  elseif(ikind==6)
 
     if(framecounter==1)
@@ -822,14 +805,35 @@ elseif(ikind==3)
     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     maxplotval100=maxval2;
     minplotval01=val01;
-    
     plotstep=(maxplotval100-minplotval01)/40;
     demcmap('inc',[maxplotval100 minplotval01],plotstep);
     hc = colorbar;
     hc.Label.String = labelstr;
     ylabel(hc,units,'FontWeight','bold');
     tightmap
-    hold on    
+    hold on  
+elseif(ikind==4)
+    geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    maxplotval100=maxval2;
+    minplotval01=val01;
+    plotstep=(maxplotval100-minplotval01)/40;
+    demcmap('inc',[maxplotval100 minplotval01],plotstep);
+    hc = colorbar;
+    hc.Label.String = labelstr;
+    ylabel(hc,units,'FontWeight','bold');
+    tightmap
+    hold on 
+ elseif(ikind==5)
+    geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    maxplotval100=maxval2;
+    minplotval01=minval;
+    plotstep=(maxplotval100-minplotval01)/40;
+    demcmap('inc',[maxplotval100 minplotval01],plotstep);
+    hc = colorbar;
+    hc.Label.String = labelstr;
+    ylabel(hc,units,'FontWeight','bold');
+    tightmap
+    hold on   
 elseif((ikind>=16) && (ikind<=50))
     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     hc = colorbar;
@@ -973,7 +977,7 @@ newaxesh=axes('Position',[0 0 1 1]);
 set(newaxesh,'XLim',[0 1],'YLim',[0 1]);
 tx1=.07;
 ty1=.18;
-if(ikind<3)
+if(ikind<6)
     txtstr1=strcat('Date-',MonthYearStr,'-Press Level-km=',num2str(heightkm),'-Time=',TimeStr);
 % elseif((ikind>=28) && (ikind<43))
 %     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID,'-Size Bin-',binstr);
@@ -985,13 +989,13 @@ if(ikind<3)
 %     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID);
 % else
 %     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID);
-elseif(ikind==3)
+elseif(ikind>5)
     txtstr1=strcat('Date-',MonthYearStr,'-Time=',TimeStr);
 end
 txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',12);
 tx2=.07;
 ty2=.14;
-if(ikind<3)
+if(ikind<6)
     txtstr2=strcat('1 ptile-',desc,'-',num2str(val01,6),'-50 ptile =',num2str(val50,6),...
         '-75 ptile=',num2str(val75,6),'-90 ptile=',num2str(val90,6),'-frac pix over max range=',num2str(frachigh,6));
     txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);

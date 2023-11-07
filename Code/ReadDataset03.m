@@ -17,13 +17,13 @@ global Merra2FileName Merra2Dat Merra2ShortFileName numSelectedFiles;
 
 global idebug;
 global LatitudesS LongitudesS LevS;
-global O3S PSS QVS HS QV2MS SLPS TS T2MS;
+global O3S PSS QVS HS  SLPS TS ;
 global timeS US VS;
 global HS10 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
 global O3S10 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
 global PSS10 PSS25 PSS50 PSS75 PSS90 PSS100 PSSLow PSSHigh PSSNaN;
-global TROPPBS TROPPTS TROPPVS TROPQS TROPTS;
-global U10MS U2MS U50MS V10MS V2MS V50MS;
+global QVS10 QVS25 QVS50 QVS75 QVS90 QVS100 QVSLow QVSHigh QVSNaN;
+
 global numtimeslice framecounter;
 global YearMonthDayStr1 YearMonthDayStr2;
 global ChoiceList;

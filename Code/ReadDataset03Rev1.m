@@ -19,14 +19,14 @@ global Merra2FileName Merra2Dat Merra2ShortFileName numSelectedFiles;
 
 global idebug;
 global LatitudesS LongitudesS LevS;
-global O3S PSS QVS HS QV2MS SLPS TS T2MS;
+global O3S PSS QVS HS  SLPS TS ;
 global timeS US VS;
 global HS01 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
 global O3S01 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
 global PSS01 PSS25 PSS50 PSS75 PSS90 PSS100 PSSLow PSSHigh PSSNaN;
-global HSValues O3SValues PSSValues;
-global TROPPBS TROPPTS TROPPVS TROPQS TROPTS;
-global U10MS U2MS U50MS V10MS V2MS V50MS;
+global QVS01 QVS25 QVS50 QVS75 QVS90 QVS100 QVSLow QVSHigh QVSNaN;
+global SLPS01 SLPS25 SLPS50 SLPS75 SLPS90 SLPS100 SLPSLow SLPSHigh SLPSNaN;
+global HSValues O3SValues PSSValues QVSValues SLPSValues;
 global numtimeslice framecounter;
 global YearMonthDayStr1 YearMonthDayStr2;
 global ChoiceList;
@@ -826,6 +826,24 @@ if(framecounter==1)
     PSSLow=zeros(numSelectedFiles,1);
     PSSHigh=zeros(numSelectedFiles,1);
     PSSNaN=zeros(numSelectedFiles,1);
+    QVS01=zeros(numSelectedFiles,1);
+    QVS25=zeros(numSelectedFiles,1);
+    QVS50=zeros(numSelectedFiles,1);
+    QVS75=zeros(numSelectedFiles,1);
+    QVS90=zeros(numSelectedFiles,1);
+    QVS100=zeros(numSelectedFiles,1);
+    QVSLow=zeros(numSelectedFiles,1);
+    QVSHigh=zeros(numSelectedFiles,1);
+    QVSNaN=zeros(numSelectedFiles,1);
+    SLPS01=zeros(numSelectedFiles,1);
+    SLPS25=zeros(numSelectedFiles,1);
+    SLPS50=zeros(numSelectedFiles,1);
+    SLPS75=zeros(numSelectedFiles,1);
+    SLPS90=zeros(numSelectedFiles,1);
+    SLPS100=zeros(numSelectedFiles,1);
+    SLPSLow=zeros(numSelectedFiles,1);
+    SLPSHigh=zeros(numSelectedFiles,1);
+    SLPSNaN=zeros(numSelectedFiles,1);
 end
 %% Capture Selected Statistics to Holding Arrays
 if(framecounter<=numSelectedFiles)
@@ -877,6 +895,38 @@ if(framecounter<=numSelectedFiles)
     PSSLow(framecounter,1)=fraclow;
     PSSHigh(framecounter,1)=frachigh;
     PSSNaN(framecounter,1)=fracNaN; 
+ % Continue with the Specific Humidity (kg/kg)
+    QVSValues=QVS.values(:,:,iPress42,iTimeSlice);
+    fillvalue=QVS.FillValue;
+    QVSValues(QVSValues==fillvalue)=NaN;
+    lowcutoff=1E-9;
+    highcutoff=1;
+    [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(QVSValues,lowcutoff,highcutoff);
+    QVS01(framecounter,1)=val01;
+    QVS25(framecounter,1)=val25;
+    QVS50(framecounter,1)=val50;
+    QVS75(framecounter,1)=val75;
+    QVS90(framecounter,1)=val90;
+    QVS100(framecounter,1)=val100;
+    QVSLow(framecounter,1)=fraclow;
+    QVSHigh(framecounter,1)=frachigh;
+    QVSNaN(framecounter,1)=fracNaN; 
+ % Continue with the Sea Level Pressure (kPA)
+    SLPSValues=SLPS.values(:,:,iTimeSlice)/1000;
+    fillvalue=SLPS.FillValue;
+    QVSValues(QVSValues==fillvalue)=NaN;
+    lowcutoff=.001;
+    highcutoff=120;
+    [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(SLPSValues,lowcutoff,highcutoff);
+    SLPS01(framecounter,1)=val01;
+    SLPS25(framecounter,1)=val25;
+    SLPS50(framecounter,1)=val50;
+    SLPS75(framecounter,1)=val75;
+    SLPS90(framecounter,1)=val90;
+    SLPS100(framecounter,1)=val100;
+    SLPSLow(framecounter,1)=fraclow;
+    SLPSHigh(framecounter,1)=frachigh;
+    SLPSNaN(framecounter,1)=fracNaN; 
     ab=2;
 end
 %% Display the selected data  on a map of the earth
@@ -908,26 +958,26 @@ iCityPlot=0;
 varname='PSS';
 iAddToReport=1;
 iNewChapter=0;
+iCloseChapter=0;
+DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+% Now plot the Specific Humidity at the selected level
+ikind=4;
+itype=3;
+iCityPlot=0;
+varname='QVS';
+iAddToReport=1;
+iNewChapter=0;
+iCloseChapter=0;
+DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+% Now plot the Sea Level Pressure
+ikind=5;
+itype=3;
+iCityPlot=0;
+varname='SLP';
+iAddToReport=1;
+iNewChapter=0;
 iCloseChapter=1;
 DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
-% % Now plot the Specific Humidity at 2 m
-% ikind=6;
-% itype=3;
-% iCityPlot=0;
-% varname='QV2M';
-% iAddToReport=1;
-% iNewChapter=0;
-% iCloseChapter=0;
-% DisplayMerra2Dataset01(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
-% % Now plot the Sea Level Pressure
-% ikind=7;
-% itype=3;
-% iCityPlot=0;
-% varname='SLP';
-% iAddToReport=1;
-% iNewChapter=0;
-% iCloseChapter=0;
-% DisplayMerra2Dataset01(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
 % % Now plot the Temperature at 10 M
 % ikind=8;
 % itype=3;
