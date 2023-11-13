@@ -52,7 +52,16 @@ function h = quiversc(x,y,u,v,varargin)
 % of the University of Texas at Austin. 
 % 
 % See also: quiver
-
+%% Needed Globals-SMF
+global widd2 lend2;
+global initialtimestr igrid ijpeg ilog imovie;
+global vert1 hor1 widd lend;
+global vert2 hor2 machine;
+global chart_time;
+global Fz1 Fz2 fid;
+global idirector mov izoom iwindow;
+global matpath GOES16path;
+global jpegpath ;
 %% Input parsing: 
 
 % Turn vectors into grids: 
@@ -116,9 +125,10 @@ if false
 end
 
 %% Plot
-
+% movie_figure1=figure('position',[hor1 vert1 widd lend]);
+% set(gcf,'MenuBar','none');
 h = quiver(x,y,u,v,varargin{:}); 
-
+ab=1;
 %% Clean up: 
 
 if nargout==0

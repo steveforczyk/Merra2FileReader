@@ -153,11 +153,12 @@ oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
 % Set some flags to control program execution
 iCreatePDFReport=0;
 iSkipReportFrames=8;
+
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
 ifixedImagePaths=1;
-isaveJpeg=2; % Set to 0 to not save jpegs (not recommended),1=print to save (slow)
+isaveJpeg=1; % Set to 0 to not save jpegs (not recommended),1=print to save (slow)
 % 2= Quick save using screencapture (recommended)
 iPrintTimingInfo=1;
 iMovie=0;

@@ -26,7 +26,11 @@ global O3S01 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
 global PSS01 PSS25 PSS50 PSS75 PSS90 PSS100 PSSLow PSSHigh PSSNaN;
 global QVS01 QVS25 QVS50 QVS75 QVS90 QVS100 QVSLow QVSHigh QVSNaN;
 global SLPS01 SLPS25 SLPS50 SLPS75 SLPS90 SLPS100 SLPSLow SLPSHigh SLPSNaN;
-global HSValues O3SValues PSSValues QVSValues SLPSValues;
+global TS01 TS25 TS50 TS75 TS90 TS100 TSLow TSHigh TSNaN;
+global US01 US25 US50 US75 US90 US100 USLow USHigh USNaN;
+global VS01 VS25 VS50 VS75 VS90 VS100 VSLow VSHigh VSNaN;
+global HSValues O3SValues PSSValues QVSValues SLPSValues TSValues USValues VSValues;
+global WindStress01 WindStress25 WindStress50 WindStress75 WindStress75 WindStress90 WindStress100;
 global numtimeslice framecounter;
 global YearMonthDayStr1 YearMonthDayStr2;
 global ChoiceList;
@@ -38,6 +42,7 @@ global SLPTable SLPTT;
 
 global numlat numlon Rpix latlim lonlim rasterSize;
 global westEdge eastEdge southEdge northEdge;
+global RasterLats RasterLons
 global yd md dd;
 global iCityPlot;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
@@ -717,6 +722,7 @@ for i = 0:numvars-1
         if(a70==1)
             eval([varname '=( double(double(double(double(netcdf.getVar(ncid,i))-0))));']);
             TS.values=T;
+            ab=1;
         end
 
         if(a80==1)
@@ -727,7 +733,6 @@ for i = 0:numvars-1
         if(a100==1)
           eval([varname '=(double(netcdf.getVar(ncid,i))-0);']);
           timeS.values=time;
-          ab=1;
         end
 
         if(a110==1)
@@ -742,7 +747,7 @@ for i = 0:numvars-1
 
         if(a130==1)
             eval([varname '=( double(double(double(double(netcdf.getVar(ncid,i))-0))));']);
-            VS.values=U;
+            VS.values=V;
         end
 
 
@@ -796,6 +801,24 @@ westEdge=-180;
 eastEdge=180;
 southEdge=-90;
 northEdge=90;
+westEdge=-180;
+eastEdge=180;
+southEdge=-90;
+northEdge=90;
+Merra2DataRasterLon=zeros(numlon,numlat);
+Merra2DataRasterLat=zeros(numlon,numlat);
+deltaLon=0.625;
+deltaLat=0.500;
+for i=1:numlon
+    nowlon=westEdge+(i-1)*deltaLon;
+    for j=1:numlat
+        nowlat=southEdge+(j-1)*deltaLat;
+        Merra2DataRasterLon(i,j)=nowlon;
+        Merra2DataRasterLat(i,j)=nowlat;
+    end
+end
+RasterLats=Merra2DataRasterLat;
+RasterLons=Merra2DataRasterLon;
 %% Initialize statistics holding arrays
 if(framecounter==1)
 % Initialize Statistic Hold Arrays for HS the geopotential height
@@ -844,6 +867,34 @@ if(framecounter==1)
     SLPSLow=zeros(numSelectedFiles,1);
     SLPSHigh=zeros(numSelectedFiles,1);
     SLPSNaN=zeros(numSelectedFiles,1);
+    TS01=zeros(numSelectedFiles,1);
+    TS25=zeros(numSelectedFiles,1);
+    TS50=zeros(numSelectedFiles,1);
+    TS75=zeros(numSelectedFiles,1);
+    TS90=zeros(numSelectedFiles,1);
+    TS100=zeros(numSelectedFiles,1);
+    TSLow=zeros(numSelectedFiles,1);
+    TSHigh=zeros(numSelectedFiles,1);
+    TSNaN=zeros(numSelectedFiles,1);
+    US01=zeros(numSelectedFiles,1);
+    US25=zeros(numSelectedFiles,1);
+    US50=zeros(numSelectedFiles,1);
+    US75=zeros(numSelectedFiles,1);
+    US90=zeros(numSelectedFiles,1);
+    US100=zeros(numSelectedFiles,1);
+    USLow=zeros(numSelectedFiles,1);
+    USHigh=zeros(numSelectedFiles,1);
+    USNaN=zeros(numSelectedFiles,1);
+    VS01=zeros(numSelectedFiles,1);
+    VS25=zeros(numSelectedFiles,1);
+    VS50=zeros(numSelectedFiles,1);
+    VS75=zeros(numSelectedFiles,1);
+    VS90=zeros(numSelectedFiles,1);
+    VS100=zeros(numSelectedFiles,1);
+    VSLow=zeros(numSelectedFiles,1);
+    VSHigh=zeros(numSelectedFiles,1);
+    VSNaN=zeros(numSelectedFiles,1);
+
 end
 %% Capture Selected Statistics to Holding Arrays
 if(framecounter<=numSelectedFiles)
@@ -900,7 +951,7 @@ if(framecounter<=numSelectedFiles)
     fillvalue=QVS.FillValue;
     QVSValues(QVSValues==fillvalue)=NaN;
     lowcutoff=1E-9;
-    highcutoff=1;
+    highcutoff=1.5;
     [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(QVSValues,lowcutoff,highcutoff);
     QVS01(framecounter,1)=val01;
     QVS25(framecounter,1)=val25;
@@ -914,8 +965,8 @@ if(framecounter<=numSelectedFiles)
  % Continue with the Sea Level Pressure (kPA)
     SLPSValues=SLPS.values(:,:,iTimeSlice)/1000;
     fillvalue=SLPS.FillValue;
-    QVSValues(QVSValues==fillvalue)=NaN;
-    lowcutoff=.001;
+    SLPSValues(SLPSValues==fillvalue)=NaN;
+    lowcutoff=.01;
     highcutoff=120;
     [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(SLPSValues,lowcutoff,highcutoff);
     SLPS01(framecounter,1)=val01;
@@ -926,7 +977,70 @@ if(framecounter<=numSelectedFiles)
     SLPS100(framecounter,1)=val100;
     SLPSLow(framecounter,1)=fraclow;
     SLPSHigh(framecounter,1)=frachigh;
-    SLPSNaN(framecounter,1)=fracNaN; 
+    SLPSNaN(framecounter,1)=fracNaN;
+  % Temperature (Deg-K)
+    TSValues=TS.values(:,:,iPress42,iTimeSlice);
+    fillvalue=TS.FillValue;
+    xcedvalue=0.99*TS.FillValue;
+    [nnrows,nncols]=size(TSValues);
+    nantot=0;
+    for ii=1:nnrows
+        for jj=1:nncols
+            nowVal=TSValues(ii,jj);
+            if(nowVal>=xcedvalue)
+                TSValues(ii,jj)=NaN;
+                nantot=nantot+1;
+            else
+                nowVal=nowVal-273.5;
+                TSValues(ii,jj)=nowVal;
+            end
+        end
+    end
+%    TSValues(TSValues==fillvalue)=NaN;
+    lowcutoff=-100;
+    highcutoff=100;
+    [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(TSValues,lowcutoff,highcutoff);
+    TS01(framecounter,1)=val01;
+    TS25(framecounter,1)=val25;
+    TS50(framecounter,1)=val50;
+    TS75(framecounter,1)=val75;
+    TS90(framecounter,1)=val90;
+    TS100(framecounter,1)=val100;
+    TSLow(framecounter,1)=fraclow;
+    TSHigh(framecounter,1)=frachigh;
+    TSNaN(framecounter,1)=fracNaN;
+  % East Wind Component(m/s)
+    USValues=US.values(:,:,iPress42,iTimeSlice);
+    fillvalue=US.FillValue;
+    USValues(USValues==fillvalue)=NaN;
+    lowcutoff=-50;
+    highcutoff=50;
+    [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(USValues,lowcutoff,highcutoff);
+    US01(framecounter,1)=val01;
+    US25(framecounter,1)=val25;
+    US50(framecounter,1)=val50;
+    US75(framecounter,1)=val75;
+    US90(framecounter,1)=val90;
+    US100(framecounter,1)=val100;
+    USLow(framecounter,1)=fraclow;
+    USHigh(framecounter,1)=frachigh;
+    USNaN(framecounter,1)=fracNaN;
+  % North Wind Component(m/s)
+    VSValues=VS.values(:,:,iPress42,iTimeSlice);
+    fillvalue=VS.FillValue;
+    VSValues(VSValues==fillvalue)=NaN;
+    lowcutoff=-50;
+    highcutoff=50;
+    [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(VSValues,lowcutoff,highcutoff);
+    VS01(framecounter,1)=val01;
+    VS25(framecounter,1)=val25;
+    VS50(framecounter,1)=val50;
+    VS75(framecounter,1)=val75;
+    VS90(framecounter,1)=val90;
+    VS100(framecounter,1)=val100;
+    VSLow(framecounter,1)=fraclow;
+    VSHigh(framecounter,1)=frachigh;
+    VSNaN(framecounter,1)=fracNaN; 
     ab=2;
 end
 %% Display the selected data  on a map of the earth
@@ -976,17 +1090,44 @@ iCityPlot=0;
 varname='SLP';
 iAddToReport=1;
 iNewChapter=0;
-iCloseChapter=1;
+iCloseChapter=0;
 DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
-% % Now plot the Temperature at 10 M
-% ikind=8;
-% itype=3;
-% iCityPlot=0;
-% varname='T10M';
-% iAddToReport=1;
-% iNewChapter=0;
-% iCloseChapter=0;
-% DisplayMerra2Dataset01(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+% Now plot the Temperature at the chosen level and time
+ikind=6;
+itype=3;
+iCityPlot=0;
+varname='TS';
+iAddToReport=1;
+iNewChapter=0;
+iCloseChapter=0;
+DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+% Now plot the East Wind Component at the chosen level and time
+ikind=7;
+itype=3;
+iCityPlot=0;
+varname='US';
+iAddToReport=1;
+iNewChapter=0;
+iCloseChapter=0;
+DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+% Now plot the North Wind Component at the chosen level and time
+ikind=8;
+itype=3;
+iCityPlot=0;
+varname='VS';
+iAddToReport=1;
+iNewChapter=0;
+iCloseChapter=0;
+DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+% Now display the wind velocity components and Windstress
+ikind=9;
+itype=3;
+iCityPlot=0;
+varname='WS';
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=1;
+DisplayMerra2DatasetWindStress(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
 % % Now plot the Temperature at 2 M
 % ikind=9;
 % itype=3;

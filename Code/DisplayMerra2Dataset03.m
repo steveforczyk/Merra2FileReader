@@ -19,10 +19,15 @@ global LatitudesS LongitudesS LevS;
 global O3S PSS QVS HS QV2MS SLPS TS T2MS;
 global HS01 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
 global O3S01 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
+
 global PSS01 PSS25 PSS50 PSS75 PSS90 PSS100 PSSLow PSSHigh PSSNaN;
 global QVS01 QVS25 QVS50 QVS75 QVS90 QVS100 QVSLow QVSHigh QVSNaN;
 global SLPS01 SLPS25 SLPS50 SLPS75 SLPS90 SLPS100 SLPSLow SLPSHigh SLPSNaN;
-global HSValues O3SValues PSSValues QVSValues SLPSValues;
+global TS01 TS25 TS50 TS75 TS90 TS100 TSLow TSHigh TSNaN;
+global US01 US25 US50 US75 US90 US100 USLow USHigh USNaN;
+global VS01 VS25 VS50 VS75 VS90 VS100 VSLow VSHigh VSNaN;
+global HSValues O3SValues PSSValues QVSValues SLPSValues TSValues;
+global USValues VSValues;
 global timeS US VS;
 global LatitudesS LongitudesS ;
 global YearMonthDayStr1 YearMonthDayStr2;
@@ -90,8 +95,6 @@ global matpath1 mappath ;
 global savepath jpegpath pdfpath logpath moviepath tablepath;
 global YearMonthStr MonthStr YearStr MonthYearStr;
 
-
-
 global widd2 lend2;
 global initialtimestr igrid ijpeg ilog imovie;
 global vert1 hor1 widd lend;
@@ -137,13 +140,14 @@ if(ikind==1)
     heightkm=PressureLevel42(iPress42,3);
     fillvalue=HS.FillValue;
     PlotArray=HSValues;
-    labelstr='Geopotential Height-m';
+    labelstr='m';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
     desc='Geopotential Height';
     units='m';
     titlestr=strcat('HS-',Merra2ShortFileName,'-Heightkm=',num2str(heightkm),TimeStr);
     descstr=strcat('Average Monthly Value follows for-',titlestr);
+    fracNaN=HSNaN(framecounter,1);
 elseif(ikind==2)
     heightkm=PressureLevel42(iPress42,3);
     PlotArray=O3SValues;
@@ -154,6 +158,7 @@ elseif(ikind==2)
     units='kg/kg';
     titlestr=strcat('O3-',Merra2ShortFileName,'-Heightkm=',num2str(heightkm),TimeStr);
     descstr=strcat('Average Monthly stats follow for-',titlestr);
+    fracNaN=O3SNaN(framecounter,1);
 elseif(ikind==3)
     heightkm=PressureLevel42(iPress42,3);
     PlotArray=PSSValues;
@@ -164,6 +169,7 @@ elseif(ikind==3)
     units='kPa';
     titlestr=strcat('PSS-',Merra2ShortFileName,TimeStr);
     descstr=strcat('Average Monthly stats follow for-',titlestr);
+    fracNaN=PSSNaN(framecounter,1);
 elseif(ikind==4)
     heightkm=PressureLevel42(iPress42,3);
     PlotArray=QVSValues;
@@ -174,6 +180,7 @@ elseif(ikind==4)
     units='kg/kg';
     titlestr=strcat('QVS-',Merra2FileName);
     descstr=strcat('Average Monthly Stats follow for-',titlestr);
+    fracNaN=QVSNaN(framecounter,1);
 elseif(ikind==5)
     heightkm=0;
     PlotArray=SLPSValues;
@@ -184,114 +191,58 @@ elseif(ikind==5)
     titlestr=strcat('SLPS-',Merra2FileName);
     descstr=strcat('Average monthly stats  follow for-',titlestr);
     FullTimeStr=YearMonthStr;
+    fracNaN=SLPSNaN(framecounter,1);
 elseif(ikind==6)
-    data=BCEMBBS.values(:,:,numtimeslice);
-    fillvalue=BCEMBBS.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-12;
-    labelstr='Black Carbon Burning Biomass Emissions-nanogram/m^2/sec';
+    heightkm=PressureLevel42(iPress42,3);
+%    xcedvalue=0.99*TS.FillValue;
+%    TSValues(TSValues==fillvalue)=NaN;
+    PlotArray=TSValues;
+%     [nnrows,nncols]=size(PlotArray);
+%     for ii=1:nnrows
+%         for jj=1:nncols
+%             nowVal=PlotArray(ii,jj);
+%             if(nowVal>xcedvalue)
+%                 PlotArray(ii,jj)=NaN;
+%             else
+%                 PlotArray(ii,jj)=nowVal-273.15;
+%             end
+%         end
+%     end
+    labelstr='Air Temp (Deg-k)';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
-    desc='Black Carbon Burning Biomass';
-    units='nanogram/m2/sec';  
-    titlestr=strcat('Black Carbon Burning Biomass-',Merra2FileName);
-    descstr=strcat('Basic hourly stats follow for-',titlestr);
+    desc='Air Temp';
+    units='Deg-C';
+    titlestr=strcat('TS-',Merra2FileName);
+    descstr=strcat('Average Monthly Stats follow for-',titlestr);
+    fracNaN=TSNaN(framecounter,1);
 elseif(ikind==7)
-    data=BCEMBFS.values(:,:,numtimeslice);
-    fillvalue=BCEMBFS.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-12;
-    labelstr='Black Carbon Biofuel Emissions-nanogram/m^2/sec';
+    heightkm=PressureLevel42(iPress42,3);
+    fillvalue=US.FillValue;
+    USValues(USValues==fillvalue)=NaN;
+    PlotArray=USValues;
+    labelstr='East Wind (m/s)';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
-    desc='Black Carbon Biofuel Emissions';
-    units='nanogram/m2/sec';  
-    titlestr=strcat('Black Carbon Biomass Emissions-',Merra2FileName);
-    descstr=strcat('Basic hourly stats follow for-',titlestr);
+    desc='East Wind';
+    units='m/s';  
+    titlestr=strcat('East Wind Component-',Merra2FileName);
+    descstr=strcat('Basic monthly stats follow for-',titlestr);
+    fracNaN=USNaN(framecounter,1);
 elseif(ikind==8)
-    data=BCHYPHILS.values(:,:,numtimeslice);
-    fillvalue=BCHYPHILS.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-12;
-    labelstr='Black Carbon Hydrophobic--nanogram/m^2/sec';
+    heightkm=PressureLevel42(iPress42,3);
+    fillvalue=VS.FillValue;
+    VSValues(VSValues==fillvalue)=NaN;
+    PlotArray=VSValues;
+    labelstr='North Wind (m/s)';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
-    desc='Black Carbon Hydrophobic';
-    units='nanogram/m2/sec';  
-    titlestr=strcat('Black Carbon Hydrophobic-',Merra2FileName);
-    descstr=strcat('Basic hourly stats follow for-',titlestr);
- elseif(ikind==9)
-    data=BCSD001S.values(:,:,numtimeslice);
-    fillvalue=BCSD001S.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-18;
-    labelstr='Black Carbon Sedimentation Bin 001-nanogram/m^2/sec';
-    [nrows,ncols]=size(PlotArray);
-    FullTimeStr=YearMonthStr;
-    desc='Black Carbon Sedimentation Bin 001';
-    units='attogm/m2/sec';  
-    titlestr=strcat('Black Carbon Sedimentation Bin 001-',Merra2FileName);
-    descstr=strcat('Basic hourly stats follow for-',titlestr);
- elseif(ikind==10)
-    data=BCSD002S.values(:,:,numtimeslice);
-    fillvalue=BCSD002S.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-18;
-    labelstr='Black Carbon Sedimentation Bin 002-nanogram/m^2/sec';
-    [nrows,ncols]=size(PlotArray);
-    FullTimeStr=YearMonthStr;
-    desc='Black Carbon Sedimentation Bin 002';
-    units='attogm/m2/sec';  
-    titlestr=strcat('Black Carbon Sedimentation Bin 002-',Merra2FileName);
-    descstr=strcat('Basic hourly stats follow for-',titlestr);
-  elseif(ikind==11)
-    data=BCSV001S.values(:,:,numtimeslice);
-    fillvalue=BCSV001S.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-15;
-    labelstr='Black Carbon Scavenging Bin 001-femtogram/m^2/sec';
-    [nrows,ncols]=size(PlotArray);
-    FullTimeStr=YearMonthStr;
-    desc='Black Carbon Scavenging Bin 001';
-    units='femtogm/m2/sec';  
-    titlestr=strcat('Black Carbon Scavenging Bin 001-',Merra2FileName);
-    descstr=strcat('Basic hourly stats follow for-',titlestr);
-  elseif(ikind==12)
-    data=BCSV002S.values(:,:,numtimeslice);
-    fillvalue=BCSV002S.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-15;
-    labelstr='Black Carbon Scavenging Bin 002-femtogram/m^2/sec';
-    [nrows,ncols]=size(PlotArray);
-    FullTimeStr=YearMonthStr;
-    desc='Black Carbon Scavenging Bin 002';
-    units='femtogm/m2/sec';  
-    titlestr=strcat('Black Carbon Scavenging Bin 002-',Merra2FileName);
-    descstr=strcat('Basic hourly stats follow for-',titlestr);
- elseif(ikind==13)
-    data=BCWT001S.values(:,:,numtimeslice);
-    fillvalue=BCWT001S.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-15;
-    labelstr='Black Carbon Wet Deposition femtograms/m^2/sec';
-    [nrows,ncols]=size(PlotArray);
-    FullTimeStr=YearMonthStr;
-    desc='Black Carbon Wet Deposition Bin 01 ';
-    units='femtograms-/m2^2/sec';  
-    titlestr=strcat('Black Carbon Wet Deposition Bin 01 For-',Merra2FileName);
-    descstr=strcat('Basic hourly stats follow for-',titlestr);
- elseif(ikind==14)
-    data=BCWT002S.values(:,:,numtimeslice);
-    fillvalue=BCWT002S.FillValue;
-    data(data==fillvalue)=NaN;
-    PlotArray=data/1E-15;
-    labelstr='Black Carbon Wet Deposition femtograms/m^2/sec';
-    [nrows,ncols]=size(PlotArray);
-    FullTimeStr=YearMonthStr;
-    desc='Black Carbon Wet Deposition Bin 02 ';
-    units='femtograms-/m2^2/sec';  
-    titlestr=strcat('Black Carbon Wet Deposition Bin 02 For-',Merra2FileName);
-    descstr=strcat('Basic hourly stats follow for-',titlestr);
+    desc='North Wind';
+    units='m/s';  
+    titlestr=strcat('North Wind Component-',Merra2FileName);
+    descstr=strcat('Basic monthly stats follow for-',titlestr);
+    fracNaN=VSNaN(framecounter,1);
+ 
 
 end
 [nrows,ncols]=size(PlotArray);
@@ -313,7 +264,7 @@ if((ikind==1))
     val90=HS90(framecounter,1);
     val100=HS100(framecounter,1);
     if(framecounter==1)
-        descstr=strcat('Basic hourly stats follow for-',titlestr);
+        descstr=strcat('Basic monthly stats follow for-',titlestr);
         fprintf(fid,'%s\n',descstr);
         ptc1str= strcat('01 % Ptile-',desc,'=',num2str(val01,5));
         fprintf(fid,'%s\n',ptc1str);
@@ -404,8 +355,8 @@ elseif(ikind==2)
         endstr=strcat('End stats for-',desc);
         fprintf(fid,'%s\n',endstr);
     end
-    maxval2=120;
-    [ihigh]=find(PlotArray1DS>120);
+    maxval2=val100;
+    [ihigh]=find(PlotArray1DS>val100);
     a1=isempty(ihigh);
     if(a1==1)
         frachigh=0;
@@ -426,7 +377,7 @@ elseif(ikind==2)
     val100=QVS100(framecounter,1);
 
     if(framecounter==1)
-        descstr=strcat('Basic hourly stats follow for-',titlestr);
+        descstr=strcat('Basic monthly stats follow for-',titlestr);
         fprintf(fid,'%s\n',descstr);
         ptc1str= strcat('01 % Ptile-',desc,'=',num2str(val01,6));
         fprintf(fid,'%s\n',ptc1str);
@@ -441,10 +392,10 @@ elseif(ikind==2)
         endstr=strcat('End stats for-',desc);
         fprintf(fid,'%s\n',endstr);
     end
-    maxval=1;
-    maxval2=1.05;
+    maxval=val01;
+    maxval2=val100;
     minval=1E-9;
-    [ihigh]=find(PlotArray1DS>10000);
+    [ihigh]=find(PlotArray1DS>.3);
     a1=isempty(ihigh);
     if(a1==1)
         frachigh=0;
@@ -474,7 +425,7 @@ elseif(ikind==2)
         fprintf(fid,'%s\n',ptc75str);
         ptc90str=strcat('99 % Ptile SLP=',num2str(val90,6));
         fprintf(fid,'%s\n',ptc90str);
-        fprintf(fid,'%s\n',' End Stats follow for BCEMAN');
+        fprintf(fid,'%s\n',' End Stats follow for SLP');
     end
     [ihigh]=find(PlotArray1DS>120);
     a1=isempty(ihigh);
@@ -484,26 +435,34 @@ elseif(ikind==2)
         numhigh=length(ihigh);
         frachigh=numhigh/(nrows*ncols);
     end
-    maxval=100000;
-    maxval2=maxval+1000;
-    minval=0;
+    maxval=118;
+    maxval2=120;
+    minval=floor(val01);
  elseif(ikind==6)
-
+    numpts=nrows*ncols;
+    PlotArray1D=reshape(PlotArray,nrows*ncols,1);
+    PlotArray1DS=sort(PlotArray1D);
+    val01=TS01(framecounter,1);
+    val25=TS25(framecounter,1);
+    val50=TS50(framecounter,1);
+    val75=TS75(framecounter,1);
+    val90=TS90(framecounter,1);
+    val100=TS100(framecounter,1);
     if(framecounter==1)
-        fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
-        ptc1str= strcat('01 % Ptile BCEMBB=',num2str(val01,6));
+        fprintf(fid,'%s\n',' Basic Stats follow for Monthly Average Data Average ');
+        ptc1str= strcat('01 % Ptile TS=',num2str(val01,6));
         fprintf(fid,'%s\n',ptc1str);
-        ptc25str=strcat('25 % Ptile BCEMBB=',num2str(val25,6));
+        ptc25str=strcat('25 % Ptile TS=',num2str(val25,6));
         fprintf(fid,'%s\n',ptc25str);
-        ptc50str=strcat('50 % Ptile BCEMBB=',num2str(val50,6));
+        ptc50str=strcat('50 % Ptile TS=',num2str(val50,6));
         fprintf(fid,'%s\n',ptc50str);
-        ptc75str=strcat('75 % Ptile BCEMBB=',num2str(val75,6));
+        ptc75str=strcat('75 % Ptile TS=',num2str(val75,6));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile BCEMBB=',num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
-        fprintf(fid,'%s\n',' End Stats follow for BCEMBB');
+        ptc90str=strcat('90 % Ptile TS=',num2str(val90,6));
+        fprintf(fid,'%s\n',ptc90str);
+        fprintf(fid,'%s\n',' End Stats follow for TS');
     end
-    [ihigh]=find(PlotArray1DS>100000);
+    [ihigh]=find(PlotArray1DS>100);
     a1=isempty(ihigh);
     if(a1==1)
         frachigh=0;
@@ -512,78 +471,71 @@ elseif(ikind==2)
         frachigh=numhigh/(nrows*ncols);
     end
     maxval=100000;
-    maxval2=maxval+1000; 
+    maxval2=100; 
+    minval=-100;
   elseif(ikind==7)
-
+    numpts=nrows*ncols;
+    PlotArray1D=reshape(PlotArray,nrows*ncols,1);
+    PlotArray1DS=sort(PlotArray1D);
+    val01=US01(framecounter,1);
+    val25=US25(framecounter,1);
+    val50=US50(framecounter,1);
+    val75=US75(framecounter,1);
+    val90=US90(framecounter,1);
+    val100=US100(framecounter,1);
     if(framecounter==1)
-        fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
-        ptc1str= strcat('01 % Ptile BCEMBF=',num2str(val01,6));
+        fprintf(fid,'%s\n',' Basic Monthly Stats follow ');
+        ptc1str= strcat('01 % Ptile US=',num2str(val01,6));
         fprintf(fid,'%s\n',ptc1str);
-        ptc25str=strcat('25 % Ptile BCEMBF=',num2str(val25,6));
+        ptc25str=strcat('25 % Ptile US=',num2str(val25,6));
         fprintf(fid,'%s\n',ptc25str);
-        ptc50str=strcat('50 % Ptile BCEMBF=',num2str(val50,6));
+        ptc50str=strcat('50 % Ptile US=',num2str(val50,6));
         fprintf(fid,'%s\n',ptc50str);
-        ptc75str=strcat('75 % Ptile BCEMBF=',num2str(val75,6));
+        ptc75str=strcat('75 % Ptile US=',num2str(val75,6));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile BCEMBF=',num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
-        fprintf(fid,'%s\n',' End Stats follow for BCEMBF');
-        [ihigh]=find(PlotArray1DS>100000);
+        ptc90str=strcat('99 % Ptile US=',num2str(val90,6));
+        fprintf(fid,'%s\n',ptc90str);
+        fprintf(fid,'%s\n',' End Stats follow for US');
+        
     end
+    [ihigh]=find(PlotArray1DS>40);
     a1=isempty(ihigh);
-    if(a1==1)
-        frachigh=0;
-    else
-        numhigh=length(ihigh);
-        frachigh=numhigh/(nrows*ncols);
-    end
-    maxval=100000;
-    maxval2=maxval+1000; 
-  elseif(ikind==8)
-
-    if(framecounter==1)
-        fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
-        ptc1str= strcat('01 % Ptile BCHYPIL=',num2str(val01,6));
-        fprintf(fid,'%s\n',ptc1str);
-        ptc25str=strcat('25 % Ptile BCHYPIL=',num2str(val25,6));
-        fprintf(fid,'%s\n',ptc25str);
-        ptc50str=strcat('50 % Ptile BCHYPIL=',num2str(val50,6));
-        fprintf(fid,'%s\n',ptc50str);
-        ptc75str=strcat('75 % Ptile BCHYPIL=',num2str(val75,6));
-        fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile BCHYPIL=',num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
-        fprintf(fid,'%s\n',' End Stats follow for BCHYPIL');
-    end
-    [ihigh]=find(PlotArray1DS>100000);
    
-    a1=isempty(ihigh);
     if(a1==1)
         frachigh=0;
     else
         numhigh=length(ihigh);
         frachigh=numhigh/(nrows*ncols);
     end
-    maxval=100000;
-    maxval2=maxval+1000; 
-
-  elseif(ikind==9)
-
+    maxval=40;
+    maxval2=50; 
+    minval=-40;
+  elseif(ikind==8)
+    numpts=nrows*ncols;
+    PlotArray1D=reshape(PlotArray,nrows*ncols,1);
+    PlotArray1DS=sort(PlotArray1D);
+    val01=VS01(framecounter,1);
+    val25=VS25(framecounter,1);
+    val50=VS50(framecounter,1);
+    val75=VS75(framecounter,1);
+    val90=VS90(framecounter,1);
+    val100=VS100(framecounter,1);
     if(framecounter==1)
-        fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
-        ptc1str= strcat('01 % Ptile BCSD001=',num2str(val01,6));
+        fprintf(fid,'%s\n',' Basic Monthly Stats follow ');
+        ptc1str= strcat('01 % Ptile US=',num2str(val01,6));
         fprintf(fid,'%s\n',ptc1str);
-        ptc25str=strcat('25 % Ptile BCSD001=',num2str(val25,6));
+        ptc25str=strcat('25 % Ptile US=',num2str(val25,6));
         fprintf(fid,'%s\n',ptc25str);
-        ptc50str=strcat('50 % Ptile BCSD001=',num2str(val50,6));
+        ptc50str=strcat('50 % Ptile US=',num2str(val50,6));
         fprintf(fid,'%s\n',ptc50str);
-        ptc75str=strcat('75 % Ptile BCSD001=',num2str(val75,6));
+        ptc75str=strcat('75 % Ptile US=',num2str(val75,6));
         fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile BCSD001=',num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
-        fprintf(fid,'%s\n',' End Stats follow for BCSD001');
+        ptc90str=strcat('99 % Ptile US=',num2str(val90,6));
+        fprintf(fid,'%s\n',ptc90str);
+        fprintf(fid,'%s\n',' End Stats follow for VS');
+        
     end
-    [ihigh]=find(PlotArray1DS>100000);
+    [ihigh]=find(PlotArray1DS>40);
     a1=isempty(ihigh);
     if(a1==1)
         frachigh=0;
@@ -591,142 +543,9 @@ elseif(ikind==2)
         numhigh=length(ihigh);
         frachigh=numhigh/(nrows*ncols);
     end
-    maxval=100000;
-    maxval2=maxval+1000; 
-
-  elseif(ikind==10)
-
-    if(framecounter==1)
-        fprintf(fid,'%s\n',' Basic Stats follow for 1 daily Data Average ');
-        ptc1str= strcat('01 % Ptile BCSD002=',num2str(val01,6));
-        fprintf(fid,'%s\n',ptc1str);
-        ptc25str=strcat('25 % Ptile BCSD002=',num2str(val25,6));
-        fprintf(fid,'%s\n',ptc25str);
-        ptc50str=strcat('50 % Ptile BCSD002=',num2str(val50,6));
-        fprintf(fid,'%s\n',ptc50str);
-        ptc75str=strcat('75 % Ptile BCSD002=',num2str(val75,6));
-        fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile BCSD002=',num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
-        fprintf(fid,'%s\n',' End Stats follow for BCSD002');
-    end
-    [ihigh]=find(PlotArray1DS>100000);
-    a1=isempty(ihigh);
-    if(a1==1)
-        frachigh=0;
-    else
-        numhigh=length(ihigh);
-        frachigh=numhigh/(nrows*ncols);
-    end
-    maxval=100000;
-    maxval2=maxval+1000; 
-
- elseif(ikind==11)
-
-    if(framecounter==1)
-        fprintf(fid,'%s\n',descstr);
-        ptc1str= strcat('01 % Ptile BCSV01-',desc,num2str(val01,6));
-        fprintf(fid,'%s\n',ptc1str);
-        ptc25str=strcat('25 % Ptile BCSV01-',desc,num2str(val25,6));
-        fprintf(fid,'%s\n',ptc25str);
-        ptc50str=strcat('50 % Ptile BCSV01-',desc,num2str(val50,6));
-        fprintf(fid,'%s\n',ptc50str);
-        ptc75str=strcat('75 % Ptile BCSV01-',desc,num2str(val75,6));
-        fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile BCSV01-',desc,num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
-        endstr=strcat('End stats for BCSV01-',desc);
-        fprintf(fid,'%s\n',endstr);
-    end
-    [ihigh]=find(PlotArray1DS>1000);
-    a1=isempty(ihigh);
-    if(a1==1)
-        frachigh=0;
-    else
-        numhigh=length(ihigh);
-        frachigh=numhigh/(nrows*ncols);
-    end
-    maxval=1000;
-    maxval2=maxval+10;
- elseif(ikind==12)
-    if(framecounter==1)
-        fprintf(fid,'%s\n',descstr);
-        ptc1str= strcat('01 % Ptile BCSV02-',desc,num2str(val01,6));
-        fprintf(fid,'%s\n',ptc1str);
-        ptc25str=strcat('25 % Ptile BCSV02-',desc,num2str(val25,6));
-        fprintf(fid,'%s\n',ptc25str);
-        ptc50str=strcat('50 % Ptile BCSV02-',desc,num2str(val50,6));
-        fprintf(fid,'%s\n',ptc50str);
-        ptc75str=strcat('75 % Ptile BCSV02-',desc,num2str(val75,6));
-        fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile BCSV02-',desc,num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
-        endstr=strcat('End stats for BCSV02-',desc);
-        fprintf(fid,'%s\n',endstr);
-    end
-    [ihigh]=find(PlotArray1DS>1000);
-    a1=isempty(ihigh);
-    if(a1==1)
-        frachigh=0;
-    else
-        numhigh=length(ihigh);
-        frachigh=numhigh/(nrows*ncols);
-    end
-    maxval=1000;
-    maxval2=maxval+10;
- elseif(ikind==13)
-    if(framecounter==1)
-        fprintf(fid,'%s\n',descstr);
-        ptc1str= strcat('01 % Ptile BCWT001-',desc,num2str(val01,6));
-        fprintf(fid,'%s\n',ptc1str);
-        ptc25str=strcat('25 % Ptile BCWT001-',desc,num2str(val25,6));
-        fprintf(fid,'%s\n',ptc25str);
-        ptc50str=strcat('50 % Ptile BCWT001-',desc,num2str(val50,6));
-        fprintf(fid,'%s\n',ptc50str);
-        ptc75str=strcat('75 % Ptile BCWT001-',desc,num2str(val75,6));
-        fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile BCWT001-',desc,num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
-        endstr=strcat('End stats for BCWT001-',desc);
-        fprintf(fid,'%s\n',endstr);
-    end
-    [ihigh]=find(PlotArray1DS>3000000);
-    a1=isempty(ihigh);
-    if(a1==1)
-        frachigh=0;
-    else
-        numhigh=length(ihigh);
-        frachigh=numhigh/(nrows*ncols);
-    end
-    maxval=3000000;
-    maxval2=maxval+1000;
-elseif((ikind==14))
-    if(framecounter==1)
-        fprintf(fid,'%s\n',descstr);
-        ptc1str= strcat('01 % Ptile BCWT002-',desc,num2str(val01,6));
-        fprintf(fid,'%s\n',ptc1str);
-        ptc25str=strcat('25 % Ptile BCWT002-',desc,num2str(val25,6));
-        fprintf(fid,'%s\n',ptc25str);
-        ptc50str=strcat('50 % Ptile BCWT002-',desc,num2str(val50,6));
-        fprintf(fid,'%s\n',ptc50str);
-        ptc75str=strcat('75 % Ptile BCWT002-',desc,num2str(val75,6));
-        fprintf(fid,'%s\n',ptc75str);
-        ptc99str=strcat('99 % Ptile BCWT002-',desc,num2str(val99,6));
-        fprintf(fid,'%s\n',ptc99str);
-        endstr=strcat('End stats for BCWT002-',desc);
-        fprintf(fid,'%s\n',endstr);
-    end
-    [ihigh]=find(PlotArray1DS>3000000);
-    a1=isempty(ihigh);
-    if(a1==1)
-        frachigh=0;
-    else
-        numhigh=length(ihigh);
-        frachigh=numhigh/(nrows*ncols);
-    end
-    maxval=3000000;
-    maxval2=maxval+1000;
-
+    maxval=40;
+    maxval2=50; 
+    minval=-40;
 
 end
 
@@ -760,94 +579,173 @@ set(gcf,'Position',[hor1 vert1 widd lend])
 set(gca,'FontWeight','bold');
 colormap jet
 %% Plot the cloud area fraction on the map
-if((ikind>2) && (ikind<=14))
-    geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-    hc = colorbar;
-    hc.Label.String = units;
-    hc.Limits=[minval maxval2];
-    ylabel(hc,units,'FontWeight','bold');
-    tightmap
-    hold on
-elseif(ikind==1)
-    geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-    maxplotval100=100*(ceil(val100/100));
-    minplotval01=100*(floor(val01/100));
-    plotstep=(maxplotval100-minplotval01)/40;
-    demcmap('inc',[maxplotval100 minplotval01],plotstep);
-    hc = colorbar;
-    hc.Label.String = labelstr;
-    ylabel(hc,units,'FontWeight','bold');
-    tightmap
-    hold on
-% elseif(ikind==2)
+if((ikind==1))
 %     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-%     maxplotval99=val99;
-%     minplotval01=val01;
-%     plotstep=(maxplotval99-minplotval01)/40;
-%     demcmap('inc',[maxplotval99 minplotval01],plotstep);
+%     maxplotval100=100*(ceil(val100/100));
+%     minplotval01=100*(floor(val01/100));
+%     plotstep=(maxplotval100-minplotval01)/40;
+%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
 %     hc = colorbar;
-%     hc.Label.String = labelstr;
+%     hc.Label.String = units;
 %     ylabel(hc,units,'FontWeight','bold');
 %     tightmap
 %     hold on
+%     ab=1;
+    geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
+    geoimg.FaceAlpha = 'texturemap';
+    alpha (geoimg,double (~isnan (PlotArray)))
+    hc = colorbar;
+    hc.Label.String = units;
+    ylabel(hc,units,'FontWeight','bold');
+    tightmap
+    hold on
+    ab=1;
+
 elseif(ikind==2) % This is a test to make NaN values transparent
     geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
     geoimg.FaceAlpha = 'texturemap';
     alpha (geoimg,double (~isnan (PlotArray)))
     hc = colorbar;
-    hc.Label.String = labelstr;
+    hc.Label.String = units;
     ylabel(hc,units,'FontWeight','bold');
     tightmap
     hold on
     ab=1;
 elseif(ikind==3)
-    geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-    maxplotval100=maxval2;
-    minplotval01=val01;
-    plotstep=(maxplotval100-minplotval01)/40;
-    demcmap('inc',[maxplotval100 minplotval01],plotstep);
+%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+%     maxplotval100=maxval2;
+%     minplotval01=val01;
+%     plotstep=(maxplotval100-minplotval01)/40;
+%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
+%     hc = colorbar;
+%     hc.Label.String = labelstr;
+%     ylabel(hc,units,'FontWeight','bold');
+%     tightmap
+%     hold on  
+%     ab=1;
+    geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
+    geoimg.FaceAlpha = 'texturemap';
+    alpha (geoimg,double (~isnan (PlotArray)))
     hc = colorbar;
-    hc.Label.String = labelstr;
+    hc.Label.String = units;
     ylabel(hc,units,'FontWeight','bold');
     tightmap
-    hold on  
+    hold on
+    ab=1;
 elseif(ikind==4)
-    geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-    maxplotval100=maxval2;
-    minplotval01=val01;
-    plotstep=(maxplotval100-minplotval01)/40;
-    demcmap('inc',[maxplotval100 minplotval01],plotstep);
+%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+%     maxplotval100=maxval2;
+%     minplotval01=val01;
+%     plotstep=(maxplotval100-minplotval01)/40;
+%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
+%     hc = colorbar;
+%     hc.Label.String = labelstr;
+%     ylabel(hc,units,'FontWeight','bold');
+%     tightmap
+%     hold on 
+%     ab=1;
+    geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
+    geoimg.FaceAlpha = 'texturemap';
+    alpha (geoimg,double (~isnan (PlotArray)))
     hc = colorbar;
-    hc.Label.String = labelstr;
+    hc.Label.String = units;
     ylabel(hc,units,'FontWeight','bold');
     tightmap
-    hold on 
+    hold on
+    ab=1;
  elseif(ikind==5)
-    geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-    maxplotval100=maxval2;
-    minplotval01=minval;
-    plotstep=(maxplotval100-minplotval01)/40;
-    demcmap('inc',[maxplotval100 minplotval01],plotstep);
+%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+%     maxplotval100=maxval2;
+%     minplotval01=minval;
+%     plotstep=(maxplotval100-minplotval01)/40;
+%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
+%     hc = colorbar;
+%     hc.Label.String = labelstr;
+%     ylabel(hc,units,'FontWeight','bold');
+%     tightmap
+%     hold on 
+%     ab=1;
+    geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
+    geoimg.FaceAlpha = 'texturemap';
+    alpha (geoimg,double (~isnan (PlotArray)))
     hc = colorbar;
-    hc.Label.String = labelstr;
-    ylabel(hc,units,'FontWeight','bold');
-    tightmap
-    hold on   
-elseif((ikind>=16) && (ikind<=50))
-    geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-    hc = colorbar;
-    hc.Label.String = labelstr;
-    ylabel(hc,units,'FontWeight','bold');
-    tightmap
-    hold on
-elseif(ikind>50)
-    geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-    hc = colorbar;
-    hc.Label.String = labelstr;
+    hc.Label.String = units;
     ylabel(hc,units,'FontWeight','bold');
     tightmap
     hold on
+    ab=1;
+ elseif(ikind==6)
+%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+%     maxplotval100=maxval2;
+%     minplotval01=minval;
+%     plotstep=(maxplotval100-minplotval01)/40;
+%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
+%     hc = colorbar;
+%     hc.Label.String = labelstr;
+%     ylabel(hc,units,'FontWeight','bold');
+%     tightmap
+%     hold on   
+    ab=1;
+    geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
+    geoimg.FaceAlpha = 'texturemap';
+    alpha (geoimg,double (~isnan (PlotArray)))
+    hc = colorbar;
+    hc.Label.String = units;
+    ylabel(hc,units,'FontWeight','bold');
+    tightmap
+    hold on
+    ab=1;
+ elseif(ikind==7)
+%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+%     maxplotval100=ceil(val90);
+%     minplotval01=floor(val01);
+%     plotstep=(maxplotval100-minplotval01)/40;
+%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
+%     hc = colorbar;
+%     hc.Label.String = labelstr;
+%     ylabel(hc,units,'FontWeight','bold');
+%     tightmap
+%     hold on  
+%     ab=1;
+    geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
+    geoimg.FaceAlpha = 'texturemap';
+    alpha (geoimg,double (~isnan (PlotArray)))
+    hc = colorbar;
+    hc.Label.String = units;
+    ylabel(hc,units,'FontWeight','bold');
+    tightmap
+    hold on
+    ab=1;
+ elseif(ikind==8)
+%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+%     maxplotval100=ceil(val90);
+%     minplotval01=floor(val01);
+%     plotstep=(maxplotval100-minplotval01)/40;
+%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
+%     hc = colorbar;
+%     hc.Label.String = labelstr;
+%     ylabel(hc,units,'FontWeight','bold');
+%     tightmap
+%     hold on  
+%     ab=1;
+    geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
+    geoimg.FaceAlpha = 'texturemap';
+    alpha (geoimg,double (~isnan (PlotArray)))
+    hc = colorbar;
+    hc.Label.String = units;
+    ylabel(hc,units,'FontWeight','bold');
+    tightmap
+    hold on
+    ab=1;
+
 else
 
 
@@ -858,13 +756,6 @@ load('USAHiResBoundaries.mat','USALat','USALon');
 plot3m(USALat,USALon,maxval2,'w');
 load('CanadaBoundaries.mat','CanadaLat','CanadaLon');
 plot3m(CanadaLat,CanadaLon,maxval2,'w');
-% try
-%     load('CanadaBoundaries.mat','CanadaLat','CanadaLon');
-% catch
-%     load('CanadaBoundariesRed.mat','CanadaLat','CanadaLon');
-%     disp('Failed to load Hi Res Canada data use low rest data')
-% end
-% plot3m(CanadaLat,CanadaLon,maxval2,'w');
 load('MexicoBoundaries.mat','MexicoLat','MexicoLon');
 plot3m(MexicoLat,MexicoLon,maxval2,'w');
 load('CubaBoundaries.mat','CubaLat','CubaLon');
@@ -977,25 +868,16 @@ newaxesh=axes('Position',[0 0 1 1]);
 set(newaxesh,'XLim',[0 1],'YLim',[0 1]);
 tx1=.07;
 ty1=.18;
-if(ikind<6)
+if(ikind<9)
     txtstr1=strcat('Date-',MonthYearStr,'-Press Level-km=',num2str(heightkm),'-Time=',TimeStr);
-% elseif((ikind>=28) && (ikind<43))
-%     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID,'-Size Bin-',binstr);
-% elseif((ikind>=66) && (ikind<76))
-%     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID,'-Size Bin-',binstr);
-% elseif((ikind>=78) && (ikind<93))
-%     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID,'-Size Bin-',binstr);
-% elseif((ikind>=93) && (ikind<=96))
-%     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID);
-% else
-%     txtstr1=strcat('Date-',FullTimeStr,'-ikind=',num2str(ikind),'-TimePeriod-',tsliceID);
-elseif(ikind>5)
+
+elseif(ikind>8)
     txtstr1=strcat('Date-',MonthYearStr,'-Time=',TimeStr);
 end
 txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',12);
 tx2=.07;
 ty2=.14;
-if(ikind<6)
+if(ikind<9)
     txtstr2=strcat('1 ptile-',desc,'-',num2str(val01,6),'-50 ptile =',num2str(val50,6),...
         '-75 ptile=',num2str(val75,6),'-90 ptile=',num2str(val90,6),'-frac pix over max range=',num2str(frachigh,6));
     txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
@@ -1004,27 +886,36 @@ else
         '-75 ptile=',num2str(val75,6),'-90 ptile=',num2str(val90,6),'-frac pix over max range=',num2str(frachigh,6));
     txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
 end
+if(ikind<9)
+    tx3=.07;
+    ty3=.10;
+    txtstr3=strcat(['Fraction Of Values that are NaN=',num2str(fracNaN,4)]);
+    txt3=text(tx3,ty3,txtstr3,'FontWeight','bold','FontSize',10);
+end
 set(newaxesh,'Visible','Off');
+if(ikind==8)
+    ab=1;
+end
 % Grab a movie frame
- if((ikind==4) && (iMovie>0) && (MovieFlags(4,1)==1))
-    frame=getframe(gcf);
-    writeVideo(vTemp4,frame);
-    disp('Grabbed 1 frame of movie data for ikind =4')
-elseif((ikind==5) && (iMovie>0) && (MovieFlags(5,1)==1))
-    frame=getframe(gcf);
-    writeVideo(vTemp5,frame);
-    disp('Grabbed 1 frame of movie data for ikind =5')
-elseif((ikind==6) && (iMovie>0) && (MovieFlags(6,1)==1))
-    frame=getframe(gcf);
-    writeVideo(vTemp6,frame);
-    disp('Grabbed 1 frame of movie data for ikind =6')
-elseif((ikind==7) && (iMovie>0) && (MovieFlags(7,1)==1))
-    frame=getframe(gcf);
-    writeVideo(vTemp7,frame);
-    disp('Grabbed 1 frame of movie data for ikind =7')
- else
-
- end
+%  if((ikind==4) && (iMovie>0) && (MovieFlags(4,1)==1))
+%     frame=getframe(gcf);
+%     writeVideo(vTemp4,frame);
+%     disp('Grabbed 1 frame of movie data for ikind =4')
+% elseif((ikind==5) && (iMovie>0) && (MovieFlags(5,1)==1))
+%     frame=getframe(gcf);
+%     writeVideo(vTemp5,frame);
+%     disp('Grabbed 1 frame of movie data for ikind =5')
+% elseif((ikind==6) && (iMovie>0) && (MovieFlags(6,1)==1))
+%     frame=getframe(gcf);
+%     writeVideo(vTemp6,frame);
+%     disp('Grabbed 1 frame of movie data for ikind =6')
+% elseif((ikind==7) && (iMovie>0) && (MovieFlags(7,1)==1))
+%     frame=getframe(gcf);
+%     writeVideo(vTemp7,frame);
+%     disp('Grabbed 1 frame of movie data for ikind =7')
+%  else
+% 
+%  end
 
 %% Save this graphic a a jpeg file
 tic;
@@ -1048,6 +939,9 @@ elseif(isaveJpeg==2)
 else % Not saved (do not use is PDF report is being created)
 
 
+end
+if(ikind==6)
+    ab=1;
 end
 pause(chart_time/2);
 elapsed_time=toc;
