@@ -151,9 +151,8 @@ gridpath='D:\Goes16\Grids\';
 oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
 %% Set Flags and default values
 % Set some flags to control program execution
-iCreatePDFReport=0;
-iSkipReportFrames=8;
-
+iCreatePDFReport=1;
+iSkipReportFrames=1;
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
@@ -1271,6 +1270,10 @@ end
         fprintf(fid,'%s\n',tpstr);
         fprintf(fid,'%s\n',prslevlstr);
         fprintf(fid,'\n');
+%  Add the intro section of the PDF report for this dataset
+        if((iCreatePDFReport==1) && (RptGenPresent==1))
+            CreateMerra2Dataset03Report
+        end
         for nn=1:numSelectedFiles
             nowFile=Merra2FileNames{nn,1}; 
             framecounter=framecounter+1;

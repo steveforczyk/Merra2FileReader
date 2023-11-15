@@ -178,4 +178,26 @@ NumProcFiles=0;
 eval(['cd ' savepath(1:length(savepath)-1)]);
 load(MatFileName);
 ab=1;
+%% Create Figure For Windstress data
+movie_figure1=figure('position',[hor1 vert1 widd lend]);
+set(gcf,'MenuBar','none');
+set(gca,'XLim',[-200 200],'YLim',[-90 90]);
+plot(coastlon,coastlat,'r');
+hold on
+quiversc(RasterLons,RasterLats,Taux,Tauy,'b');
+pause(5)
+close('all');
+movie_figure1=figure('position',[hor1 vert1 widd lend]);
+set(gcf,'MenuBar','none');
+%worldmap('World')
+load coastlines
+% plotm(coastlat,coastlon,'g');
+% hold on
+axesm ('pcarree','Frame','on','Grid','on','MapLatLimit',[-90 90],...
+ 'MapLonLimit',[-180 180],'meridianlabel','on','parallellabel','on','plabellocation',15,'mlabellocation',30,...
+ 'MLabelParallel','south','GColor',[1 1 0],'GLineWidth',1);
+quiversc(RasterLons,RasterLats,Taux,Tauy,'b');
+hold on
+plotm(coastlat,coastlon,'g');
+
 

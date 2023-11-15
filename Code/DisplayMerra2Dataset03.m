@@ -34,7 +34,6 @@ global YearMonthDayStr1 YearMonthDayStr2;
 global ChoiceList;
 global PascalsToMilliBars PascalsToPsi;
 global PSTable PSTT;
-
 global SLPTable SLPTT;
 
 
@@ -896,26 +895,6 @@ set(newaxesh,'Visible','Off');
 if(ikind==8)
     ab=1;
 end
-% Grab a movie frame
-%  if((ikind==4) && (iMovie>0) && (MovieFlags(4,1)==1))
-%     frame=getframe(gcf);
-%     writeVideo(vTemp4,frame);
-%     disp('Grabbed 1 frame of movie data for ikind =4')
-% elseif((ikind==5) && (iMovie>0) && (MovieFlags(5,1)==1))
-%     frame=getframe(gcf);
-%     writeVideo(vTemp5,frame);
-%     disp('Grabbed 1 frame of movie data for ikind =5')
-% elseif((ikind==6) && (iMovie>0) && (MovieFlags(6,1)==1))
-%     frame=getframe(gcf);
-%     writeVideo(vTemp6,frame);
-%     disp('Grabbed 1 frame of movie data for ikind =6')
-% elseif((ikind==7) && (iMovie>0) && (MovieFlags(7,1)==1))
-%     frame=getframe(gcf);
-%     writeVideo(vTemp7,frame);
-%     disp('Grabbed 1 frame of movie data for ikind =7')
-%  else
-% 
-%  end
 
 %% Save this graphic a a jpeg file
 tic;
@@ -952,7 +931,7 @@ ProcFileList{1+NumProcFiles,2}=jpegpath;
 ProcFileList{1+NumProcFiles,3}=elapsed_time;
 ProcFileList{1+NumProcFiles,4}=capture;
 rem=mod(framecounter-1,iSkipReportFrames);
-if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
+if((iCreatePDFReport>2) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
     if(iNewChapter)
         if(ikind==1)
             headingstr1=strcat('Analysis Results For Black Carbon-',Merra2ShortFileName);

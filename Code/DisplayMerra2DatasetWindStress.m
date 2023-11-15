@@ -311,20 +311,20 @@ ProcFileList{1+NumProcFiles,3}=elapsed_time;
 ProcFileList{1+NumProcFiles,4}=capture;
 close('all');
 % Save the data that makes up this chart
-eval(['cd ' savepath(1:length(savepath)-1)]);
-MatFileName=strcat('WindtsressData-',num2str(framecounter),'.mat');
-actionstr='save';
-varstr1='U10 V10 Taux Tauy RasterLons RasterLats';
-varstr2=' coastlon coastlat';
-varstr=strcat(varstr1,varstr2);
-qualstr='-v7.3';
-[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
-eval(cmdString)
-dispstr=strcat('Wrote Matlab File-',MatFileName);
-disp(dispstr);
+% eval(['cd ' savepath(1:length(savepath)-1)]);
+% MatFileName=strcat('WindtsressData-',num2str(framecounter),'.mat');
+% actionstr='save';
+% varstr1='U10 V10 Taux Tauy RasterLons RasterLats';
+% varstr2=' coastlon coastlat';
+% varstr=strcat(varstr1,varstr2);
+% qualstr='-v7.3';
+% [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+% eval(cmdString)
+% dispstr=strcat('Wrote Matlab File-',MatFileName);
+% disp(dispstr);
 
 rem=mod(framecounter-1,iSkipReportFrames);
-if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
+if((iCreatePDFReport>2) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
     if(iNewChapter)
         if(ikind==1)
             headingstr1=strcat('Analysis Results For Black Carbon-',Merra2ShortFileName);
