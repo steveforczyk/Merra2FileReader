@@ -596,8 +596,13 @@ while igo>0 % This setup up a loop to processing various file until user decides
     end
     if(indx==1)
         logfilename=strcat('Merra2LogFileIndx1-',logfilename,'.txt');
+        pdfpath='K:\Merra-2\netCDF\Dataset01\PDF_Files\';
     elseif(indx==2)
         logfilename=strcat('Merra2LogFileIndx2-',logfilename,'.txt');
+        pdfpath='K:\Merra-2\netCDF\Dataset02\PDF_Files\';
+    elseif(indx==3)
+        logfilename=strcat('Merra2LogFileIndx3-',logfilename,'.txt');
+        pdfpath='K:\Merra-2\netCDF\Dataset03\PDF_Files\';
     end
     eval(['cd ' logpath(1:length(logpath)-1)]);
     fid=fopen(logfilename,'w');
@@ -606,6 +611,9 @@ while igo>0 % This setup up a loop to processing various file until user decides
     fprintf(fid,'%50s\n',startrunstr);
     if(indx==2)
         pdfpath='K:\Merra-2\netCDF\Dataset02\PDF_Files\';
+%     elseif(indx==3)
+%         pdfpath='K:\Merra-2\netCDF\Dataset03\PDF_Files\';
+%     end
 %% Get the Run Configuration Data
         if(iCheckConfig==1)
             SpecifyMatlabConfiguration('ReadMerra2Data.m');
@@ -1763,9 +1771,7 @@ a1=exist('rpt','var');
 % profile off
 % profile viewer
 if((iCreatePDFReport==1) && (RptGenPresent==1))
-%     if(iReport(62,1)==1)
-%         CreateAerosolDataAlgoDesc
-%     end
+
     close(rpt);
     rptview(rpt)
     dispstr=strcat('Closed PDF Report-',pdffilename);
