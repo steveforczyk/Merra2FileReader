@@ -12,7 +12,10 @@ function  DisplayMerra2DatasetWindStress(ikind,itype,varname,iAddToReport,iNewCh
 % Written By: Stephen Forczyk
 % Based On: Windstress function by Chad Greene
 % Created: Nov 8,2023
-% Revised: 
+% Revised: Nov 26,2023 added borders to map
+% Revised: Nov 27,2023 added code to activate PDF file chapter
+% Revised: Nov 28.2023 added iSeaOny and iLandOnly flags to restrict
+% processing to sea areas only(==1) or land only(==1)
 
 
 % Classification: Unclassified
@@ -50,6 +53,7 @@ global westEdge eastEdge southEdge northEdge;
 global yd md dd;
 global iCityPlot;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
+global iSeaOnly iLandOnly;
 
 
 global LatitudesS LongitudesS ;
@@ -149,108 +153,23 @@ heightkm=PressureLevel42(1,3);
 fillvalue=US.FillValue;
 U10(U10==fillvalue)=NaN;
 V10(V10==fillvalue)=NaN;
-% PlotArray=HSValues;
-% labelstr='Geopotential Height-m';
-% [nrows,ncols]=size(PlotArray);
-% FullTimeStr=YearMonthStr;
+
 desc='Geopotential Height';
 units='Pa';
 titlestr=strcat('WindStress-',Merra2ShortFileName,'-Heightkm=',num2str(heightkm),TimeStr);
 descstr=strcat('Average Monthly Value follows for-',titlestr);
-[Taux,Tauy] = windstress(U10,V10);
-%[nrows,ncols]=size(U10);
-movie_figure1=figure('position',[hor1 vert1 widd lend]);
+[Taux,Tauy] = windstress(U10,V10,'Density',90);
+parastr4='All Areas Included In Plot';
+if(iSeaOnly==1)
+    land=island(RasterLats,RasterLons);
+    Taux(land)=NaN;
+    Tauy(land)=NaN;
+    parastr4='Plot only includes sea areas';
+end
+movie_figure1=figure('position',[hor1 vert1 widd lend-70]);
 set(gcf,'MenuBar','none');
 set(gca,'XLim',[-200 200],'YLim',[-90 90]);
-% load the a simplified set of coastlines using default Matlab file
-eval(['cd ' mappath(1:length(mappath)-1)]);
-load('coastlines.mat','coastlon','coastlat');
-plot(coastlon,coastlat,'r');
-% load('USAHiResBoundaries.mat','USALat','USALon');
-% plot(USALon,USALat,'r');
-% load('CanadaBoundaries.mat','CanadaLat','CanadaLon');
-% plot(CanadaLon,CanadaLat,'r');
-% load('MexicoBoundaries.mat','MexicoLat','MexicoLon');
-% plot(MexicoLon,MexicoLat,'r');
-% load('CubaBoundaries.mat','CubaLat','CubaLon');
-% plot(CubaLon,CubaLat,'r');
-% load('DominicanRepublicBoundaries.mat','DRLat','DRLon');
-% plot(DRLon,DRLat,'r');
-% load('HaitiBoundaries.mat','HaitiLat','HaitiLon');
-% plot(HaitiLon,HaitiLat,'r');
-% load('BelizeBoundaries.mat','BelizeLat','BelizeLon');
-% plot(BelizeLon,BelizeLat,'r');
-% load('GautemalaBoundaries.mat','GautemalaLat','GautemalaLon');
-% plot(GautemalaLon,GautemalaLat,'r')
-% load('JamaicaBoundaries.mat','JamaicaLat','JamaicaLon');
-% plot(JamaicaLon,JamaicaLat,'r');
-% load('NicaraguaBoundaries.mat','NicaraguaLat','NicaraguaLon');
-% plot(NicaraguaLon,NicaraguaLat,'r')
-% load('HondurasBoundaries.mat','HondurasLat','HondurasLon');
-% plot(HondurasLon,HondurasLat,'r')
-% load('ElSalvadorBoundaries.mat','ElSalvadorLat','ElSalvadorLon');
-% plot(ElSalvadorLon,ElSalvadorLat,'r');
-% load('PanamaBoundaries.mat','PanamaLat','PanamaLon');
-% plot(PanamaLon,PanamaLat,'r');
-% load('ColumbiaBoundaries.mat','ColumbiaLat','ColumbiaLon');
-% plot(ColumbiaLon,ColumbiaLat,'r');
-% load('VenezuelaBoundaries.mat','VenezuelaLat','VenezuelaLon');
-% plot(VenezuelaLon,VenezuelaLat,'r')
-% load('PeruBoundaries.mat','PeruLat','PeruLon');
-% plot(PeruLon,PeruLat,'r');
-% load('EcuadorBoundaries.mat','EcuadorLat','EcuadorLon');
-% plot(EcuadorLat,EcuadorLon,'r')
-% load('BrazilBoundaries.mat','BrazilLat','BrazilLon');
-% plot(BrazilLat,BrazilLon,'r');
-% load('BoliviaBoundaries.mat','BoliviaLat','BoliviaLon');
-% plot(BoliviaLat,BoliviaLon,'r')
-% load('ChileBoundaries.mat','ChileLat','ChileLon');
-% plot(ChileLat,ChileLon,'r');
-% load('ArgentinaBoundaries.mat','ArgentinaLat','ArgentinaLon');
-% plot(ArgentinaLat,ArgentinaLon,'r');
-% load('UruguayBoundaries.mat','UruguayLat','UruguayLon');
-% plot(UruguayLat,UruguayLon,'r');
-% load('CostaRicaBoundaries.mat','CostaRicaLat','CostaRicaLon');
-% plot(CostaRicaLat,CostaRicaLon,'r');
-% load('FrenchGuianaBoundaries.mat','FrenchGuianaLat','FrenchGuianaLon');
-% plot(FrenchGuianaLat,FrenchGuianaLon,'r');
-% load('GuyanaBoundaries.mat','GuyanaLat','GuyanaLon');
-% plot(GuyanaLat,GuyanaLon,'r');
-% load('SurinameBoundaries.mat','SurinameLat','SurinameLon');
-% plot(SurinameLat,SurinameLon,'r');
-% load('SaudiBoundaries','SaudiLat','SaudiLon');
-% plot(SaudiLat,SaudiLon,'r');
-% load('TurkeyBoundaries','TurkeyLat','TurkeyLon');
-% plot(TurkeyLat,TurkeyLon,'r');
-% load('SyriaBoundaries','SyriaLat','SyriaLon');
-% plot(SyriaLat,SyriaLon,'r');
-% load('LebanonBoundaries','LebanonLat','LebanonLon');
-% plot(LebanonLat,LebanonLon,'r');
-% load('JordanBoundaries','JordanLat','JordanLon');
-% plot(JordanLat,JordanLon,'r');
-% load('IranBoundaries','IranLat','IranLon');
-% plot(IranLat,IranLon,'r');
-% load('IraqBoundaries','IraqLat','IraqLon');
-% plot(IraqLat,IraqLon,'r');
-% load('KuwaitBoundaries','KuwaitLat','KuwaitLon');
-% plot(KuwaitLat,KuwaitLon,'r');
-% load('IsraelBoundaries','IsraelLat','IsraelLon');
-% plot(IsraelLat,IsraelLon,'r');
-% load('AfricaLowResBoundaries','AfricaLat','AfricaLon');
-% plot(AfricaLat,AfricaLon,'r');
-% load('AsiaLowResBoundaries.mat','AsiaLat','AsiaLon');
-% plot(AsiaLat,AsiaLon,'r');
-% try
-%     load('EuropeHiResBoundaries.mat','EuropeLat','EuropeLon');
-% 
-% catch
-%     load('EuropeLowResBoundaries.mat','EuropeLat','EuropeLon');
-%     disp('Failed to load Hi Res Europe data use low resolution data')
-%     
-% end
-% plot(EuropeLat,EuropeLon,'r');
-% load('AustraliaBoundaries.mat','AustraliaLat','AustraliaLon');
-% plot(AustraliaLat,AustraliaLon,'r');
+borders
 hold on
 quiversc(RasterLons,RasterLats,Taux,Tauy,'b');
 titlestr=strcat('Windstress-',Merra2ShortFileName,TimeStr);
@@ -274,11 +193,14 @@ end
 % Set up an axis for writing text at the bottom of the chart
 newaxesh=axes('Position',[0 0 1 1]);
 set(newaxesh,'XLim',[0 1],'YLim',[0 1]);
-tx1=.10;
-ty1=.04;
+tx1=.08;
+ty1=.07;
 txtstr1=strcat('Date-',MonthYearStr,'-Press Level-km=',num2str(heightkm),'-Time=',TimeStr);
 txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',10);
-
+tx2=.08;
+ty2=.04;
+txtstr2=parastr4;
+txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
 set(newaxesh,'Visible','Off');
 %% Save this graphic a a jpeg file
 tic;
@@ -310,36 +232,14 @@ ProcFileList{1+NumProcFiles,2}=jpegpath;
 ProcFileList{1+NumProcFiles,3}=elapsed_time;
 ProcFileList{1+NumProcFiles,4}=capture;
 close('all');
-% Save the data that makes up this chart
-% eval(['cd ' savepath(1:length(savepath)-1)]);
-% MatFileName=strcat('WindtsressData-',num2str(framecounter),'.mat');
-% actionstr='save';
-% varstr1='U10 V10 Taux Tauy RasterLons RasterLats';
-% varstr2=' coastlon coastlat';
-% varstr=strcat(varstr1,varstr2);
-% qualstr='-v7.3';
-% [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
-% eval(cmdString)
-% dispstr=strcat('Wrote Matlab File-',MatFileName);
-% disp(dispstr);
 
 rem=mod(framecounter-1,iSkipReportFrames);
-if((iCreatePDFReport>2) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
+if((iCreatePDFReport>0) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
     if(iNewChapter)
-        if(ikind==1)
-            headingstr1=strcat('Analysis Results For Black Carbon-',Merra2ShortFileName);
-        elseif(ikind==15)
-            headingstr1=strcat('Analysis Results For Dust-',Merra2ShortFileName);
-            ab=1;
-        elseif(ikind==45)
-             headingstr1=strcat('Analysis Results For Organic Carbon-',Merra2ShortFileName);
-        elseif(ikind==60)
-             headingstr1=strcat('Analysis Results For Sulfates-',Merra2ShortFileName);
-        elseif(ikind==65)
-             headingstr1=strcat('Analysis Results For Sea Salts-',Merra2ShortFileName);
+        if(ikind==9)
+            headingstr1=strcat('Analysis Results Windstress-',Merra2ShortFileName); 
         else
              headingstr1=strcat('Analysis Results For Other Aerosols-',Merra2ShortFileName);
-             ab=1;
         end
         chapter = Chapter("Title",headingstr1);
     end
@@ -364,20 +264,13 @@ if((iCreatePDFReport>2) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
 % Now add some text -start by describing the with a basic description of the
 % variable being plotted
     parastr1=strcat('The data for this chart was taken from file-',Merra2ShortFileName,'.');
-    parastr2=strcat(' This metric is an hourly average for-',varname,'-at time slice-',tsliceID);
-    if((ikind>=1) && (ikind<=26))
-        parastr3='The expected data range for this dataset is from 0 to <<1 and is in nanograms/m^2/sec .';
-    elseif((ikind==76) || (ikind==77) || (ikind==65))
-        parastr3='The expected data range for this dataset is from 0 to 1 and is dimensionless .';
-    elseif((ikind>=28) && (ikind<76))
-        parastr3='The expected data range for this dataset is from 0 to <<1 and is in femtograms/m^2/sec .';
-    elseif(ikind>=78)
-        parastr3='The expected data range for this dataset is from 0 to <<1 and is in femtograms/m^2/sec .';
+    parastr2=strcat(' This metric is an monthly average for-',varname,'-at time slice-',TimeStr);
+    if(ikind==9)
+        parastr3='The expect data range is +/- 30 Pa.';
     else
         parastr3='unspecified';
     end
-
-    parastr9=strcat(parastr1,parastr2,parastr3);
+    parastr9=strcat(parastr1,parastr2,parastr3,parastr4);
     p1 = Paragraph(parastr9);
     p1.Style = {OuterMargin("0pt", "0pt","10pt","10pt")};
     add(chapter,p1);
@@ -385,6 +278,6 @@ if((iCreatePDFReport>2) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
         add(rpt,chapter);
     end
 end
-close('all');
+%close('all');
 end
 

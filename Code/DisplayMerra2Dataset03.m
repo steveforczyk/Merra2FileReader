@@ -7,6 +7,8 @@ function  DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iC
 % Created: Nov 1,2023
 % Revised: Nov 2-5 Added O3 and PS
 % Revised: Nov 6,2023 take advantage of stats previously computed
+% Revised: Nov 20-28 added code to activitate PDF report creation
+% of figures generated in this routine
 
 % Classification: Unclassified
 global minTauValue PressureLevel42 PressureLevel72 iPress42 iPress72;
@@ -139,11 +141,11 @@ if(ikind==1)
     heightkm=PressureLevel42(iPress42,3);
     fillvalue=HS.FillValue;
     PlotArray=HSValues;
-    labelstr='m';
+    labelstr='meters';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
     desc='Geopotential Height';
-    units='m';
+    units='meters';
     titlestr=strcat('HS-',Merra2ShortFileName,'-Heightkm=',num2str(heightkm),TimeStr);
     descstr=strcat('Average Monthly Value follows for-',titlestr);
     fracNaN=HSNaN(framecounter,1);
@@ -193,20 +195,7 @@ elseif(ikind==5)
     fracNaN=SLPSNaN(framecounter,1);
 elseif(ikind==6)
     heightkm=PressureLevel42(iPress42,3);
-%    xcedvalue=0.99*TS.FillValue;
-%    TSValues(TSValues==fillvalue)=NaN;
     PlotArray=TSValues;
-%     [nnrows,nncols]=size(PlotArray);
-%     for ii=1:nnrows
-%         for jj=1:nncols
-%             nowVal=PlotArray(ii,jj);
-%             if(nowVal>xcedvalue)
-%                 PlotArray(ii,jj)=NaN;
-%             else
-%                 PlotArray(ii,jj)=nowVal-273.15;
-%             end
-%         end
-%     end
     labelstr='Air Temp (Deg-k)';
     [nrows,ncols]=size(PlotArray);
     FullTimeStr=YearMonthStr;
@@ -241,7 +230,6 @@ elseif(ikind==8)
     titlestr=strcat('North Wind Component-',Merra2FileName);
     descstr=strcat('Basic monthly stats follow for-',titlestr);
     fracNaN=VSNaN(framecounter,1);
- 
 
 end
 [nrows,ncols]=size(PlotArray);
@@ -579,17 +567,6 @@ set(gca,'FontWeight','bold');
 colormap jet
 %% Plot the cloud area fraction on the map
 if((ikind==1))
-%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-%     maxplotval100=100*(ceil(val100/100));
-%     minplotval01=100*(floor(val01/100));
-%     plotstep=(maxplotval100-minplotval01)/40;
-%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
-%     hc = colorbar;
-%     hc.Label.String = units;
-%     ylabel(hc,units,'FontWeight','bold');
-%     tightmap
-%     hold on
-%     ab=1;
     geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
     geoimg.FaceAlpha = 'texturemap';
@@ -613,17 +590,7 @@ elseif(ikind==2) % This is a test to make NaN values transparent
     hold on
     ab=1;
 elseif(ikind==3)
-%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-%     maxplotval100=maxval2;
-%     minplotval01=val01;
-%     plotstep=(maxplotval100-minplotval01)/40;
-%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
-%     hc = colorbar;
-%     hc.Label.String = labelstr;
-%     ylabel(hc,units,'FontWeight','bold');
-%     tightmap
-%     hold on  
-%     ab=1;
+    PlotArray=PlotArray-100;
     geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
     geoimg.FaceAlpha = 'texturemap';
@@ -633,19 +600,7 @@ elseif(ikind==3)
     ylabel(hc,units,'FontWeight','bold');
     tightmap
     hold on
-    ab=1;
 elseif(ikind==4)
-%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-%     maxplotval100=maxval2;
-%     minplotval01=val01;
-%     plotstep=(maxplotval100-minplotval01)/40;
-%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
-%     hc = colorbar;
-%     hc.Label.String = labelstr;
-%     ylabel(hc,units,'FontWeight','bold');
-%     tightmap
-%     hold on 
-%     ab=1;
     geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
     geoimg.FaceAlpha = 'texturemap';
@@ -655,19 +610,7 @@ elseif(ikind==4)
     ylabel(hc,units,'FontWeight','bold');
     tightmap
     hold on
-    ab=1;
  elseif(ikind==5)
-%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-%     maxplotval100=maxval2;
-%     minplotval01=minval;
-%     plotstep=(maxplotval100-minplotval01)/40;
-%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
-%     hc = colorbar;
-%     hc.Label.String = labelstr;
-%     ylabel(hc,units,'FontWeight','bold');
-%     tightmap
-%     hold on 
-%     ab=1;
     geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
     geoimg.FaceAlpha = 'texturemap';
@@ -679,17 +622,6 @@ elseif(ikind==4)
     hold on
     ab=1;
  elseif(ikind==6)
-%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-%     maxplotval100=maxval2;
-%     minplotval01=minval;
-%     plotstep=(maxplotval100-minplotval01)/40;
-%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
-%     hc = colorbar;
-%     hc.Label.String = labelstr;
-%     ylabel(hc,units,'FontWeight','bold');
-%     tightmap
-%     hold on   
-    ab=1;
     geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
     geoimg.FaceAlpha = 'texturemap';
@@ -701,17 +633,6 @@ elseif(ikind==4)
     hold on
     ab=1;
  elseif(ikind==7)
-%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-%     maxplotval100=ceil(val90);
-%     minplotval01=floor(val01);
-%     plotstep=(maxplotval100-minplotval01)/40;
-%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
-%     hc = colorbar;
-%     hc.Label.String = labelstr;
-%     ylabel(hc,units,'FontWeight','bold');
-%     tightmap
-%     hold on  
-%     ab=1;
     geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
     geoimg.FaceAlpha = 'texturemap';
@@ -723,17 +644,6 @@ elseif(ikind==4)
     hold on
     ab=1;
  elseif(ikind==8)
-%     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
-%     maxplotval100=ceil(val90);
-%     minplotval01=floor(val01);
-%     plotstep=(maxplotval100-minplotval01)/40;
-%     demcmap('inc',[maxplotval100 minplotval01],plotstep);
-%     hc = colorbar;
-%     hc.Label.String = labelstr;
-%     ylabel(hc,units,'FontWeight','bold');
-%     tightmap
-%     hold on  
-%     ab=1;
     geoimg=geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     geoimg.AlphaDataMapping = 'none'; % interpet alpha values as transparency values
     geoimg.FaceAlpha = 'texturemap';
@@ -743,7 +653,6 @@ elseif(ikind==4)
     ylabel(hc,units,'FontWeight','bold');
     tightmap
     hold on
-    ab=1;
 
 else
 
@@ -919,9 +828,7 @@ else % Not saved (do not use is PDF report is being created)
 
 
 end
-if(ikind==6)
-    ab=1;
-end
+
 pause(chart_time/2);
 elapsed_time=toc;
 close('all');
@@ -931,22 +838,26 @@ ProcFileList{1+NumProcFiles,2}=jpegpath;
 ProcFileList{1+NumProcFiles,3}=elapsed_time;
 ProcFileList{1+NumProcFiles,4}=capture;
 rem=mod(framecounter-1,iSkipReportFrames);
-if((iCreatePDFReport>2) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
+
+if((iCreatePDFReport>0) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0) && (ikind<9) )
     if(iNewChapter)
         if(ikind==1)
-            headingstr1=strcat('Analysis Results For Black Carbon-',Merra2ShortFileName);
-        elseif(ikind==15)
-            headingstr1=strcat('Analysis Results For Dust-',Merra2ShortFileName);
-            ab=1;
-        elseif(ikind==45)
-             headingstr1=strcat('Analysis Results For Organic Carbon-',Merra2ShortFileName);
-        elseif(ikind==60)
-             headingstr1=strcat('Analysis Results For Sulfates-',Merra2ShortFileName);
-        elseif(ikind==65)
-             headingstr1=strcat('Analysis Results For Sea Salts-',Merra2ShortFileName);
-        else
-             headingstr1=strcat('Analysis Results For Other Aerosols-',Merra2ShortFileName);
-             ab=1;
+            headingstr1=strcat('Analysis Results For Geopotential Height-',Merra2ShortFileName);
+        elseif(ikind==2)
+            headingstr1=strcat('Analysis Results For Ozone Mixing Ratio-',Merra2ShortFileName);
+        elseif(ikind==3)
+             headingstr1=strcat('Analysis Results For Surface Pressure-',Merra2ShortFileName);
+        elseif(ikind==4)
+             headingstr1=strcat('Analysis Results For Specific Humidity-',Merra2ShortFileName);
+        elseif(ikind==5)
+             headingstr1=strcat('Analysis Results For Sea Level Pressure-',Merra2ShortFileName);
+        elseif(ikind==6)
+             headingstr1=strcat('Analysis Results For Air Temperature-',Merra2ShortFileName);
+        elseif(ikind==7)
+             headingstr1=strcat('Analysis Results For East Wind Component-',Merra2ShortFileName);
+        elseif(ikind==8)
+             headingstr1=strcat('Analysis Results For North Wind Component-',Merra2ShortFileName);
+
         end
         chapter = Chapter("Title",headingstr1);
     end
@@ -971,15 +882,23 @@ if((iCreatePDFReport>2) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
 % Now add some text -start by describing the with a basic description of the
 % variable being plotted
     parastr1=strcat('The data for this chart was taken from file-',Merra2ShortFileName,'.');
-    parastr2=strcat(' This metric is an hourly average for-',varname,'-at time slice-',tsliceID);
-    if((ikind>=1) && (ikind<=26))
-        parastr3='The expected data range for this dataset is from 0 to <<1 and is in nanograms/m^2/sec .';
-    elseif((ikind==76) || (ikind==77) || (ikind==65))
-        parastr3='The expected data range for this dataset is from 0 to 1 and is dimensionless .';
-    elseif((ikind>=28) && (ikind<76))
-        parastr3='The expected data range for this dataset is from 0 to <<1 and is in femtograms/m^2/sec .';
-    elseif(ikind>=78)
-        parastr3='The expected data range for this dataset is from 0 to <<1 and is in femtograms/m^2/sec .';
+    parastr2=strcat(' This metric is an hourly average for-',varname,'-at time slice-',TimeStr);
+    if(ikind==1)
+        parastr3='The expected data range for this dataset is from 0 to 30 km .';
+    elseif(ikind==2)
+        parastr3='The expected data range for this dataset is from 0 to 1E-8.';
+    elseif(ikind==3)
+        parastr3='The expected data range is 0 - 120 kPa plot has 100 kPA subtracted from actual values .';
+    elseif(ikind==4)
+        parastr3='The expected data range is 0 to 1 kg/kg .';
+    elseif(ikind==5)
+        parastr3='The expected data range for this dataset is from 0 to < 110 kPA .';
+    elseif(ikind==6)
+        parastr3='The expected data range for this dataset is from -60 to < 60 Deg C .';
+    elseif(ikind==7)
+        parastr3='The expected data range for this dataset is from -30 to < 30 m/sec.';
+    elseif(ikind==8)
+        parastr3='The expected data range for this dataset is from -30 to < 30 m/sec.';
     else
         parastr3='unspecified';
     end

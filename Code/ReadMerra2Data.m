@@ -65,6 +65,7 @@ global iCityPlot maxCities;
 global PressureFileName ;
 global SelectedFiles numSelectedFiles path1;
 global iLogo LogoFileName1 LogoFileName2;
+global iSeaOnly iLandOnly;
 global numtimeslice;
 
 global fid;
@@ -176,6 +177,8 @@ iCheckConfig=1;
 iLogo=1;
 iPress42=1;
 iPress72=1;
+iSeaOnly=1;
+iLandOnly=1;
 PascalsToMilliBars=1/1000;
 PascalsToPsi=14.696/101325;
 % Select a Time Slice

@@ -379,6 +379,97 @@ Merra2Dataset03Variables{12,5}='Geo2D';
     add(chapter,p13);
     add(chapter,br);
 
+  % Example East Wind Component
+    eval(['cd ' govjpegpath(1:length(govjpegpath)-1)]);
+    imdata = imread('EastWindComponent.jpg');
+    [nhigh,nwid,~]=size(imdata);
+    nhigh2=floor(nhigh/2.1);
+    nwid2=floor(nwid/2.1);
+    image = mlreportgen.report.FormalImage();
+    image.Image = which('EastWindComponent.jpg');
+    text = Text('Average East Wind Component Jan 1980 ');
+    text.Color = 'red';
+    image.Caption = text;
+    heightstr=strcat(num2str(nhigh2),'px');
+    widthstr=strcat(num2str(nwid2),'px');
+    image.Height = heightstr;
+    image.Width = widthstr;
+    image.ScaleToFit=0;
+    image2=image;
+    add(chapter,image); 
+    parastr131='This dataset includes the East and North Wind Components which are very useful.';
+    parastr132=' When used together the components can be used to calculate the wind stress on ocean waves.';
+    parastr133=' The data available in this set are at 42 levels but only the lowest level is useful for surface wind stress.';
+    parastr134=' Note that the lowest level available is at 100 meters which is higher than the desired 2 or 10 meter values.';
+    parastr135=' Reason so many were returned as missing is probably related to minimum magnitude sizes.';
+    parastr136=' This graphic returns the magnitude of the east wind component with no directional info.';
+    parastr139=strcat(parastr131,parastr132,parastr133,parastr134,parastr135,parastr136);
+    p14 = Paragraph(parastr139);
+    p14.Style = {OuterMargin("0pt", "0pt","10pt","10pt")};
+    add(chapter,p14);
+    add(chapter,br);
+
+  % Example North Wind Component
+    eval(['cd ' govjpegpath(1:length(govjpegpath)-1)]);
+    imdata = imread('NorthWindComponent.jpg');
+    [nhigh,nwid,~]=size(imdata);
+    nhigh2=floor(nhigh/2.1);
+    nwid2=floor(nwid/2.1);
+    image = mlreportgen.report.FormalImage();
+    image.Image = which('NorthWindComponent.jpg');
+    text = Text('Average North Wind Component Jan 1980 ');
+    text.Color = 'red';
+    image.Caption = text;
+    heightstr=strcat(num2str(nhigh2),'px');
+    widthstr=strcat(num2str(nwid2),'px');
+    image.Height = heightstr;
+    image.Width = widthstr;
+    image.ScaleToFit=0;
+    image2=image;
+    add(chapter,image); 
+    parastr141='This is North Wind Components of this Merra 2 data product.';
+    parastr142=' When used together, the components can be used to calculate the wind stress on ocean waves.';
+    parastr143=' The data available in this set are at 42 levels but only the lowest level is useful for surface wind stress.';
+    parastr144=' Note that the lowest level available is at 100 meters which is higher than the desired 2 or 10 meter values.';
+    parastr145=' Reason so many were returned as missing is probably related to minimum magnitude sizes.';
+    parastr146=' This graphic returns the magnitude of the north wind component with no directional info.';
+    parastr149=strcat(parastr141,parastr142,parastr143,parastr144,parastr145,parastr146);
+    p15 = Paragraph(parastr149);
+    p15.Style = {OuterMargin("0pt", "0pt","10pt","10pt")};
+    add(chapter,p15);
+    add(chapter,br);
+
+  % Example Windstress
+    eval(['cd ' govjpegpath(1:length(govjpegpath)-1)]);
+    imdata = imread('ExampleWindstress.jpg');
+    [nhigh,nwid,~]=size(imdata);
+    nhigh2=floor(nhigh/2.1);
+    nwid2=floor(nwid/2.1);
+    image = mlreportgen.report.FormalImage();
+    image.Image = which('ExampleWindstress.jpg');
+    text = Text('Average Windstress Jan 1980 ');
+    text.Color = 'red';
+    image.Caption = text;
+    heightstr=strcat(num2str(nhigh2),'px');
+    widthstr=strcat(num2str(nwid2),'px');
+    image.Height = heightstr;
+    image.Width = widthstr;
+    image.ScaleToFit=0;
+    image2=image;
+    add(chapter,image); 
+    parastr151='This item is NOT a direct output of the Merra2 data assimilation.';
+    parastr152=' Windstress is calculated by combining the East and North wind components to derive the force of the wind on a vertical object.';
+    parastr153=' Typically,this would be used to estimate the  force on ocean waves using data from 2 or 10 meters height.';
+    parastr154=' Unfortunately, the lowest level available in this data set is taken at about 100 meters so this is only an indication of windstress.';
+    parastr155=' When the direction of the wind is considered,this provides a surrogate of high and low pressure areas.';
+    parastr156=' This graphic returns the magnitude and direction of the windstress at 100 m.';
+    parastr159=strcat(parastr151,parastr152,parastr153,parastr154,parastr155,parastr156);
+    p16 = Paragraph(parastr159);
+    p16.Style = {OuterMargin("0pt", "0pt","10pt","10pt")};
+    add(chapter,p16);
+    add(chapter,br);
+
+
 
 %% Start a new section that describes the specific data set used
 %     add(chapter,Section('Aerosol Diagnostics Information'));

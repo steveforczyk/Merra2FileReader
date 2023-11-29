@@ -1054,6 +1054,7 @@ varname='HS';
 iAddToReport=1;
 iNewChapter=1;
 iCloseChapter=0;
+% Display Ozone Mixing Ratio
 DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
 % Ozone Mixing Ratio
 ikind=2;
@@ -1064,7 +1065,6 @@ iAddToReport=1;
 iNewChapter=0;
 iCloseChapter=0;
 DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
-ab=1;
 % Continue with the Surface Pressure
 ikind=3;
 itype=3;
@@ -1117,15 +1117,15 @@ iCityPlot=0;
 varname='VS';
 iAddToReport=1;
 iNewChapter=0;
-iCloseChapter=0;
+iCloseChapter=1;
 DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
 % Now display the wind velocity components and Windstress
 ikind=9;
 itype=3;
 iCityPlot=0;
 varname='WS';
-iAddToReport=0;
-iNewChapter=0;
+iAddToReport=1;
+iNewChapter=1;
 iCloseChapter=1;
 DisplayMerra2DatasetWindStress(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
 % % Now plot the Temperature at 2 M
