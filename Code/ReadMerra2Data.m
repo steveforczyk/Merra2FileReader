@@ -153,7 +153,7 @@ oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
 %% Set Flags and default values
 % Set some flags to control program execution
 iCreatePDFReport=1;
-iSkipReportFrames=1;
+iSkipReportFrames=2;
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
@@ -734,6 +734,7 @@ while igo>0 % This setup up a loop to processing various file until user decides
         logpath='K:\Merra-2\netCDF\Dataset03\Log_Files\';
         moviepath='K:\Merra-2\netCDF\Dataset03\Movies\';
         savepath='K:\Merra-2\netCDF\Dataset03\Matlab_Files\';  
+        tablepath='K:\Merra-2\netCDF\Dataset03\Tables\';
         logfilename=strcat('Merra2LogFileIndx3-',logfilename,'.txt');
         TimeSlices=cell(4,1);
         TimeSlices{1,1}='0 HRS GMT';
@@ -1272,7 +1273,6 @@ end
             filestr='File Num';            
             fprintf(fid,'%s\n',nowFile);
         end
-
         fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
         tpstr=strcat('Process time-',TimeSlices{iTimeSlice,1});
         pslice=iPress42;

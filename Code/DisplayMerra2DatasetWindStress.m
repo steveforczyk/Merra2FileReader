@@ -159,13 +159,19 @@ units='Pa';
 titlestr=strcat('WindStress-',Merra2ShortFileName,'-Heightkm=',num2str(heightkm),TimeStr);
 descstr=strcat('Average Monthly Value follows for-',titlestr);
 [Taux,Tauy] = windstress(U10,V10,'Density',90);
-parastr4='All Areas Included In Plot';
+parastr4a='All Areas Included In Plot';
 if(iSeaOnly==1)
     land=island(RasterLats,RasterLons);
     Taux(land)=NaN;
     Tauy(land)=NaN;
-    parastr4='Plot only includes sea areas';
+    parastr4a='Plot only includes sea areas';
 end
+tf=isnan(Taux);
+numNaN=sum(sum(tf));
+[nrows,ncols]=size(Taux);
+numvals=nrows*ncols;
+fracNaN=numNaN/numvals;
+parastr4=strcat(parastr4a,'-NaN Fraction=',num2str(fracNaN,4));
 movie_figure1=figure('position',[hor1 vert1 widd lend-70]);
 set(gcf,'MenuBar','none');
 set(gca,'XLim',[-200 200],'YLim',[-90 90]);
@@ -194,11 +200,11 @@ end
 newaxesh=axes('Position',[0 0 1 1]);
 set(newaxesh,'XLim',[0 1],'YLim',[0 1]);
 tx1=.08;
-ty1=.07;
+ty1=.06;
 txtstr1=strcat('Date-',MonthYearStr,'-Press Level-km=',num2str(heightkm),'-Time=',TimeStr);
 txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',10);
 tx2=.08;
-ty2=.04;
+ty2=.03;
 txtstr2=parastr4;
 txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
 set(newaxesh,'Visible','Off');
@@ -278,6 +284,5 @@ if((iCreatePDFReport>0) && (RptGenPresent==1)  && (iAddToReport==1) && (rem==0))
         add(rpt,chapter);
     end
 end
-%close('all');
 end
 
