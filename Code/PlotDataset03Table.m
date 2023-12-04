@@ -4,12 +4,13 @@ function PlotDataset03Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapte
 % Written By: Stephen Forczyk
 % Created: Nov 29,2023
 % Revised: Nov 30,2023 added Geopotential Height Table
-
-
-
+% Revised: Dec 01,2023 added Surface Pressure Yable
+% Revised: Dec 02,2023 added Specific Humidity Table
+% Revised: Dec 04,2023 added final=table for NorthWind
 % Classification: Public Domain
 global YearMonthStr YearStr MonthStr framecounter numSelectedFiles;
-global TSTable TSTT HSTable HSTT O3STable O3STT;
+global TSTable TSTT HSTable HSTT O3STable O3STT SLPSTable SLPSTT;
+global QVSTable QVSTT PSSTable PSSTT USTable USTT VSTable VSTT;
 global ROIArea ROIPts ROIFracPts numgridpts Merra2WorkingMask;
 
 global Merra2ShortFileName;
@@ -74,13 +75,29 @@ elseif(ikind==2)
         O3STT.Time,O3STT.O3S50,'k',O3STT.Time,O3STT.O3S75,'c',...
         O3STT.Time,O3STT.O3S90,'r',O3STT.Time,O3STT.O3S100,'r--o'); 
 elseif(ikind==3)
-        plot(DustDepositionAllTT.Time,DustDepositionAllTT.Bin001,'b',DustDepositionAllTT.Time,DustDepositionAllTT.Bin002,'g',...
-        DustDepositionAllTT.Time,DustDepositionAllTT.Bin003,'k',DustDepositionAllTT.Time,DustDepositionAllTT.Bin004,'c',...
-        DustDepositionAllTT.Time,DustDepositionAllTT.Bin005,'r',DustDepositionAllTT.Time,DustDepositionAllTT.Sum,'r--o'); 
+    plot(PSSTT.Time,PSSTT.PSS01,'b',PSSTT.Time,PSSTT.PSS25,'g',...
+        PSSTT.Time,PSSTT.PSS50,'k',PSSTT.Time,PSSTT.PSS75,'c',...
+        PSSTT.Time,PSSTT.PSS90,'r',PSSTT.Time,PSSTT.PSS100,'r--o');
+elseif(ikind==4)
+    plot(QVSTT.Time,QVSTT.QVS01,'b',QVSTT.Time,QVSTT.QVS25,'g',...
+        QVSTT.Time,QVSTT.QVS50,'k',QVSTT.Time,QVSTT.QVS75,'c',...
+        QVSTT.Time,QVSTT.QVS90,'r',QVSTT.Time,QVSTT.QVS100,'r--o'); 
+elseif(ikind==5)
+    plot(SLPSTT.Time,SLPSTT.SLPS01,'b',SLPSTT.Time,SLPSTT.SLPS25,'g',...
+        SLPSTT.Time,SLPSTT.SLPS50,'k',SLPSTT.Time,SLPSTT.SLPS75,'c',...
+        SLPSTT.Time,SLPSTT.SLPS90,'r',SLPSTT.Time,SLPSTT.SLPS100,'r--o'); 
 elseif(ikind==6)
-        plot(TSTT.Time,TSTT.TS01,'b',TSTT.Time,TSTT.TS25,'g',...
+    plot(TSTT.Time,TSTT.TS01,'b',TSTT.Time,TSTT.TS25,'g',...
         TSTT.Time,TSTT.TS50,'k',TSTT.Time,TSTT.TS75,'c',...
         TSTT.Time,TSTT.TS90,'r',TSTT.Time,TSTT.TS100,'r--o'); 
+elseif(ikind==7)
+    plot(USTT.Time,USTT.US01,'b',USTT.Time,USTT.US25,'g',...
+        USTT.Time,USTT.US50,'k',USTT.Time,USTT.US75,'c',...
+        USTT.Time,USTT.US90,'r',USTT.Time,USTT.US100,'r--o'); 
+elseif(ikind==8)
+    plot(VSTT.Time,VSTT.VS01,'b',VSTT.Time,VSTT.VS25,'g',...
+        VSTT.Time,VSTT.VS50,'k',VSTT.Time,VSTT.VS75,'c',...
+        VSTT.Time,VSTT.VS90,'r',VSTT.Time,VSTT.VS100,'r--o'); 
 end
 set(gcf,'Position',[hor1 vert1 widd lend])
 set(gca,'FontWeight','bold');
@@ -92,14 +109,24 @@ elseif(ikind==2)
         hl=legend('Global Ozone Ratio 1 Ptile','Global Ozone Ratio 25 Ptile','Global Ozone Ratio 50 Ptile','Global Ozone Ratio 75 Ptile',...
         'Global Ozone Ratio 90 Ptile','Global Ozone Ratio 100 Ptile');
 elseif(ikind==3)
-        hl=legend('Dust Depo Bin001','Dust Depo Bin002','Dust Depo Bin003','Dust Depo Bin004',...
-        'Dust Depo Bin005','Sum All Bins');
+        hl=legend('Global Surface Press 1 Ptile','Global Surface Press 25 Ptile','Global Surface Press 50 Ptile',...
+        'Global Surface Press 75 Ptile','Global Surface Press 90 Ptile','Global Surface Press 100 Ptile');
 elseif(ikind==4)
-        hl=legend('World Dust Depo Bin001','World Dust Depo Bin002','World Dust Depo Bin003','World Dust Depo Bin004',...
-        'World Dust Depo Bin005','Sum All Bins');
+        hl=legend('Global Surface QV 1 Ptile','Global Surface QV 25 Ptile','Global Surface QV 50 Ptile','Global Surface QV 75 Ptile',...
+        'Global Surface QV 90 Ptile','Global Surface QV 100 Ptile');
+elseif(ikind==5)
+        hl=legend('Global  SLP 1 Ptile','Global  SLP 25 Ptile','Global  SLP 50 Ptile','Global  SLP 75 Ptile',...
+        'Global SLP 90 Ptile','Global  SLP 100 Ptile');
 elseif(ikind==6)
         hl=legend('Global Temp 1 Ptile','Global Temp 25 Ptile','Global Temp 50 Ptile','Global Temp 75 Ptile',...
-        'Global Tem 90 Ptile','Global Temp 100 PTile');
+        'Global Temp 90 Ptile','Global Temp 100 PTile');
+elseif(ikind==7)
+        hl=legend('Global East Wind 1 Ptile','Global East Wind 25 Ptile','Global East Wind 50 Ptile','Global East Wind 75 Ptile',...
+        'Global East Wind 90 Ptile','Global East Wind 100 PTile');
+
+elseif(ikind==8)
+        hl=legend('Global North Wind 1 Ptile','Global North Wind 25 Ptile','Global North Wind 50 Ptile','Global North Wind 75 Ptile',...
+        'Global North Wind 90 Ptile','Global North Wind 100 PTile');
 
 end
 
@@ -111,12 +138,19 @@ elseif(ikind==2)
     ylabel('Ozone Mixing Ratio kg/kg','FontWeight','bold','FontSize',12); 
 elseif(ikind==3)
     ylabel('Surface Pressure Pa','FontWeight','bold','FontSize',12); 
+elseif(ikind==4)
+    ylabel('Specific Humidity kg/kg','FontWeight','bold','FontSize',12); 
+elseif(ikind==5)
+    ylabel('Sea Level Pressure Pa','FontWeight','bold','FontSize',12); 
 elseif(ikind==6)
     ylabel('Air Temp Deg-C','FontWeight','bold','FontSize',12); 
+elseif(ikind==7)
+    ylabel('East Wind m/s','FontWeight','bold','FontSize',12); 
+elseif(ikind==8)
+    ylabel('North Wind m/s','FontWeight','bold','FontSize',12); 
 end
 
-% Add a logo
-
+%% Add a logo
 if(iLogo==1)
     eval(['cd ' govjpegpath(1:length(govjpegpath)-1)]);
     ha =gca;
@@ -134,6 +168,7 @@ actionstr='print';
 typestr='-djpeg';
 [cmdString]=MyStrcat2(actionstr,typestr,figstr);
 eval(cmdString);
+%% Add data to PDF Report
 if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
     if(iNewChapter)
         headingstr1='Tabular Analysis Global Results Dataset03';
@@ -144,13 +179,17 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
     elseif(ikind==2)
         sectionstr=strcat('Ozone Ratio','-Whole World','-Map');
     elseif(ikind==3)
-        sectionstr=strcat('Dust Deposition-',DustROICountry,'-Map');
+        sectionstr=strcat('Surface Pressure','-Whole World','-Map');
     elseif(ikind==4)
-        sectionstr=strcat('Dust Deposition','-Whole World','-Map');
+        sectionstr=strcat('Specific Humidity','-Whole World','-Map');
     elseif(ikind==5)
-        sectionstr=strcat('Dust Sedimentation-',DustROICountry,'-Map');
+        sectionstr=strcat('Sea Level Pressure','-Whole World','-Map');
     elseif(ikind==6)
         sectionstr=strcat('Air Temperature','-Whole World','-Map');
+    elseif(ikind==7)
+        sectionstr=strcat('East Wind','-Whole World','-Map');
+    elseif(ikind==8)
+        sectionstr=strcat('North Wind','-Whole World','-Map');
     end    
     add(chapter,Section(sectionstr));
     eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
@@ -158,7 +197,7 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
     [nhigh,nwid,~]=size(imdata);
     image = mlreportgen.report.FormalImage();
     image.Image = which(figstr);
-    pdftxtstr=strcat(' Dust Emission All Bins-',Merra2ShortFileName);
+    pdftxtstr=strcat(' Dateset03 Variables-',Merra2ShortFileName);
     pdftext = Text(pdftxtstr);
     pdftext.Color = 'red';
     image.Caption = pdftext;
@@ -184,22 +223,32 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         parastr4=strcat('Data displayed is for time-',TimeStr);
         parastr5=strcat('The selected pressure level was-',num2str(iPress42,2));
     elseif(ikind==3)
-        parastr2='This is the sum of Dust Deposition over the study period.';
-        parastr3=' Each of the 5 bins are treated separately with the particle size increasing from Bin 1 thru Bin 5.';
-        parastr4=' The Deposition values are for the selected country.';
-        parastr5=' Dust Deposition reduces the dust in the atmosphere.';
+        parastr2='This is the montly average surface pressure over the globe.';
+        parastr3=' Data displayed if for a local surface height over one of 4 canonical times.';
+        parastr4=strcat('Data displayed is for time-',TimeStr);
+        parastr5=' Variations in the local surface height are the big driver.';
     elseif(ikind==4)
-        parastr2='This is the sum of Dust Deposition over the study period.';
-        parastr3=' Each of the 5 bins are treated separately with the particle size increasing from Bin 1 thru Bin 5.';
-        parastr4=' The Deposition values are for the entire world';
-        parastr5=' Dust Deposition reduces the dust in the atmosphere.';
+        parastr2='This is the monthly averaged specific humidity over the study period.';
+        parastr3=' Data displayed if for one pressure level over one of 4 canonical times.';
+        parastr4=strcat('Data displayed is for time-',TimeStr);
+        parastr5=' Moisture content drives atmospheric dynamics.';
     elseif(ikind==5)
-        parastr2='This is the sum of Dust Sedimentation over the study period.';
-        parastr3=' Each of the 5 bins are treated separately with the particle size increasing from Bin 1 thru Bin 5.';
-        parastr4=' The Sedimentation values are for the selected country.';
-        parastr5=' Dust Sedimentation reduces the dust in the atmosphere.';
+        parastr2='This is the monthly averaged sea level pressure over the study period.';
+        parastr3=' Data displayed if for sea levelpressure over one of 4 canonical times.';
+        parastr4=strcat('Data displayed is for time-',TimeStr);
+        parastr5=' This compares the pressure at a consistent level but has gaps where the ground is higher than sea level.';
     elseif(ikind==6)
         parastr2='This is monthly averaged air temp over the earth for the study period.';
+        parastr3=' Data displayed if for a single pressure height over one of 4 canonical times.';
+        parastr4=strcat('Data displayed is for time-',TimeStr);
+        parastr5=strcat('The selected pressure level was-',num2str(iPress42,2));
+    elseif(ikind==7)
+        parastr2='This is monthly averaged east wind over the earth for the study period.';
+        parastr3=' Data displayed if for a single pressure height over one of 4 canonical times.';
+        parastr4=strcat('Data displayed is for time-',TimeStr);
+        parastr5=strcat('The selected pressure level was-',num2str(iPress42,2));
+    elseif(ikind==8)
+        parastr2='This is monthly averaged north wind over the earth for the study period.';
         parastr3=' Data displayed if for a single pressure height over one of 4 canonical times.';
         parastr4=strcat('Data displayed is for time-',TimeStr);
         parastr5=strcat('The selected pressure level was-',num2str(iPress42,2));
@@ -350,7 +399,7 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         add(chapter,bt1);
         parastr601='The table above shows the distribution of the Monthly averaged Ozone Ratio over the globe.';
         parastr602=' The values shown are for a single time and a single pressure level ';
-        parastr603=' The Mixing Ration is in units of kg/kg.';
+        parastr603=' The Mixing Ratio is in units of kg/kg.';
 %         parastr604=' A diurnal cycle is generally observed for these emissions.';
 %         parastr605=' The current table shows the summation for each day using the 24 - 1 hour time slices.';
 %         parastr606=' Last column of the table displays the sum of all emissions in all 5 bins.';
@@ -361,7 +410,7 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
       elseif(ikind==3)
         br = PageBreak(); 
         add(chapter,br);
-        LeftCol= char(DustEmissionAllTT.Properties.RowTimes);
+        LeftCol= char(PSSTT.Properties.RowTimes);
 % Now convert the Left Column to a cell
         [nrows,ncols]=size(LeftCol);
 % Now convert this to Year Month Day format in 3 columns
@@ -384,18 +433,18 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         Hdrs{1,1}='Years';
         Hdrs{1,2}='Months';
         Hdrs{1,3}='Days';
-        Hdrs{1,4}='Bin001';
-        Hdrs{1,5}='Bin002';
-        Hdrs{1,6}='Bin003';
-        Hdrs{1,7}='Bin004';
-        Hdrs{1,8}='Bin005';
-        Hdrs{1,9}='Sum';
-        Col1=DustEmissionAllTable.Bin001;
-        Col2=DustEmissionAllTable.Bin002;
-        Col3=DustEmissionAllTable.Bin003;
-        Col4=DustEmissionAllTable.Bin004;
-        Col5=DustEmissionAllTable.Bin005;
-        Col6=DustEmissionAllTable.Sum;
+        Hdrs{1,4}='PSS01';
+        Hdrs{1,5}='PSS25';
+        Hdrs{1,6}='PSS50';
+        Hdrs{1,7}='PSS75';
+        Hdrs{1,8}='PSS90';
+        Hdrs{1,9}='PSS100';
+        Col1=PSSTable.PSS01;
+        Col2=PSSTable.PSS25;
+        Col3=PSSTable.PSS50;
+        Col4=PSSTable.PSS75;
+        Col5=PSSTable.PSS90;
+        Col6=PSSTable.PSS100;
         myCellArray=cell(nrows,6);
         myArray=[Years,Months,Days,Col1,Col2,Col3,Col4,Col5,Col6];
         for i=1:nrows
@@ -403,14 +452,13 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
             myCellArray{i,2}=Months(i,1);
             myCellArray{i,3}=Days(i,1);
             for j=1:6
-                myCellArray{i,j+3}=myArray(i,j+3);
-                
+                myCellArray{i,j+3}=myArray(i,j+3);                
             end
         end
         T1=[Hdrs;myCellArray];
         tbl1=Table(T1);
         tbl1.Style = [tbl1.Style {Border('solid','black','3px'),...
-            NumberFormat("%3.4e")}];
+            NumberFormat("%8.3e")}];
         tbl1.TableEntriesHAlign = 'center';
         tbl1.HAlign='center';
         tbl1.ColSep = 'single';
@@ -418,26 +466,26 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         r = row(tbl1,1);
         r.Style = [r.Style {Color('red'),Bold(true)}];
         bt1 = BaseTable(tbl1);
-        tabletitlestr='Merra2 Daily Dust Emission For One Country';
+        tabletitlestr='Merra2 Monthly Average Surface Pressure';
         tabletitle = Text(tabletitlestr);
         tabletitle.Bold = false;
         bt1.Title = tabletitle;
         bt1.TableWidth="7in";
         add(chapter,bt1);
-        parastr601='The table above shows the distribution of the DustEmissionAllTable over the selected data range.';
-        parastr602=' DustEmissionAll is the sum for the selected country over the specified time period of the files ';
-        parastr603=' Typical values are on the order of TGrams/day.';
-        parastr604=' A diurnal cycle is generally observed for these emissions.';
-        parastr605=' The current table shows the summation for each day using the 24 - 1 hour time slices.';
-        parastr606=' Last column of the table displays the sum of all emissions in all 5 bins.';
-        parastr609=strcat(parastr601,parastr602,parastr603,parastr604,parastr605,parastr606);
+        parastr601='The table above shows the distribution of the Monthly averaged surface pressure over the globe.';
+        parastr602=' The values shown are for a single time and the local surface height not a pressure level ';
+        parastr603=' The the surface pressure is in units of Pa.';
+%         parastr604=' A diurnal cycle is generally observed for these emissions.';
+%         parastr605=' The current table shows the summation for each day using the 24 - 1 hour time slices.';
+%         parastr606=' Last column of the table displays the sum of all emissions in all 5 bins.';
+        parastr609=strcat(parastr601,parastr602,parastr603);
         p609= Paragraph(parastr609);
         p609.Style = {OuterMargin("0pt", "0pt","20pt","10pt")};
         add(chapter,p609);
-     elseif(ikind==4)
+      elseif(ikind==4)
         br = PageBreak(); 
         add(chapter,br);
-        LeftCol= char(WDustDepositionAllTT.Properties.RowTimes);
+        LeftCol= char(QVSTT.Properties.RowTimes);
 % Now convert the Left Column to a cell
         [nrows,ncols]=size(LeftCol);
 % Now convert this to Year Month Day format in 3 columns
@@ -460,18 +508,18 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         Hdrs{1,1}='Years';
         Hdrs{1,2}='Months';
         Hdrs{1,3}='Days';
-        Hdrs{1,4}='Bin001';
-        Hdrs{1,5}='Bin002';
-        Hdrs{1,6}='Bin003';
-        Hdrs{1,7}='Bin004';
-        Hdrs{1,8}='Bin005';
-        Hdrs{1,9}='Sum';
-        Col1=WDustDepositionAllTable.Bin001;
-        Col2=WDustDepositionAllTable.Bin002;
-        Col3=WDustDepositionAllTable.Bin003;
-        Col4=WDustDepositionAllTable.Bin004;
-        Col5=WDustDepositionAllTable.Bin005;
-        Col6=WDustDepositionAllTable.Sum;
+        Hdrs{1,4}='QVS01';
+        Hdrs{1,5}='QVS25';
+        Hdrs{1,6}='QVS50';
+        Hdrs{1,7}='QVS75';
+        Hdrs{1,8}='QVS90';
+        Hdrs{1,9}='QVS100';
+        Col1=QVSTable.QVS01;
+        Col2=QVSTable.QVS25;
+        Col3=QVSTable.QVS50;
+        Col4=QVSTable.QVS75;
+        Col5=QVSTable.QVS90;
+        Col6=QVSTable.QVS100;
         myCellArray=cell(nrows,6);
         myArray=[Years,Months,Days,Col1,Col2,Col3,Col4,Col5,Col6];
         for i=1:nrows
@@ -479,14 +527,13 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
             myCellArray{i,2}=Months(i,1);
             myCellArray{i,3}=Days(i,1);
             for j=1:6
-                myCellArray{i,j+3}=myArray(i,j+3);
-                
+                myCellArray{i,j+3}=myArray(i,j+3);              
             end
         end
         T1=[Hdrs;myCellArray];
         tbl1=Table(T1);
         tbl1.Style = [tbl1.Style {Border('solid','black','3px'),...
-            NumberFormat("%3.4e")}];
+            NumberFormat("%4.3e")}];
         tbl1.TableEntriesHAlign = 'center';
         tbl1.HAlign='center';
         tbl1.ColSep = 'single';
@@ -494,26 +541,26 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         r = row(tbl1,1);
         r.Style = [r.Style {Color('red'),Bold(true)}];
         bt1 = BaseTable(tbl1);
-        tabletitlestr='Merra2 Daily Dust Deposition For The World';
+        tabletitlestr='Merra2 Monthly Averaged Specific Humidity';
         tabletitle = Text(tabletitlestr);
         tabletitle.Bold = false;
         bt1.Title = tabletitle;
         bt1.TableWidth="7in";
         add(chapter,bt1);
-        parastr601='The table above shows the distribution of the WDustDepositionAllTable over the selected data range.';
-        parastr602=' WDustDepositionAll is the sum for the entire world over the specified time period of the files ';
-        parastr603=' Typical values are on the order of TGrams/day.';
-        parastr604=' A diurnal cycle is generally observed for these emissions.';
-        parastr605=' The current table shows the summation for each day using the 24 - 1 hour time slices.';
-        parastr606=' Last column of the table displays the sum of all emissions in all 5 bins.';
-        parastr609=strcat(parastr601,parastr602,parastr603,parastr604,parastr605,parastr606);
+        parastr601='The table above shows monthly averaged specific humidity values over the world.';
+        parastr602=' The values shown are for a single time and the local surface height not a pressure level ';
+        parastr603=' The the surface pressure is in units of Pa.';
+%         parastr604=' A diurnal cycle is generally observed for these emissions.';
+%         parastr605=' The current table shows the summation for each day using the 24 - 1 hour time slices.';
+%         parastr606=' Last column of the table displays the sum of all emissions in all 5 bins.';
+        parastr609=strcat(parastr601,parastr602,parastr603);
         p609= Paragraph(parastr609);
         p609.Style = {OuterMargin("0pt", "0pt","20pt","10pt")};
-        add(chapter,p609);
-      elseif(ikind==5)
+        add(chapter,p609); 
+     elseif(ikind==5)
         br = PageBreak(); 
         add(chapter,br);
-        LeftCol= char(DustSedimentationAllTT.Properties.RowTimes);
+        LeftCol= char(SLPSTT.Properties.RowTimes);
 % Now convert the Left Column to a cell
         [nrows,ncols]=size(LeftCol);
 % Now convert this to Year Month Day format in 3 columns
@@ -536,18 +583,18 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         Hdrs{1,1}='Years';
         Hdrs{1,2}='Months';
         Hdrs{1,3}='Days';
-        Hdrs{1,4}='Bin001';
-        Hdrs{1,5}='Bin002';
-        Hdrs{1,6}='Bin003';
-        Hdrs{1,7}='Bin004';
-        Hdrs{1,8}='Bin005';
-        Hdrs{1,9}='Sum';
-        Col1=DustSedimentationAllTable.Bin001;
-        Col2=DustSedimentationAllTable.Bin002;
-        Col3=DustSedimentationAllTable.Bin003;
-        Col4=DustSedimentationAllTable.Bin004;
-        Col5=DustSedimentationAllTable.Bin005;
-        Col6=DustSedimentationAllTable.Sum;
+        Hdrs{1,4}='SLPS01';
+        Hdrs{1,5}='SLPS25';
+        Hdrs{1,6}='SLPS50';
+        Hdrs{1,7}='SLPS75';
+        Hdrs{1,8}='SLPS90';
+        Hdrs{1,9}='SLPS100';
+        Col1=SLPSTable.SLPS01;
+        Col2=SLPSTable.SLPS25;
+        Col3=SLPSTable.SLPS50;
+        Col4=SLPSTable.SLPS75;
+        Col5=SLPSTable.SLPS90;
+        Col6=SLPSTable.SLPS100;
         myCellArray=cell(nrows,6);
         myArray=[Years,Months,Days,Col1,Col2,Col3,Col4,Col5,Col6];
         for i=1:nrows
@@ -555,14 +602,13 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
             myCellArray{i,2}=Months(i,1);
             myCellArray{i,3}=Days(i,1);
             for j=1:6
-                myCellArray{i,j+3}=myArray(i,j+3);
-                
+                myCellArray{i,j+3}=myArray(i,j+3);              
             end
         end
         T1=[Hdrs;myCellArray];
         tbl1=Table(T1);
         tbl1.Style = [tbl1.Style {Border('solid','black','3px'),...
-            NumberFormat("%3.2e")}];
+            NumberFormat("%4.3e")}];
         tbl1.TableEntriesHAlign = 'center';
         tbl1.HAlign='center';
         tbl1.ColSep = 'single';
@@ -570,22 +616,22 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         r = row(tbl1,1);
         r.Style = [r.Style {Color('red'),Bold(true)}];
         bt1 = BaseTable(tbl1);
-        tabletitlestr='Merra2 Daily Dust Sedimentatiom For One Country';
+        tabletitlestr='Merra2 Monthly Averaged Sea Level Pressure';
         tabletitle = Text(tabletitlestr);
         tabletitle.Bold = false;
         bt1.Title = tabletitle;
         bt1.TableWidth="7in";
         add(chapter,bt1);
-        parastr601='The table above shows the distribution of the DustSedimentationAllTable over the selected data range.';
-        parastr602=' DustSedimentationAll is the sum for just one country over the specified time period of the files ';
-        parastr603=' Typical values are on the order of TGrams/day.';
-        parastr604=' A diurnal cycle is generally observed for these emissions.';
-        parastr605=' The current table shows the summation for each day using the 24 - 1 hour time slices.';
-        parastr606=' Last column of the table displays the sum of all emissions in all 5 bins.';
-        parastr609=strcat(parastr601,parastr602,parastr603,parastr604,parastr605,parastr606);
+        parastr601='The table above shows monthly averaged sea level pressure  over the world.';
+        parastr602=' The values shown are for a single time at sea level not a pressure level ';
+        parastr603=' The the sea level pressure is in units of Pa.';
+%         parastr604=' A diurnal cycle is generally observed for these emissions.';
+%         parastr605=' The current table shows the summation for each day using the 24 - 1 hour time slices.';
+%         parastr606=' Last column of the table displays the sum of all emissions in all 5 bins.';
+        parastr609=strcat(parastr601,parastr602,parastr603);
         p609= Paragraph(parastr609);
         p609.Style = {OuterMargin("0pt", "0pt","20pt","10pt")};
-        add(chapter,p609)     
+        add(chapter,p609); 
      elseif(ikind==6)
         br = PageBreak(); 
         add(chapter,br);
@@ -654,6 +700,156 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
         parastr601='The table above shows the distribution of the Monthly averaged Temperature over the globe.';
         parastr602=' The values shown are for a single time and a single pressure level ';
         parastr603=' Temperature units are in Deg-C.';
+%         parastr604=' A diurnal cycle is generally observed for these emissions.';
+%         parastr605=' The current table shows the summation for each day using the 24 - 1 hour time slices.';
+%         parastr606=' Last column of the table displays the sum of all emissions in all 5 bins.';
+        parastr609=strcat(parastr601,parastr602,parastr603);
+        p609= Paragraph(parastr609);
+        p609.Style = {OuterMargin("0pt", "0pt","20pt","10pt")};
+        add(chapter,p609);
+     elseif(ikind==7)
+        br = PageBreak(); 
+        add(chapter,br);
+        LeftCol= char(USTT.Properties.RowTimes);
+% Now convert the Left Column to a cell
+        [nrows,ncols]=size(LeftCol);
+% Now convert this to Year Month Day format in 3 columns
+        Years=zeros(nrows,1);
+        Months=zeros(nrows,1);
+        Days=zeros(nrows,1);
+        for n=1:nrows
+            nowStr=LeftCol(n,1:ncols);
+            daystr=nowStr(1:2);
+            monthstr=nowStr(4:6);
+            yearstr=nowStr(8:11);
+            daynum=str2double(daystr);
+            [monthnum] = ConvertMonthStrToNumber(monthstr);
+            yearnum=str2double(yearstr);
+            Years(n,1)=yearnum;
+            Months(n,1)=monthnum;
+            Days(n,1)=daynum;
+        end
+        Hdrs=cell(1,8);
+        Hdrs{1,1}='Years';
+        Hdrs{1,2}='Months';
+        Hdrs{1,3}='Days';
+        Hdrs{1,4}='US01';
+        Hdrs{1,5}='US25';
+        Hdrs{1,6}='US50';
+        Hdrs{1,7}='US75';
+        Hdrs{1,8}='US90';
+        Hdrs{1,9}='US100';
+        Col1=USTable.US01;
+        Col2=USTable.US25;
+        Col3=USTable.US50;
+        Col4=USTable.US75;
+        Col5=USTable.US90;
+        Col6=USTable.US100;
+        myCellArray=cell(nrows,6);
+        myArray=[Years,Months,Days,Col1,Col2,Col3,Col4,Col5,Col6];
+        for i=1:nrows
+            myCellArray{i,1}=Years(i,1);
+            myCellArray{i,2}=Months(i,1);
+            myCellArray{i,3}=Days(i,1);
+            for j=1:6
+                myCellArray{i,j+3}=myArray(i,j+3);                
+            end
+        end
+        T1=[Hdrs;myCellArray];
+        tbl1=Table(T1);
+        tbl1.Style = [tbl1.Style {Border('solid','black','3px'),...
+            NumberFormat("%4.1f")}];
+        tbl1.TableEntriesHAlign = 'center';
+        tbl1.HAlign='center';
+        tbl1.ColSep = 'single';
+        tbl1.RowSep = 'single';
+        r = row(tbl1,1);
+        r.Style = [r.Style {Color('red'),Bold(true)}];
+        bt1 = BaseTable(tbl1);
+        tabletitlestr='Merra2 Monthly Averaged Global East Wind';
+        tabletitle = Text(tabletitlestr);
+        tabletitle.Bold = false;
+        bt1.Title = tabletitle;
+        bt1.TableWidth="7in";
+        add(chapter,bt1);
+        parastr601='The table above shows the distribution of the Monthly averaged East Wind over the globe.';
+        parastr602=' The values shown are for a single time and a single pressure level ';
+        parastr603=' Wind Magnitude is units are m/sec';
+%         parastr604=' A diurnal cycle is generally observed for these emissions.';
+%         parastr605=' The current table shows the summation for each day using the 24 - 1 hour time slices.';
+%         parastr606=' Last column of the table displays the sum of all emissions in all 5 bins.';
+        parastr609=strcat(parastr601,parastr602,parastr603);
+        p609= Paragraph(parastr609);
+        p609.Style = {OuterMargin("0pt", "0pt","20pt","10pt")};
+        add(chapter,p609);
+     elseif(ikind==8)
+        br = PageBreak(); 
+        add(chapter,br);
+        LeftCol= char(VSTT.Properties.RowTimes);
+% Now convert the Left Column to a cell
+        [nrows,ncols]=size(LeftCol);
+% Now convert this to Year Month Day format in 3 columns
+        Years=zeros(nrows,1);
+        Months=zeros(nrows,1);
+        Days=zeros(nrows,1);
+        for n=1:nrows
+            nowStr=LeftCol(n,1:ncols);
+            daystr=nowStr(1:2);
+            monthstr=nowStr(4:6);
+            yearstr=nowStr(8:11);
+            daynum=str2double(daystr);
+            [monthnum] = ConvertMonthStrToNumber(monthstr);
+            yearnum=str2double(yearstr);
+            Years(n,1)=yearnum;
+            Months(n,1)=monthnum;
+            Days(n,1)=daynum;
+        end
+        Hdrs=cell(1,8);
+        Hdrs{1,1}='Years';
+        Hdrs{1,2}='Months';
+        Hdrs{1,3}='Days';
+        Hdrs{1,4}='VS01';
+        Hdrs{1,5}='VS25';
+        Hdrs{1,6}='VS50';
+        Hdrs{1,7}='VS75';
+        Hdrs{1,8}='VS90';
+        Hdrs{1,9}='VS100';
+        Col1=VSTable.VS01;
+        Col2=VSTable.VS25;
+        Col3=VSTable.VS50;
+        Col4=VSTable.VS75;
+        Col5=VSTable.VS90;
+        Col6=VSTable.VS100;
+        myCellArray=cell(nrows,6);
+        myArray=[Years,Months,Days,Col1,Col2,Col3,Col4,Col5,Col6];
+        for i=1:nrows
+            myCellArray{i,1}=Years(i,1);
+            myCellArray{i,2}=Months(i,1);
+            myCellArray{i,3}=Days(i,1);
+            for j=1:6
+                myCellArray{i,j+3}=myArray(i,j+3);                
+            end
+        end
+        T1=[Hdrs;myCellArray];
+        tbl1=Table(T1);
+        tbl1.Style = [tbl1.Style {Border('solid','black','3px'),...
+            NumberFormat("%4.1f")}];
+        tbl1.TableEntriesHAlign = 'center';
+        tbl1.HAlign='center';
+        tbl1.ColSep = 'single';
+        tbl1.RowSep = 'single';
+        r = row(tbl1,1);
+        r.Style = [r.Style {Color('red'),Bold(true)}];
+        bt1 = BaseTable(tbl1);
+        tabletitlestr='Merra2 Monthly Averaged Global North Wind';
+        tabletitle = Text(tabletitlestr);
+        tabletitle.Bold = false;
+        bt1.Title = tabletitle;
+        bt1.TableWidth="7in";
+        add(chapter,bt1);
+        parastr601='The table above shows the distribution of the Monthly averaged North Wind over the globe.';
+        parastr602=' The values shown are for a single time and a single pressure level ';
+        parastr603=' Wind Magnitude is units are m/sec';
 %         parastr604=' A diurnal cycle is generally observed for these emissions.';
 %         parastr605=' The current table shows the summation for each day using the 24 - 1 hour time slices.';
 %         parastr606=' Last column of the table displays the sum of all emissions in all 5 bins.';

@@ -1273,6 +1273,7 @@ end
             filestr='File Num';            
             fprintf(fid,'%s\n',nowFile);
         end
+        
         fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
         tpstr=strcat('Process time-',TimeSlices{iTimeSlice,1});
         pslice=iPress42;

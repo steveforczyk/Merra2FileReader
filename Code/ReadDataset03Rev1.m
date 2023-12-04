@@ -6,7 +6,7 @@ function ReadDataset03Rev1(nowFile,nowpath)
 % calculations
 % Written By: Stephen Forczyk
 % Created: Nov 6,2023
-% Revised: 
+% Revised: Rest of Nov 2023 adding code for all dataset items
 
 % Classification: Unclassified
 
@@ -30,7 +30,8 @@ global TS01 TS25 TS50 TS75 TS90 TS100 TSLow TSHigh TSNaN;
 global US01 US25 US50 US75 US90 US100 USLow USHigh USNaN;
 global VS01 VS25 VS50 VS75 VS90 VS100 VSLow VSHigh VSNaN;
 global HSValues O3SValues PSSValues QVSValues SLPSValues TSValues USValues VSValues;
-global TSTable TSTT HSTable HSTT O3STable O3STT;
+global TSTable TSTT HSTable HSTT O3STable O3STT SLPSTable SLPSTT;
+global QVSTable QVSTT PSSTable PSSTT USTable USTT VSTable VSTT;
 global WindStress01 WindStress25 WindStress50 WindStress75 WindStress75 WindStress90 WindStress100;
 global numtimeslice framecounter;
 global YearMonthDayStr1 YearMonthDayStr2;
@@ -1177,7 +1178,52 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   o3sstr=strcat('Created O3STT-','Contains Ozone Mixing Ratio Data-',num2str(4));
   fprintf(fid,'%s\n',o3sstr);
-% Create the Temperature Table ikind=6
+% Create Surface Pressure  Table ikind=3
+  PSSTable=table(PSS01(:,1),PSS25(:,1),PSS50(:,1),PSS75(:,1),...
+      PSS90(:,1),PSS100(:,1),...
+            'VariableNames',{'PSS01','PSS25','PSS50',...
+            'PSS75','PSS90','PSS100'});
+  PSSTT = table2timetable(PSSTable,'TimeStep',timestep,'StartTime',stime);
+  eval(['cd ' tablepath(1:length(tablepath)-1)]);
+  actionstr='save';
+  varstr1='PSSTable PSSTT';
+  MatFileName=strcat('PSSTable',YearMonthStr,TimeStr,'.mat');
+  qualstr='-v7.3';
+  [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+  eval(cmdString)
+  psstr=strcat('Created PSSTT-','Contains Surface Pressure Data-',num2str(4));
+  fprintf(fid,'%s\n',psstr);
+% Create the Specific Humidity Table ikind=4
+  QVSTable=table(QVS01(:,1),QVS25(:,1),QVS50(:,1),QVS75(:,1),...
+      QVS90(:,1),QVS100(:,1),...
+            'VariableNames',{'QVS01','QVS25','QVS50',...
+            'QVS75','QVS90','QVS100'});
+  QVSTT = table2timetable(QVSTable,'TimeStep',timestep,'StartTime',stime);
+  eval(['cd ' tablepath(1:length(tablepath)-1)]);
+  actionstr='save';
+  varstr1='QVSTable QVSTT';
+  MatFileName=strcat('QVSTable',YearMonthStr,TimeStr,'-PrsLvl-',num2str(iPress42,2),'.mat');
+  qualstr='-v7.3';
+  [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+  eval(cmdString)
+  qvsstr=strcat('Created QVSTT-','Contains Speific Humidity at One Pressure Level-',num2str(5));
+  fprintf(fid,'%s\n',qvsstr);
+%% Create the Sea Level Pressure ikind=5
+  SLPSTable=table(SLPS01(:,1),SLPS25(:,1),SLPS50(:,1),SLPS75(:,1),...
+      SLPS90(:,1),SLPS100(:,1),...
+            'VariableNames',{'SLPS01','SLPS25','SLPS50',...
+            'SLPS75','SLPS90','SLPS100'});
+  SLPSTT = table2timetable(SLPSTable,'TimeStep',timestep,'StartTime',stime);
+  eval(['cd ' tablepath(1:length(tablepath)-1)]);
+  actionstr='save';
+  varstr1='SLPSTable SLPSTT';
+  MatFileName=strcat('SLPSTable',YearMonthStr,TimeStr,'.mat');
+  qualstr='-v7.3';
+  [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+  eval(cmdString)
+  slpsstr=strcat('Created SLPSTT-','Contains Sea Level Pressure-',num2str(7));
+  fprintf(fid,'%s\n',slpsstr);
+%% Create the Temperature Table ikind=6
   TSTable=table(TS01(:,1),TS25(:,1),TS50(:,1),TS75(:,1),...
       TS90(:,1),TS100(:,1),...
             'VariableNames',{'TS01','TS25','TS50',...
@@ -1192,348 +1238,39 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   tsstr=strcat('Created TSTT-','Contains Temperature Data-',num2str(4));
   fprintf(fid,'%s\n',tsstr);
-  ab=1;
-% Create the Specific Humidity at 10 M ikind=5
-%   QV10MTable=table(QV10M10(:,1),QV10M25(:,1),QV10M50(:,1),QV10M75(:,1),...
-%       QV10M90(:,1),QV10M100(:,1),...
-%             'VariableNames',{'QV10M10','QV10M25','QV10M50',...
-%             'QV10M75','QV10M90','QV10M100'});
-%   QV10MTT = table2timetable(QV10MTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='QV10MTable QV10MTT';
-%   MatFileName=strcat('QV10MTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   qv10str=strcat('Created QV10MTT-','Contains Speific Humidity at 10 M-',num2str(5));
-%   fprintf(fid,'%s\n',qv10str);
-%  % Create the Specific Humidity at 2 M ikind=6
-%   QV2MTable=table(QV2M10(:,1),QV2M25(:,1),QV2M50(:,1),QV2M75(:,1),...
-%       QV2M90(:,1),QV2M100(:,1),...
-%             'VariableNames',{'QV2M10','QV2M25','QV2M50',...
-%             'QV2M75','QV2M90','QV2M100'});
-%   QV2MTT = table2timetable(QV2MTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='QV2MTable QV2MTT';
-%   MatFileName=strcat('QV2MTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   qv2str=strcat('Created QV2MTT-','Contains Specific Humidity at 2 M-',num2str(6));
-%   fprintf(fid,'%s\n',qv2str);
-%  % Create the Sea Level Pressure ikind=7
-%   SLPTable=table(SLP10(:,1),SLP25(:,1),SLP50(:,1),SLP75(:,1),...
-%       SLP90(:,1),SLP100(:,1),...
-%             'VariableNames',{'SLP10','SLP25','SLP50',...
-%             'SLP75','SLP90','SLP100'});
-%   SLPTT = table2timetable(SLPTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='SLPTable SLPTT';
-%   MatFileName=strcat('SLPTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   slpstr=strcat('Created SLPTT-','Contains Sea Level Pressure-',num2str(7));
-%   fprintf(fid,'%s\n',slpstr);
-%  % Create the Air Temp At 10 M Table ikind=8
-%   T10MTable=table(T10M10(:,1),T10M25(:,1),T10M50(:,1),T10M75(:,1),...
-%       T10M90(:,1),T10M100(:,1),...
-%             'VariableNames',{'T10M10','T10M25','T10M50',...
-%             'T10M75','T10M90','T10M100'});
-%   T10MTT = table2timetable(T10MTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='T10MTable T10MTT';
-%   MatFileName=strcat('T10MTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   t10str=strcat('Created T10MTT-','Contains Air Temp at 10 M-',num2str(8));
-%   fprintf(fid,'%s\n',t10str);
-%  % Create the Air Temp At 2 M Table ikind=9
-%   T2MTable=table(T2M10(:,1),T2M25(:,1),T2M50(:,1),T2M75(:,1),...
-%       T2M90(:,1),T2M100(:,1),...
-%             'VariableNames',{'T2M10','T2M25','T2M50',...
-%             'T2M75','T2M90','T2M100'});
-%   T2MTT = table2timetable(T2MTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='T2MTable T2MTT';
-%   MatFileName=strcat('T2MTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   t2str=strcat('Created T2MTT-','Contains Air Temp at 2 M-',num2str(9));
-%   fprintf(fid,'%s\n',t2str);
-%  % Create the Total Column Ozone ikind=11
-%   TO3Table=table(TO310(:,1),TO325(:,1),TO350(:,1),TO375(:,1),...
-%       TO390(:,1),TO3100(:,1),...
-%             'VariableNames',{'TO310','TO325','TO350',...
-%             'TO375','TO390','TO3100'});
-%   TO3TT = table2timetable(TO3Table,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TO3Table TO3TT';
-%   MatFileName=strcat('TO3Table',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   tO3str=strcat('Created TO3TT-','Contains Total Column Ozone-',num2str(11));
-%   fprintf(fid,'%s\n',tO3str);
-% % Create the Total Column Odd Oxygen ikind=12
-%   TOXTable=table(TOX10(:,1),TOX25(:,1),TOX50(:,1),TOX75(:,1),...
-%       TOX90(:,1),TOX100(:,1),...
-%             'VariableNames',{'TOX10','TOX25','TOX50',...
-%             'TOX75','TOX90','TOX100'});
-%   TOXTT = table2timetable(TOXTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TOXTable TOXTT';
-%   MatFileName=strcat('TOXTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   toxstr=strcat('Created TOXTT-','Contains Total Column Odd Oxygen-',num2str(12));
-%   fprintf(fid,'%s\n',toxstr);
-%  % Create the Total Precipatable Ice Water ikind=13
-%   TQITable=table(TQI10(:,1),TQI25(:,1),TQI50(:,1),TQI75(:,1),...
-%       TQI90(:,1),TQI100(:,1),...
-%             'VariableNames',{'TQI10','TQI25','TQI50',...
-%             'TQI75','TQI90','TQI100'});
-%   TQITT = table2timetable(TQITable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TQITable TQITT';
-%   MatFileName=strcat('TQITable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   tqistr=strcat('Created TQITT-','Contains Total Precipitable Ice Water-',num2str(13));
-%   fprintf(fid,'%s\n',tqistr);
-%  % Create the Total Precipatable Liquid Water ikind=14
-%   TQLTable=table(TQL10(:,1),TQL25(:,1),TQL50(:,1),TQL75(:,1),...
-%       TQL90(:,1),TQL100(:,1),...
-%             'VariableNames',{'TQL10','TQL25','TQL50',...
-%             'TQL75','TQL90','TQL100'});
-%   TQLTT = table2timetable(TQLTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TQLTable TQLTT';
-%   MatFileName=strcat('TQITable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   tqlstr=strcat('Created TQLTT-','Contains Total Precipitable Liquid Water-',num2str(14));
-%   fprintf(fid,'%s\n',tqlstr);
-%  % Create the Total Precipatable Water Vapor ikind=15
-%   TQVTable=table(TQV10(:,1),TQV25(:,1),TQV50(:,1),TQV75(:,1),...
-%       TQV90(:,1),TQV100(:,1),...
-%             'VariableNames',{'TQV10','TQV25','TQV50',...
-%             'TQV75','TQV90','TQV100'});
-%   TQVTT = table2timetable(TQVTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TQVTable TQVTT';
-%   MatFileName=strcat('TQVTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   tqvstr=strcat('Created TQVTT-','Contains Total Precipitable Water Vapor-',num2str(15));
-%   fprintf(fid,'%s\n',tqvstr);
-% % Create the Troposphere pressure estimate based on blended estimate ikind=16
-%   TROPPBTable=table(TROPPB10(:,1),TROPPB25(:,1),TROPPB50(:,1),TROPPB75(:,1),...
-%       TROPPB90(:,1),TROPPB100(:,1),...
-%             'VariableNames',{'TROPPB10','TROPPB25','TROPPB50',...
-%             'TROPPB75','TROPPB90','TROPPB100'});
-%   TROPPBTT = table2timetable(TROPPBTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TROPPBTable TROPPBTT';
-%   MatFileName=strcat('TROPPBTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   tropbbstr=strcat('Created TROPPBTT-','Contains blended tropossphere pressure in psi-',num2str(16));
-%   fprintf(fid,'%s\n',tropbbstr);
-% % Create the Troposphere pressure estimate based on thermal estimate
-% % ikind=17
-%   TROPPTTable=table(TROPPT10(:,1),TROPPT25(:,1),TROPPT50(:,1),TROPPT75(:,1),...
-%       TROPPT90(:,1),TROPPT100(:,1),...
-%             'VariableNames',{'TROPPT10','TROPPT25','TROPPT50',...
-%             'TROPPT75','TROPPT90','TROPPT100'});
-%   TROPPTTT = table2timetable(TROPPTTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TROPPTTable TROPPTTT';
-%   MatFileName=strcat('TROPPTTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   tropbtstr=strcat('Created TROPPTTT-','Contains troposphere pressure based on thermal estimate in psi-',num2str(17));
-%   fprintf(fid,'%s\n',tropbtstr);
-% % Create the Troposphere pressure estimate based on EPV estimate
-% % ikind=18
-%   TROPPVTable=table(TROPPV10(:,1),TROPPV25(:,1),TROPPV50(:,1),TROPPV75(:,1),...
-%       TROPPV90(:,1),TROPPV100(:,1),...
-%             'VariableNames',{'TROPPV10','TROPPV25','TROPPV50',...
-%             'TROPPV75','TROPPV90','TROPPV100'});
-%   TROPPVTT = table2timetable(TROPPVTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TROPPVTable TROPPVTT';
-%   MatFileName=strcat('TROPPVTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   troppvstr=strcat('Created TROPPVTT-','Contains troposphere pressure based on EPV estimate',num2str(18));
-%   fprintf(fid,'%s\n',troppvstr);
-% % Create the Troposphere Specific Humidity estimate based on blended
-% % estimate  ikind=19
-%   TROPQTable=table(TROPQ10(:,1),TROPQ25(:,1),TROPQ50(:,1),TROPQ75(:,1),...
-%       TROPQ90(:,1),TROPQ100(:,1),...
-%             'VariableNames',{'TROPQ10','TROPQ25','TROPQ50',...
-%             'TROPQ75','TROPQ90','TROPQ100'});
-%   TROPQTT = table2timetable(TROPQTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TROPQTable TROPQTT';
-%   MatFileName=strcat('TROPQTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   tropqstr=strcat('Created TROPQTT-','Contains troposphere specific humidity based on blended estimate',num2str(19));
-%   fprintf(fid,'%s\n',tropqstr);
-% % Create the Troposphere Temperature estimate based on blended
-% % estimate  ikind=20
-%   TROPTTable=table(TROPT10(:,1),TROPT25(:,1),TROPT50(:,1),TROPT75(:,1),...
-%       TROPT90(:,1),TROPT100(:,1),...
-%             'VariableNames',{'TROPT10','TROPT25','TROPT50',...
-%             'TROPT75','TROPT90','TROPT100'});
-%   TROPTTT = table2timetable(TROPTTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TROPTTable TROPTTT';
-%   MatFileName=strcat('TROPTTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   troptstr=strcat('Created TROPTTT-','Contains troposphere temperature based on blended estimate',num2str(20));
-%   fprintf(fid,'%s\n',troptstr);
-% % Surface Skin Temperature Table
-% % ikind=21
-%   TSTable=table(TS10(:,1),TS25(:,1),TS50(:,1),TS75(:,1),...
-%       TS90(:,1),TS100(:,1),...
-%             'VariableNames',{'TS10','TS25','TS50',...
-%             'TS75','TS90','TS100'});
-%   TSTT = table2timetable(TSTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='TSTable TSTT';
-%   MatFileName=strcat('TSTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   tsstr=strcat('Created TSTT-','Contains earth surface skin temp',num2str(21));
-%   fprintf(fid,'%s\n',tsstr);
-% % East Wind at 10 m
-% % ikind=22
-%   U10MTable=table(U10M10(:,1),U10M25(:,1),U10M50(:,1),U10M75(:,1),...
-%       U10M90(:,1),U10M100(:,1),...
-%             'VariableNames',{'U10M10','U10M25','U10M50',...
-%             'U10M75','U10M90','U10M100'});
-%   U10MTT = table2timetable(U10MTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='U10MTable U10MTT';
-%   MatFileName=strcat('U10MTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   u10mstr=strcat('Created U10MTT-','Contains east wind at 10 m ',num2str(22));
-%   fprintf(fid,'%s\n',u10mstr);
-% % East Wind at 2 m
-% % ikind=23
-%   U2MTable=table(U2M10(:,1),U2M25(:,1),U2M50(:,1),U2M75(:,1),...
-%       U2M90(:,1),U2M100(:,1),...
-%             'VariableNames',{'U2M10','U2M25','U2M50',...
-%             'U2M75','U2M90','U2M100'});
-%   U2MTT = table2timetable(U2MTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='U2MTable U2MTT';
-%   MatFileName=strcat('U2MTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   u2mstr=strcat('Created U2MTT-','Contains east wind at 2 m ',num2str(23));
-%   fprintf(fid,'%s\n',u2mstr);
-% % East Wind at 50 m
-% % ikind=24
-%   U50MTable=table(U50M10(:,1),U50M25(:,1),U50M50(:,1),U50M75(:,1),...
-%       U50M90(:,1),U50M100(:,1),...
-%             'VariableNames',{'U50M10','U50M25','U50M50',...
-%             'U50M75','U50M90','U50M100'});
-%   U50MTT = table2timetable(U50MTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='U50MTable U50MTT';
-%   MatFileName=strcat('U50MTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   u50mstr=strcat('Created U50MTT-','Contains east wind at 50 m ',num2str(24));
-%   fprintf(fid,'%s\n',u50mstr);
-% % North Wind at 10 m
-% % ikind=25
-%   V10MTable=table(V10M10(:,1),V10M25(:,1),V10M50(:,1),V10M75(:,1),...
-%       V10M90(:,1),V10M100(:,1),...
-%             'VariableNames',{'V10M10','V10M25','V10M50',...
-%             'V10M75','V10M90','V10M100'});
-%   V10MTT = table2timetable(V10MTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='V10MTable V10MTT';
-%   MatFileName=strcat('V10MTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   v10mstr=strcat('Created V10MTT-','Contains north wind at 10 m ',num2str(25));
-%   fprintf(fid,'%s\n',v10mstr);
-% % North Wind at 2 m
-% % ikind=26
-%   V2MTable=table(V2M10(:,1),V2M25(:,1),V2M50(:,1),V2M75(:,1),...
-%       V2M90(:,1),V2M100(:,1),...
-%             'VariableNames',{'V2M10','V2M25','V2M50',...
-%             'V2M75','V2M90','V2M100'});
-%   V2MTT = table2timetable(V2MTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='V2MTable V2MTT';
-%   MatFileName=strcat('V2MTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   v2mstr=strcat('Created V2MTT-','Contains north wind at 2 m ',num2str(26));
-%   fprintf(fid,'%s\n',v2mstr);
-% % North Wind at 50 m
-% % ikind=27
-%   V50MTable=table(V50M10(:,1),V50M25(:,1),V50M50(:,1),V50M75(:,1),...
-%       V50M90(:,1),V50M100(:,1),...
-%             'VariableNames',{'V50M10','V50M25','V50M50',...
-%             'V50M75','V50M90','V50M100'});
-%   V50MTT = table2timetable(V50MTable,'TimeStep',timestep,'StartTime',stime);
-%   eval(['cd ' tablepath(1:length(tablepath)-1)]);
-%   actionstr='save';
-%   varstr1='V50MTable V50MTT';
-%   MatFileName=strcat('V50MTable',YearMonthStr,'-',num2str(numtimeslice),'.mat');
-%   qualstr='-v7.3';
-%   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
-%   eval(cmdString)
-%   v50mstr=strcat('Created V50MTT-','Contains north wind at 50 m ',num2str(24));
-%   fprintf(fid,'%s\n',v50mstr);
+%% Create East Wind Component Table ikind=7
+  USTable=table(US01(:,1),US25(:,1),US50(:,1),US75(:,1),...
+      US90(:,1),US100(:,1),...
+            'VariableNames',{'US01','US25','US50',...
+            'US75','US90','US100'});
+  USTT = table2timetable(USTable,'TimeStep',timestep,'StartTime',stime);
+  eval(['cd ' tablepath(1:length(tablepath)-1)]);
+  actionstr='save';
+  varstr1='USTable USTT';
+  MatFileName=strcat('USTable',YearMonthStr,TimeStr,'-PrsLvl-',num2str(iPress42,2),'.mat');
+  qualstr='-v7.3';
+  [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+  eval(cmdString)
+  usstr=strcat('Created USTT-','Contains East Wind Data-',num2str(4));
+  fprintf(fid,'%s\n',usstr);
+%% Create North Wind Component Table ikind=8
+  VSTable=table(VS01(:,1),VS25(:,1),VS50(:,1),VS75(:,1),...
+      VS90(:,1),VS100(:,1),...
+            'VariableNames',{'VS01','VS25','VS50',...
+            'VS75','VS90','VS100'});
+  VSTT = table2timetable(VSTable,'TimeStep',timestep,'StartTime',stime);
+  eval(['cd ' tablepath(1:length(tablepath)-1)]);
+  actionstr='save';
+  varstr1='VSTable VSTT';
+  MatFileName=strcat('VSTable',YearMonthStr,TimeStr,'-PrsLvl-',num2str(iPress42,2),'.mat');
+  qualstr='-v7.3';
+  [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+  eval(cmdString)
+  vsstr=strcat('Created VSTT-','Contains North Wind Data-',num2str(4));
+  fprintf(fid,'%s\n',vsstr);
+
+
+
 %% Plot the Geopotential Height Results
    titlestr=strcat('Monthly-Averaged-GeoPotential-Temp-',num2str(yd));
    ikind=1;
@@ -1548,122 +1285,48 @@ if(framecounter==numSelectedFiles)
    iNewChapter=0;
    iCloseChapter=0;
    PlotDataset03Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Continue Surface Pressure
+   titlestr=strcat('Monthly-Averaged-Surface-Pressure-',num2str(yd));
+   ikind=3;
+   iAddToReport=1;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset03Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+%% Continue Specific Humidity
+   titlestr=strcat('Monthly-Averaged-Specific-Humidity-',num2str(yd));
+   ikind=4;
+   iAddToReport=1;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset03Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+%% Continue Sea Level Pressure
+   titlestr=strcat('Monthly-Averaged-SeaLevel-Pressure-',num2str(yd));
+   ikind=5;
+   iAddToReport=1;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset03Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
 %% Continue with the Monthly Averaged Air Temp
    titlestr=strcat('Monthly-Averaged-Global-Temp-',num2str(yd));
    ikind=6;
    iAddToReport=1;
    iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset03Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+%% Continue with the Monthly Averaged East Wind Magnitude
+   titlestr=strcat('Monthly-Averaged-East-Wind-',num2str(yd));
+   ikind=7;
+   iAddToReport=1;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset03Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+%% Continue with the Monthly Averaged North Wind Magnitude
+   titlestr=strcat('Monthly-Averaged-North-Wind-',num2str(yd));
+   ikind=8;
+   iAddToReport=1;
+   iNewChapter=0;
    iCloseChapter=1;
    PlotDataset03Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the Total Precipitable Ice Water
-%    titlestr=strcat('Instantaneous-TotalPrecipIceWater-',num2str(yd));
-%    ikind=13;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotTQITable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the Total Precipitable Liquid Water
-%    titlestr=strcat('Instantaneous-TotalPrecipLiquidWater-',num2str(yd));
-%    ikind=14;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotTQITable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the Total Precipitable Water Vapor
-%    titlestr=strcat('Instantaneous-TotalPrecipWaterVapor-',num2str(yd));
-%    ikind=15;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotTQITable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the Tropospheric pressure estimate based on a blended
-%  % technique
-%    titlestr=strcat('Instantaneous-TropPressureBlended-',num2str(yd));
-%    ikind=16;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotTROPTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the Tropospheric pressure estimate based on a thermal
-%  % estimate
-%    titlestr=strcat('Instantaneous-TropPressureThermal-',num2str(yd));
-%    ikind=17;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotTROPTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the Tropospheric pressure estimate based on a thermal
-%  % estimate
-%    titlestr=strcat('Instantaneous-TropSpecific-Humidity-',num2str(yd));
-%    ikind=18;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotTROPTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the Tropospheric specific humidity based on a blended
-%  % estimate
-%    titlestr=strcat('Instantaneous-TropSpecific-Humidity-',num2str(yd));
-%    ikind=19;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotTROPTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the Tropospheric specific humidity based on a blended
-%  % estimate
-%    titlestr=strcat('Instantaneous-TropSpecific-Temp-',num2str(yd));
-%    ikind=20;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotTROPTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the earth surface skin temp
-%    titlestr=strcat('Instantaneous-EarthSurface-Temp-',num2str(yd));
-%    ikind=21;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotTROPTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the east wind velocity component at 10 m
-%    titlestr=strcat('Instantaneous-EastWind-10m-',num2str(yd));
-%    ikind=22;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotUVTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the east wind velocity component at 2 m
-%    titlestr=strcat('Instantaneous-EastWind-2m-',num2str(yd));
-%    ikind=23;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotUVTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the east wind velocity component at 50 m
-%    titlestr=strcat('Instantaneous-EastWind-50m-',num2str(yd));
-%    ikind=24;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotUVTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the north wind velocity component at 10 m
-%    titlestr=strcat('Instantaneous-NorthWind-10m-',num2str(yd));
-%    ikind=25;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotUVTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the north wind velocity component at 2 m
-%    titlestr=strcat('Instantaneous-NorthWind-2m-',num2str(yd));
-%    ikind=26;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=0; 
-%    PlotUVTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-%  % Continue with the north wind velocity component at 50 m
-%    titlestr=strcat('Instantaneous-NorthWind-50m-',num2str(yd));
-%    ikind=27;
-%    iAddToReport=1;
-%    iNewChapter=0;
-%    iCloseChapter=1; 
-%    PlotUVTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+
 end
 
