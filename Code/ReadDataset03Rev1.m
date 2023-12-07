@@ -14,6 +14,9 @@ global BandDataS MetaDataS;
 global minTauValue PressureLevel42 PressureLevel72 iPress42 iPress72;
 global PressureLevelUsed PressureLabels42 PressureLabels72 framecounter;
 global TimeSlices iTimeSlice;
+global LatSpacing LonSpacing RasterAreas RadiusCalc;
+global RasterLats RasterLons RasterAreaGrid sumMaskArea ;
+global TSValues1 TSValues2;
 
 global Merra2FileName Merra2Dat Merra2ShortFileName numSelectedFiles;
 
@@ -38,22 +41,30 @@ global YearMonthDayStr1 YearMonthDayStr2;
 global ChoiceList;
 global PascalsToMilliBars PascalsToPsi;
 global PSTable PSTT;
+global Merra2WorkingMask1 Merra2WorkingMask2 Merra2WorkingMask3;
+global Merra2WorkingMask4 Merra2WorkingMask5;
+global Merra2WorkingMask6 Merra2WorkingMask7;
+global Merra2WorkingMask8 Merra2WorkingMask9 Merra2WorkingMask10;
+global TSStats;
 
 global SLPTable SLPTT;
 
 
 global numlat numlon Rpix latlim lonlim rasterSize;
 global westEdge eastEdge southEdge northEdge;
-global RasterLats RasterLons
 global yd md dd;
 global iCityPlot;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
 
 % additional paths needed for mapping
-global matpath1 mappath ;
+global matpath1 mappath oceanmappath;
 global savepath jpegpath pdfpath logpath moviepath tablepath;
 global YearMonthStr MonthStr YearStr MonthYearStr;
 global fid isavefiles;
+global GridFileName;
+
+global ROIName1 ROIName2 ROIName3 ROIName4 ROIName5;
+global ROIName6 ROIName7 ROIName8 ROIName9 ROIName10;
 
 fprintf(fid,'\n');
 fprintf(fid,'%s\n','**************Start reading dataset 03***************');
@@ -793,34 +804,79 @@ else
 %     disp(dispstr);
 end
 %% Create Georeference object Rpix
-latlim=[-90 90];
-lonlim=[-180 180];
-numlon=length(lon);
-numlat=length(lat);
-rasterSize=[numlat numlon];
-Rpix = georefcells(latlim,lonlim,rasterSize,'ColumnsStartFrom','south','RowsStartFrom','west');
-westEdge=-180;
-eastEdge=180;
-southEdge=-90;
-northEdge=90;
-westEdge=-180;
-eastEdge=180;
-southEdge=-90;
-northEdge=90;
-Merra2DataRasterLon=zeros(numlon,numlat);
-Merra2DataRasterLat=zeros(numlon,numlat);
-deltaLon=0.625;
-deltaLat=0.500;
-for i=1:numlon
-    nowlon=westEdge+(i-1)*deltaLon;
-    for j=1:numlat
-        nowlat=southEdge+(j-1)*deltaLat;
-        Merra2DataRasterLon(i,j)=nowlon;
-        Merra2DataRasterLat(i,j)=nowlat;
+if(framecounter==1)
+    latlim=[-90 90];
+    lonlim=[-180 180];
+    numlon=length(lon);
+    numlat=length(lat);
+    rasterSize=[numlat numlon];
+    Rpix = georefcells(latlim,lonlim,rasterSize,'ColumnsStartFrom','south','RowsStartFrom','west');
+    westEdge=-180;
+    eastEdge=180;
+    southEdge=-90;
+    northEdge=90;
+    westEdge=-180;
+    eastEdge=180;
+    southEdge=-90;
+    northEdge=90;
+    Merra2DataRasterLon=zeros(numlon,numlat);
+    Merra2DataRasterLat=zeros(numlon,numlat);
+    deltaLon=0.625;
+    deltaLat=0.500;
+    for i=1:numlon
+        nowlon=westEdge+(i-1)*deltaLon;
+        for j=1:numlat
+            nowlat=southEdge+(j-1)*deltaLat;
+            Merra2DataRasterLon(i,j)=nowlon;
+            Merra2DataRasterLat(i,j)=nowlat;
+        end
     end
+    RasterLats=Merra2DataRasterLat;
+    RasterLons=Merra2DataRasterLon;
+%% Now calculate the area of each Raster point. This on varies by latitude
+% Get the area of each cell based on the latitude
+    nlats=length(RasterLats);
+    nlons=length(RasterLons);
+    RadiusCalc=zeros(nlats,1);
+    LatSpacing=0.5;
+    LonSpacing=0.625;
+    lon1=10;
+    lon2=lon1+LonSpacing;
+    deg2rad=pi/180;
+    areakmlast=0;
+    for k=1:nlats
+        lat1=RasterLats(k,1);
+        lat2=RasterLats(k,1)+LatSpacing;
+        [arclen1,~]=distance(lat1,lon1,lat2,lon1);
+        radius = geocradius(lat1);
+        distlat=radius*arclen1*deg2rad;
+        [arclen2,~]=distance(lat1,lon1,lat1,lon2);
+        distlon=radius*arclen2*deg2rad;
+        areakm=distlat*distlon/1E6;
+        if(areakm<1)
+            areaused=16;
+        else
+            areaused=areakm;
+        end
+        RasterAreas(k,1)=areaused;
+        RadiusCalc(k,1)=radius;
+    end
+    [nr,~]=size(RasterLats);
+    [nc,~]=size(RasterLons);
+%     RasterAreaGrid=zeros(nc,nr);
+% % Now make an area grid that will have the same values of Area for each
+% % latitude point regardless 
+%         for ii=1:nr
+%             nowArea=RasterAreas(ii,1);
+%             for jj=1:nc
+%                 RasterAreaGrid(jj,ii)=nowArea;
+%             end
+%         end
+% Load Raster Grid Areas
+eval(['cd ' oceanmappath(1:length(oceanmappath)-1)]);
+load(GridFileName,'RasterAreaGrid','RasterLats','RasterLons');
+ab=1;
 end
-RasterLats=Merra2DataRasterLat;
-RasterLons=Merra2DataRasterLon;
 %% Initialize statistics holding arrays
 if(framecounter==1)
 % Initialize Statistic Hold Arrays for HS the geopotential height
@@ -896,7 +952,7 @@ if(framecounter==1)
     VSLow=zeros(numSelectedFiles,1);
     VSHigh=zeros(numSelectedFiles,1);
     VSNaN=zeros(numSelectedFiles,1);
-
+    TSStats=zeros(numSelectedFiles,10);
 end
 %% Capture Selected Statistics to Holding Arrays
 if(framecounter<=numSelectedFiles)
@@ -1000,6 +1056,7 @@ if(framecounter<=numSelectedFiles)
     end
     lowcutoff=-100;
     highcutoff=100;
+    TSValues1=TSValues+273.15;
     [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(TSValues,lowcutoff,highcutoff);
     TS01(framecounter,1)=val01;
     TS25(framecounter,1)=val25;
@@ -1009,7 +1066,12 @@ if(framecounter<=numSelectedFiles)
     TS100(framecounter,1)=val100;
     TSLow(framecounter,1)=fraclow;
     TSHigh(framecounter,1)=frachigh;
-    TSNaN(framecounter,1)=fracNaN;
+    TSNaN(framecounter,1)=fracNaN;    
+    sumMaskArea=sum(sum(RasterAreaGrid.*Merra2WorkingMask1));
+    TSValues1=TSValues1.*Merra2WorkingMask1;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues1,100,400);
+    TSStats(framecounter,1)=val50W;
+    ab=1;
   % East Wind Component(m/s)
     USValues=US.values(:,:,iPress42,iTimeSlice);
     fillvalue=US.FillValue;
@@ -1043,6 +1105,10 @@ if(framecounter<=numSelectedFiles)
     VSHigh(framecounter,1)=frachigh;
     VSNaN(framecounter,1)=fracNaN; 
     ab=2;
+end
+%% Gets stats on Selected Variables On Defined Map Areas
+if(framecounter<=numSelectedFiles)
+
 end
 %% Display the selected data  on a map of the earth
 % This dataset has 4 timeslices-only data from a single pre selected
@@ -1121,14 +1187,14 @@ iNewChapter=0;
 iCloseChapter=1;
 DisplayMerra2Dataset03(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
 % Now display the wind velocity components and Windstress
-ikind=9;
-itype=3;
-iCityPlot=0;
-varname='WS';
-iAddToReport=1;
-iNewChapter=1;
-iCloseChapter=1;
-DisplayMerra2DatasetWindStress(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+% ikind=9;
+% itype=3;
+% iCityPlot=0;
+% varname='WS';
+% iAddToReport=1;
+% iNewChapter=1;
+% iCloseChapter=1;
+% DisplayMerra2DatasetWindStress(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
 if(framecounter==1)
     yd=str2double(YearMonthStr(1:4));
     md=str2double(YearMonthStr(5:6));

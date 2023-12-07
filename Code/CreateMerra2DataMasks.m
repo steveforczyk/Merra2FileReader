@@ -3,6 +3,8 @@
 % Written By: Stephen Forczyk
 % Created: Jul 27,2023
 % Revised: July 29-Aug 12,2023 added code for more countries
+% Revised: Dec 5,2023 found error in code that created Germany mask
+%          it save the result too the Ukraine Mask. Both files corrected
 % Classification: Unclassified
 global Merra2DataRasterLon Merra2DataRasterLat;
 global Merra2AfricaMask Merra2EuropeMask Merra2NorthAmericaMask;
@@ -1862,40 +1864,40 @@ warning('off');
 % dispstr=strcat('Wrote Matlab File-',MatFileName);
 % disp(dispstr)
 
-% %% Make The Ukraine Mask
-% eval(['cd ' mappath(1:length(mappath)-1)]);
-% load('UkraineBoundaries.mat','UkraineLat','UkraineLon');
-% Merra2UkraineMask=zeros(576,361);
-% for i=1:numlon
-%     xq(1,1)=Merra2DataRasterLon(i,1)-.312;
-%     xq(2,1)=Merra2DataRasterLon(i,1)+.312;
-%     xq(3,1)=Merra2DataRasterLon(i,1)+.312;
-%     xq(4,1)=Merra2DataRasterLon(i,1)-.312;
-%     xq(5,1)=Merra2DataRasterLon(i,1)-.312;
-%     xqq=Merra2DataRasterLon(i,1);
-%     for j=1:numlat
-%         yq(1,1)=Merra2DataRasterLat(j,1)-.25;
-%         yq(2,1)=Merra2DataRasterLat(j,1)-.25;
-%         yq(3,1)=Merra2DataRasterLat(j,1)+.25;
-%         yq(4,1)=Merra2DataRasterLat(j,1)+.25;
-%         yq(5,1)=Merra2DataRasterLat(j,1)-.25;
-%         yqq=Merra2DataRasterLat(j,1);
-%         [in,on]=inpolygon(xqq,yqq, UkraineLon, UkraineLat);
-%         Merra2UkraineMask(i,j)=in;
-%     end
-%     dispstr=strcat('finished with lon#',num2str(i),'-for  Ukraine');
-%     disp(dispstr);
-% end
-% eval(['cd ' maskpath(1:length(maskpath)-1)]);
-% actionstr='save';
-% varstr='Merra2UkraineMask';
-% MatFileName='UkraineMask';
-% qualstr='-v7.3';
-% [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
-% eval(cmdString)
-% dispstr=strcat('Wrote Matlab File-',MatFileName);
-% disp(dispstr)
-%% Make The Germany Mask
+%% Make The Ukraine Mask
+eval(['cd ' mappath(1:length(mappath)-1)]);
+load('UkraineBoundaries.mat','UkraineLat','UkraineLon');
+Merra2UkraineMask=zeros(576,361);
+for i=1:numlon
+    xq(1,1)=Merra2DataRasterLon(i,1)-.312;
+    xq(2,1)=Merra2DataRasterLon(i,1)+.312;
+    xq(3,1)=Merra2DataRasterLon(i,1)+.312;
+    xq(4,1)=Merra2DataRasterLon(i,1)-.312;
+    xq(5,1)=Merra2DataRasterLon(i,1)-.312;
+    xqq=Merra2DataRasterLon(i,1);
+    for j=1:numlat
+        yq(1,1)=Merra2DataRasterLat(j,1)-.25;
+        yq(2,1)=Merra2DataRasterLat(j,1)-.25;
+        yq(3,1)=Merra2DataRasterLat(j,1)+.25;
+        yq(4,1)=Merra2DataRasterLat(j,1)+.25;
+        yq(5,1)=Merra2DataRasterLat(j,1)-.25;
+        yqq=Merra2DataRasterLat(j,1);
+        [in,on]=inpolygon(xqq,yqq, UkraineLon, UkraineLat);
+        Merra2UkraineMask(i,j)=in;
+    end
+    dispstr=strcat('finished with lon#',num2str(i),'-for  Ukraine');
+    disp(dispstr);
+end
+eval(['cd ' maskpath(1:length(maskpath)-1)]);
+actionstr='save';
+varstr='Merra2UkraineMask';
+MatFileName='UkraineMask';
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+eval(cmdString)
+dispstr=strcat('Wrote Matlab File-',MatFileName);
+disp(dispstr)
+% %% Make The Germany Mask
 % eval(['cd ' mappath(1:length(mappath)-1)]);
 % load('GermanyBoundaries.mat','GermanyLat','GermanyLon');
 % Merra2GermanyMask=zeros(576,361);
@@ -1914,7 +1916,8 @@ warning('off');
 %         yq(5,1)=Merra2DataRasterLat(j,1)-.25;
 %         yqq=Merra2DataRasterLat(j,1);
 %         [in,on]=inpolygon(xqq,yqq,GermanyLon,GermanyLat);
-%         Merra2UkraineMask(i,j)=in;
+%         Merra2GermanyMask(i,j)=in;
+%         ab=1;
 %     end
 %     dispstr=strcat('finished with lon#',num2str(i),'-for  Germany');
 %     disp(dispstr);
@@ -6542,38 +6545,38 @@ warning('off');
 % disp(dispstr)
 
 %% Make The Oklahoma Mask
-eval(['cd ' mappath(1:length(mappath)-1)]);
-load('OklahomaBoundaries.mat','OklahomaLat','OklahomaLon');
-Merra2OklahomaMask=zeros(576,361);
-for i=1:numlon
-    xq(1,1)=Merra2DataRasterLon(i,1)-.312;
-    xq(2,1)=Merra2DataRasterLon(i,1)+.312;
-    xq(3,1)=Merra2DataRasterLon(i,1)+.312;
-    xq(4,1)=Merra2DataRasterLon(i,1)-.312;
-    xq(5,1)=Merra2DataRasterLon(i,1)-.312;
-    xqq=Merra2DataRasterLon(i,1);
-    for j=1:numlat
-        yq(1,1)=Merra2DataRasterLat(j,1)-.25;
-        yq(2,1)=Merra2DataRasterLat(j,1)-.25;
-        yq(3,1)=Merra2DataRasterLat(j,1)+.25;
-        yq(4,1)=Merra2DataRasterLat(j,1)+.25;
-        yq(5,1)=Merra2DataRasterLat(j,1)-.25;
-        yqq=Merra2DataRasterLat(j,1);
-        [in,on]=inpolygon(xqq,yqq,OklahomaLon,OklahomaLat);
-        Merra2OklahomaMask(i,j)=in;
-    end
-    dispstr=strcat('finished with lon#',num2str(i),'-USA-Oklahoma');
-    disp(dispstr);
-end
-eval(['cd ' maskpath(1:length(maskpath)-1)]);
-actionstr='save';
-varstr='Merra2OklahomaMask';
-MatFileName='OklahomaMask';
-qualstr='-v7.3';
-[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
-eval(cmdString)
-dispstr=strcat('Wrote Oklahoma File-',MatFileName);
-disp(dispstr)
+% eval(['cd ' mappath(1:length(mappath)-1)]);
+% load('OklahomaBoundaries.mat','OklahomaLat','OklahomaLon');
+% Merra2OklahomaMask=zeros(576,361);
+% for i=1:numlon
+%     xq(1,1)=Merra2DataRasterLon(i,1)-.312;
+%     xq(2,1)=Merra2DataRasterLon(i,1)+.312;
+%     xq(3,1)=Merra2DataRasterLon(i,1)+.312;
+%     xq(4,1)=Merra2DataRasterLon(i,1)-.312;
+%     xq(5,1)=Merra2DataRasterLon(i,1)-.312;
+%     xqq=Merra2DataRasterLon(i,1);
+%     for j=1:numlat
+%         yq(1,1)=Merra2DataRasterLat(j,1)-.25;
+%         yq(2,1)=Merra2DataRasterLat(j,1)-.25;
+%         yq(3,1)=Merra2DataRasterLat(j,1)+.25;
+%         yq(4,1)=Merra2DataRasterLat(j,1)+.25;
+%         yq(5,1)=Merra2DataRasterLat(j,1)-.25;
+%         yqq=Merra2DataRasterLat(j,1);
+%         [in,on]=inpolygon(xqq,yqq,OklahomaLon,OklahomaLat);
+%         Merra2OklahomaMask(i,j)=in;
+%     end
+%     dispstr=strcat('finished with lon#',num2str(i),'-USA-Oklahoma');
+%     disp(dispstr);
+% end
+% eval(['cd ' maskpath(1:length(maskpath)-1)]);
+% actionstr='save';
+% varstr='Merra2OklahomaMask';
+% MatFileName='OklahomaMask';
+% qualstr='-v7.3';
+% [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+% eval(cmdString)
+% dispstr=strcat('Wrote Oklahoma File-',MatFileName);
+% disp(dispstr)
 %% Make The Oregon Mask
 % eval(['cd ' mappath(1:length(mappath)-1)]);
 % load('OregonBoundaries.mat','OregonLat','OregonLon');

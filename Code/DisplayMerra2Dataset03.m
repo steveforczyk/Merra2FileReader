@@ -15,6 +15,10 @@ global minTauValue PressureLevel42 PressureLevel72 iPress42 iPress72;
 global PressureLevelUsed PressureLabels42 PressureLabels72 framecounter;
 global TimeSlices iTimeSlice numtimeslice;
 global Merra2FileName Merra2Dat Merra2ShortFileName numSelectedFiles;
+global Merra2WorkingMask1 Merra2WorkingMask2 Merra2WorkingMask3;
+global Merra2WorkingMask4 Merra2WorkingMask5;
+global Merra2WorkingMask6 Merra2WorkingMask7;
+global Merra2WorkingMask8 Merra2WorkingMask9 Merra2WorkingMask10;
 
 global idebug;
 global LatitudesS LongitudesS LevS;

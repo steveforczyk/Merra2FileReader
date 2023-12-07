@@ -32,6 +32,9 @@ global SelectedMaskData numSelectedMasks numUserSelectedSeaMasks;
 global Merra2FileName Merra2FileNames MapFormFactor;
 global Merra2WorkingMask1 Merra2WorkingMask2 Merra2WorkingMask3;
 global Merra2WorkingMask4 Merra2WorkingMask5;
+global Merra2WorkingMask6 Merra2WorkingMask7;
+global Merra2WorkingMask8 Merra2WorkingMask9 Merra2WorkingMask10;
+global TSStats;
 global Merra2WorkingSeaMask1 Merra2WorkingSeaMask2 Merra2WorkingSeaMask3;
 global Merra2WorkingSeaMask4 Merra2WorkingSeaMask5;
 global ROIName1 ROIName2 ROIName3 ROIName4 ROIName5;
@@ -47,7 +50,7 @@ global Merra2DataPaths Merra2Path MerraDataCollectionTimes;
 global CountyBoundaryFile;
 global CountyBoundaries StateFIPSFile;
 global StateFIPSCodes NationalCountiesShp;
-global USAStatesShapeFileList USAStatesFileName;
+global USAStatesShapeFileList USAStatesFileName GridFileName;
 global UrbanAreasShapeFile NorthAmericaLakes ;
 global idebug isavefiles ;
 global iPrimeRoads iCountyRoads iCommonRoads iStateRecRoads iUSRoads iStateRoads;
@@ -129,6 +132,7 @@ citypath='D:\Forczyk\Map_Data\World_Cities\';
 WorldCityFileName='WorldTopCitiesList.mat';
 CalendarFileName='CalendarDays.mat';
 PressureFileName='Merra2PressureData.mat';
+GridFileName='Merra2Grids.mat';
 pressurepath='K:\Merra-2\netCDF\Dataset09\Matlab_Files\';
 shapefilepath='D:\Goes16\ShapeFiles\';
 countyshapepath='D:\Forczyk\Map_Data\MAT_Files_Geographic\';
@@ -153,7 +157,7 @@ oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
 %% Set Flags and default values
 % Set some flags to control program execution
 iCreatePDFReport=1;
-iSkipReportFrames=2;
+iSkipReportFrames=4;
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
@@ -177,7 +181,7 @@ iCheckConfig=1;
 iLogo=1;
 iPress42=1;
 iPress72=1;
-iSeaOnly=1;
+iSeaOnly=0;
 iLandOnly=1;
 PascalsToMilliBars=1/1000;
 PascalsToPsi=14.696/101325;
@@ -1272,8 +1276,7 @@ end
             nowFile=Merra2FileNames{nn,1};
             filestr='File Num';            
             fprintf(fid,'%s\n',nowFile);
-        end
-        
+        end       
         fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
         tpstr=strcat('Process time-',TimeSlices{iTimeSlice,1});
         pslice=iPress42;
@@ -1286,6 +1289,23 @@ end
         if((iCreatePDFReport==1) && (RptGenPresent==1))
             CreateMerra2Dataset03Report
         end
+% Add in Country Masks-(Pre Selected List)
+        ROIName1='Germany';
+        ROIName2='Finland';
+        ROIName3='UK';
+        ROIName4='Sudan';
+        ROIName5='SouthAfrica';
+        ROIName6='India';
+        ROIName7='Australia';
+        ROIName8='California';
+        ROIName9='Texas';
+        ROIName10='Peru';
+        eval(['cd ' maskpath(1:length(maskpath)-1)]);
+% Load the Mask for ROIName1
+        maskVar='Merra2GermanyMask';
+        load('GermanyMask.mat',maskVar);
+        Merra2WorkingMask1=eval(maskVar);
+        ab=1;
         for nn=1:numSelectedFiles
             nowFile=Merra2FileNames{nn,1}; 
             framecounter=framecounter+1;
@@ -1785,6 +1805,7 @@ else
 end
 % Set current directory back to the code folder
 eval(['cd ' codepath(1:length(codepath)-1)]);
+
 
 
 ab=2;
