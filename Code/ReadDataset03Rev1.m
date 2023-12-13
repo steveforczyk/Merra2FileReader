@@ -7,7 +7,10 @@ function ReadDataset03Rev1(nowFile,nowpath)
 % Written By: Stephen Forczyk
 % Created: Nov 6,2023
 % Revised: Rest of Nov 2023 adding code for all dataset items
-
+% Revised: Dec 7,2023 added TSStatsTable to store data on air temp data
+% at median value over a number of defined geographic areas
+% Revised: Dec 11,2023 added QVStatsTable to do the same for specific
+% humidity
 % Classification: Unclassified
 
 global BandDataS MetaDataS;
@@ -15,12 +18,20 @@ global minTauValue PressureLevel42 PressureLevel72 iPress42 iPress72;
 global PressureLevelUsed PressureLabels42 PressureLabels72 framecounter;
 global TimeSlices iTimeSlice;
 global LatSpacing LonSpacing RasterAreas RadiusCalc;
-global RasterLats RasterLons RasterAreaGrid sumMaskArea ;
-global TSValues1 TSValues2;
+global RasterLats RasterLons RasterAreaGrid;
+global sumMaskArea1 sumMaskArea2 sumMaskArea3 sumMaskArea4 sumMaskArea5;
+global sumMaskArea6 sumMaskArea7 sumMaskArea8 sumMaskArea9 sumMaskArea10;
+global TSValues1 TSValues2 TSValues3 TSValues4 TSValues5;
+global TSValues6 TSValues7 TSValues8 TSValues9 TSValues10;
+global QVSValues1 QVSValues2 QVSValues3 QVSValues4 QVSValues5;
+global QVSValues6 QVSValues7 QVSValues8 QVSValues9 QVSValues10;
+global O3Values1 O3Values2 O3Values3 O3Values4 O3Values5;
+global O3Values6 O3Values7 O3Values8 O3Values9 O3Values10;
 
 global Merra2FileName Merra2Dat Merra2ShortFileName numSelectedFiles;
 
 global idebug;
+global iSubtract iSubval;
 global LatitudesS LongitudesS LevS;
 global O3S PSS QVS HS SLPS TS ;
 global timeS US VS;
@@ -45,8 +56,9 @@ global Merra2WorkingMask1 Merra2WorkingMask2 Merra2WorkingMask3;
 global Merra2WorkingMask4 Merra2WorkingMask5;
 global Merra2WorkingMask6 Merra2WorkingMask7;
 global Merra2WorkingMask8 Merra2WorkingMask9 Merra2WorkingMask10;
-global TSStats;
-
+global TSStats TSStatsTable TSSTT TSStats2Table TSS2TT;
+global QVStats QVStatsTable QVStatTT QVStats2Table QVStat2TT;
+global O3Stats O3StatsTable O3StatTT O3Stats2Table O3Stat2TT;
 global SLPTable SLPTT;
 
 
@@ -953,6 +965,8 @@ if(framecounter==1)
     VSHigh=zeros(numSelectedFiles,1);
     VSNaN=zeros(numSelectedFiles,1);
     TSStats=zeros(numSelectedFiles,10);
+    QVStats=zeros(numSelectedFiles,10);
+    O3Stats=zeros(numSelectedFiles,10);
 end
 %% Capture Selected Statistics to Holding Arrays
 if(framecounter<=numSelectedFiles)
@@ -976,8 +990,18 @@ if(framecounter<=numSelectedFiles)
     O3SValues=O3S.values(:,:,iPress42,iTimeSlice);
     fillvalue=O3S.FillValue;
     O3SValues(O3SValues==fillvalue)=NaN;
-    lowcutoff=1E-9;
-    highcutoff=1E-5;
+    O3Values1= O3SValues;
+    O3Values2= O3SValues;
+    O3Values3= O3SValues;
+    O3Values4= O3SValues;
+    O3Values5= O3SValues;
+    O3Values6= O3SValues;
+    O3Values7= O3SValues;
+    O3Values8= O3SValues;
+    O3Values9= O3SValues;
+    O3Values10= O3SValues;
+    lowcutoff=1E-10;
+    highcutoff=1E-4;
     [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(O3SValues,lowcutoff,highcutoff);
     O3S01(framecounter,1)=val01;
     O3S25(framecounter,1)=val25;
@@ -988,6 +1012,59 @@ if(framecounter<=numSelectedFiles)
     O3SLow(framecounter,1)=fraclow;
     O3SHigh(framecounter,1)=frachigh;
     O3SNaN(framecounter,1)=fracNaN;
+    iSubtract=0;
+    iSubval=0;
+ % Compute the Stats for Mask 1-Germany
+    sumMaskArea1=sum(sum(RasterAreaGrid.*Merra2WorkingMask1));
+    O3Values1=O3Values1.*Merra2WorkingMask1;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(O3Values1,sumMaskArea1,lowcutoff,highcutoff);
+    O3Stats(framecounter,1)=val50W;
+ % Compute the Stats for Mask 2-Finland
+    sumMaskArea2=sum(sum(RasterAreaGrid.*Merra2WorkingMask2));
+    O3Values2=O3Values2.*Merra2WorkingMask2;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(O3Values2,sumMaskArea2,lowcutoff,highcutoff);
+    O3Stats(framecounter,2)=val50W;
+ % Compute the Stats for Mask 3-UK
+    sumMaskArea3=sum(sum(RasterAreaGrid.*Merra2WorkingMask3));
+    O3Values3=O3Values3.*Merra2WorkingMask3;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(O3Values3,sumMaskArea3,lowcutoff,highcutoff);
+    O3Stats(framecounter,3)=val50W;
+ % Compute the Stats for Mask 4-Sudan
+    sumMaskArea4=sum(sum(RasterAreaGrid.*Merra2WorkingMask4));
+    O3Values4=O3Values4.*Merra2WorkingMask4;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(O3Values4,sumMaskArea4,lowcutoff,highcutoff);
+    O3Stats(framecounter,4)=val50W;
+ % Compute the Stats for Mask 5-SouthArica
+    sumMaskArea5=sum(sum(RasterAreaGrid.*Merra2WorkingMask5));
+    O3Values5=O3Values5.*Merra2WorkingMask5;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(O3Values5,sumMaskArea5,lowcutoff,highcutoff);
+    O3Stats(framecounter,5)=val50W;
+ % Compute the Stats for Mask 6-India
+    sumMaskArea6=sum(sum(RasterAreaGrid.*Merra2WorkingMask6));
+    O3Values6=O3Values6.*Merra2WorkingMask6;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(O3Values6,sumMaskArea6,lowcutoff,highcutoff);
+    O3Stats(framecounter,6)=val50W;
+ % Compute the Stats for Mask 7-Australia
+    sumMaskArea7=sum(sum(RasterAreaGrid.*Merra2WorkingMask7));
+    O3Values7=O3Values7.*Merra2WorkingMask7;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(O3Values7,sumMaskArea7,lowcutoff,highcutoff);
+    O3Stats(framecounter,7)=val50W;
+ % Compute the Stats for Mask 8-California
+    sumMaskArea8=sum(sum(RasterAreaGrid.*Merra2WorkingMask8));
+    O3Values8=O3Values8.*Merra2WorkingMask8;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(O3Values8,sumMaskArea8,lowcutoff,highcutoff);
+    O3Stats(framecounter,8)=val50W;
+ % Compute the Stats for Mask 9-Texas
+    sumMaskArea9=sum(sum(RasterAreaGrid.*Merra2WorkingMask9));
+    O3Values9=O3Values9.*Merra2WorkingMask9;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(O3Values9,sumMaskArea9,lowcutoff,highcutoff);
+    O3Stats(framecounter,9)=val50W;
+ % Compute the Stats for Mask 10-Peru
+    sumMaskArea10=sum(sum(RasterAreaGrid.*Merra2WorkingMask10));
+    O3Values10=O3Values10.*Merra2WorkingMask10;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(O3Values10,sumMaskArea10,lowcutoff,highcutoff);
+    O3Stats(framecounter,10)=val50W;
+    ab=1;
  % Continue with the SurfacePressure in kPa
     PSSValues=PSS.values(:,:,iTimeSlice)/1000;
     fillvalue=PSS.FillValue;
@@ -1008,8 +1085,18 @@ if(framecounter<=numSelectedFiles)
     QVSValues=QVS.values(:,:,iPress42,iTimeSlice);
     fillvalue=QVS.FillValue;
     QVSValues(QVSValues==fillvalue)=NaN;
+    QVSValues1= QVSValues;
+    QVSValues2= QVSValues;
+    QVSValues3= QVSValues;
+    QVSValues4= QVSValues;
+    QVSValues5= QVSValues;
+    QVSValues6= QVSValues;
+    QVSValues7= QVSValues;
+    QVSValues8= QVSValues;
+    QVSValues9= QVSValues;
+    QVSValues10= QVSValues;
     lowcutoff=1E-9;
-    highcutoff=1.5;
+    highcutoff=.99;
     [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(QVSValues,lowcutoff,highcutoff);
     QVS01(framecounter,1)=val01;
     QVS25(framecounter,1)=val25;
@@ -1020,6 +1107,59 @@ if(framecounter<=numSelectedFiles)
     QVSLow(framecounter,1)=fraclow;
     QVSHigh(framecounter,1)=frachigh;
     QVSNaN(framecounter,1)=fracNaN; 
+    iSubtract=0;
+    iSubval=0;
+ % Compute the Stats for Mask 1-Germany
+    sumMaskArea1=sum(sum(RasterAreaGrid.*Merra2WorkingMask1));
+    QVSValues1=QVSValues1.*Merra2WorkingMask1;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(QVSValues1,sumMaskArea1,lowcutoff,highcutoff);
+    QVStats(framecounter,1)=val50W;
+ % Compute the Stats for Mask 2-Finland
+    sumMaskArea2=sum(sum(RasterAreaGrid.*Merra2WorkingMask2));
+    QVSValues2=QVSValues2.*Merra2WorkingMask2;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(QVSValues2,sumMaskArea2,lowcutoff,highcutoff);
+    QVStats(framecounter,2)=val50W;
+ % Compute the Stats for Mask 3-UK
+    sumMaskArea3=sum(sum(RasterAreaGrid.*Merra2WorkingMask3));
+    QVSValues3=QVSValues3.*Merra2WorkingMask3;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(QVSValues3,sumMaskArea3,lowcutoff,highcutoff);
+    QVStats(framecounter,3)=val50W;
+ % Compute the Stats for Mask 4-Sudan
+    sumMaskArea4=sum(sum(RasterAreaGrid.*Merra2WorkingMask4));
+    QVSValues4=QVSValues4.*Merra2WorkingMask4;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(QVSValues4,sumMaskArea4,lowcutoff,highcutoff);
+    QVStats(framecounter,4)=val50W;
+ % Compute the Stats for Mask 5-SouthArica
+    sumMaskArea5=sum(sum(RasterAreaGrid.*Merra2WorkingMask5));
+    QVSValues5=QVSValues5.*Merra2WorkingMask5;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(QVSValues5,sumMaskArea5,lowcutoff,highcutoff);
+    QVStats(framecounter,5)=val50W;
+ % Compute the Stats for Mask 6-India
+    sumMaskArea6=sum(sum(RasterAreaGrid.*Merra2WorkingMask6));
+    QVSValues6=QVSValues6.*Merra2WorkingMask6;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(QVSValues6,sumMaskArea6,lowcutoff,highcutoff);
+    QVStats(framecounter,6)=val50W;
+ % Compute the Stats for Mask 7-Australia
+    sumMaskArea7=sum(sum(RasterAreaGrid.*Merra2WorkingMask7));
+    QVSValues7=QVSValues7.*Merra2WorkingMask7;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(QVSValues7,sumMaskArea7,lowcutoff,highcutoff);
+    QVStats(framecounter,7)=val50W;
+ % Compute the Stats for Mask 8-California
+    sumMaskArea8=sum(sum(RasterAreaGrid.*Merra2WorkingMask8));
+    QVSValues8=QVSValues8.*Merra2WorkingMask8;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(QVSValues8,sumMaskArea8,lowcutoff,highcutoff);
+    QVStats(framecounter,8)=val50W;
+ % Compute the Stats for Mask 9-Texas
+    sumMaskArea9=sum(sum(RasterAreaGrid.*Merra2WorkingMask9));
+    QVSValues9=QVSValues9.*Merra2WorkingMask9;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(QVSValues9,sumMaskArea9,lowcutoff,highcutoff);
+    QVStats(framecounter,9)=val50W;
+ % Compute the Stats for Mask 10-Peru
+    sumMaskArea10=sum(sum(RasterAreaGrid.*Merra2WorkingMask10));
+    QVSValues10=QVSValues10.*Merra2WorkingMask10;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(QVSValues10,sumMaskArea10,lowcutoff,highcutoff);
+    QVStats(framecounter,10)=val50W;
+    ab=1;
  % Continue with the Sea Level Pressure (kPA)
     SLPSValues=SLPS.values(:,:,iTimeSlice)/1000;
     fillvalue=SLPS.FillValue;
@@ -1057,6 +1197,15 @@ if(framecounter<=numSelectedFiles)
     lowcutoff=-100;
     highcutoff=100;
     TSValues1=TSValues+273.15;
+    TSValues2=TSValues1;
+    TSValues3=TSValues1;
+    TSValues4=TSValues1;
+    TSValues5=TSValues1;
+    TSValues6=TSValues1;
+    TSValues7=TSValues1;
+    TSValues8=TSValues1;
+    TSValues9=TSValues1;
+    TSValues10=TSValues1;
     [val01,val25,val50,val75,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStatsRev4(TSValues,lowcutoff,highcutoff);
     TS01(framecounter,1)=val01;
     TS25(framecounter,1)=val25;
@@ -1066,11 +1215,59 @@ if(framecounter<=numSelectedFiles)
     TS100(framecounter,1)=val100;
     TSLow(framecounter,1)=fraclow;
     TSHigh(framecounter,1)=frachigh;
-    TSNaN(framecounter,1)=fracNaN;    
-    sumMaskArea=sum(sum(RasterAreaGrid.*Merra2WorkingMask1));
+    TSNaN(framecounter,1)=fracNaN;  
+    iSubtract=1;
+    iSubval=273.15;
+ % Compute the Stats for Mask 1-Germany
+    sumMaskArea1=sum(sum(RasterAreaGrid.*Merra2WorkingMask1));
     TSValues1=TSValues1.*Merra2WorkingMask1;
-    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues1,100,400);
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues1,sumMaskArea1,100,400);
     TSStats(framecounter,1)=val50W;
+ % Compute the Stats for Mask 2-Finland
+    sumMaskArea2=sum(sum(RasterAreaGrid.*Merra2WorkingMask2));
+    TSValues2=TSValues2.*Merra2WorkingMask2;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues2,sumMaskArea2,100,400);
+    TSStats(framecounter,2)=val50W;
+ % Compute the Stats for Mask 3-UK
+    sumMaskArea3=sum(sum(RasterAreaGrid.*Merra2WorkingMask3));
+    TSValues3=TSValues3.*Merra2WorkingMask3;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues3,sumMaskArea3,100,400);
+    TSStats(framecounter,3)=val50W;
+ % Compute the Stats for Mask 4-Sudan
+    sumMaskArea4=sum(sum(RasterAreaGrid.*Merra2WorkingMask4));
+    TSValues4=TSValues4.*Merra2WorkingMask4;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues4,sumMaskArea4,100,400);
+    TSStats(framecounter,4)=val50W;
+ % Compute the Stats for Mask 5-SouthArica
+    sumMaskArea5=sum(sum(RasterAreaGrid.*Merra2WorkingMask5));
+    TSValues5=TSValues5.*Merra2WorkingMask5;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues5,sumMaskArea5,100,400);
+    TSStats(framecounter,5)=val50W;
+ % Compute the Stats for Mask 6-India
+    sumMaskArea6=sum(sum(RasterAreaGrid.*Merra2WorkingMask6));
+    TSValues6=TSValues6.*Merra2WorkingMask6;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues6,sumMaskArea6,100,400);
+    TSStats(framecounter,6)=val50W;
+ % Compute the Stats for Mask 7-Australia
+    sumMaskArea7=sum(sum(RasterAreaGrid.*Merra2WorkingMask7));
+    TSValues7=TSValues7.*Merra2WorkingMask7;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues7,sumMaskArea7,100,400);
+    TSStats(framecounter,7)=val50W;
+ % Compute the Stats for Mask 8-California
+    sumMaskArea8=sum(sum(RasterAreaGrid.*Merra2WorkingMask8));
+    TSValues8=TSValues8.*Merra2WorkingMask8;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues8,sumMaskArea8,100,400);
+    TSStats(framecounter,8)=val50W;
+ % Compute the Stats for Mask 9-Texas
+    sumMaskArea9=sum(sum(RasterAreaGrid.*Merra2WorkingMask9));
+    TSValues9=TSValues9.*Merra2WorkingMask9;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues9,sumMaskArea9,100,400);
+    TSStats(framecounter,9)=val50W;
+ % Compute the Stats for Mask 10-Peru
+    sumMaskArea10=sum(sum(RasterAreaGrid.*Merra2WorkingMask10));
+    TSValues10=TSValues10.*Merra2WorkingMask10;
+    [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues10,sumMaskArea10,100,400);
+    TSStats(framecounter,10)=val50W;
     ab=1;
   % East Wind Component(m/s)
     USValues=US.values(:,:,iPress42,iTimeSlice);
@@ -1334,9 +1531,87 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   vsstr=strcat('Created VSTT-','Contains North Wind Data-',num2str(4));
   fprintf(fid,'%s\n',vsstr);
-
-
-
+%% Create Table For Temps For First 5 Countries
+    TSStatsTable=table(TSStats(:,1),TSStats(:,2),TSStats(:,3),TSStats(:,4),TSStats(:,5),...
+         'VariableNames',{'Germany','Finland','UK','Sudan','SouthAfrica'});
+    TSSTT = table2timetable(TSStatsTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='TSStatsTable TSSTT';
+    MatFileName=strcat('TSStatsTable',YearMonthStr,TimeStr,'-PrsLvl-',num2str(iPress42,2),'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    tssstr=strcat('Created TSSTT-','Contains Five Country Temp Data-',num2str(4));
+    fprintf(fid,'%s\n',tssstr);
+%% Create Table For Temps For Second 5 Countries
+    TSStats2Table=table(TSStats(:,6),TSStats(:,7),TSStats(:,8),TSStats(:,9),TSStats(:,10),...
+         'VariableNames',{'India','Australia','California','Texas','Peru'});
+    TSS2TT = table2timetable(TSStats2Table,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='TSStats2Table TSS2TT';
+    MatFileName=strcat('TSStats2Table',YearMonthStr,TimeStr,'-PrsLvl-',num2str(iPress42,2),'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    tss2str=strcat('Created TSS2TT-','Contains Second 6 Country Country Temp Data-',num2str(4));
+    fprintf(fid,'%s\n',tss2str);
+    ab=1;
+%% Create Table For Specific Humidity For First 5 Countries
+    QVStatsTable=table(QVStats(:,1),QVStats(:,2),QVStats(:,3),QVStats(:,4),QVStats(:,5),...
+         'VariableNames',{'Germany','Finland','UK','Sudan','SouthAfrica'});
+    QVStatTT = table2timetable(QVStatsTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='QVStatsTable QVStatTT';
+    MatFileName=strcat('QVStatsTable',YearMonthStr,TimeStr,'-PrsLvl-',num2str(iPress42,2),'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    qvsstr=strcat('Created QVStatSTT-','Contains Five Country QV Data-',num2str(4));
+    fprintf(fid,'%s\n',qvsstr);
+%% Create Table For Temps For Second 5 Countries
+    QVStats2Table=table(QVStats(:,6),QVStats(:,7),QVStats(:,8),QVStats(:,9),QVStats(:,10),...
+         'VariableNames',{'India','Australia','California','Texas','Peru'});
+    QVStat2TT = table2timetable(QVStats2Table,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='QVStats2Table QVStat2TT';
+    MatFileName=strcat('QVStats2Table',YearMonthStr,TimeStr,'-PrsLvl-',num2str(iPress42,2),'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    qvss2str=strcat('Created QVStat2TT-','Contains Second 6 Country Country QV Data-',num2str(4));
+    fprintf(fid,'%s\n',qvss2str);
+    ab=1;
+%% Create Table For Ozone Mixing Ratio For First 5 Countries
+    O3StatsTable=table(O3Stats(:,1),O3Stats(:,2),O3Stats(:,3),O3Stats(:,4),O3Stats(:,5),...
+         'VariableNames',{'Germany','Finland','UK','Sudan','SouthAfrica'});
+    O3StatTT = table2timetable(O3StatsTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='O3StatsTable O3StatTT';
+    MatFileName=strcat('O3StatsTable',YearMonthStr,TimeStr,'-PrsLvl-',num2str(iPress42,2),'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    o3str=strcat('Created O3StatSTT-','Contains Five Country O3 Data-',num2str(4));
+    fprintf(fid,'%s\n',o3str);
+%% Create Table For Temps For Second 5 Countries
+    O3Stats2Table=table(O3Stats(:,6),O3Stats(:,7),O3Stats(:,8),O3Stats(:,9),O3Stats(:,10),...
+         'VariableNames',{'India','Australia','California','Texas','Peru'});
+    O3Stat2TT = table2timetable(O3Stats2Table,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='O3Stats2Table O3Stat2TT';
+    MatFileName=strcat('O3Stats2Table',YearMonthStr,TimeStr,'-PrsLvl-',num2str(iPress42,2),'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    o32str=strcat('Created O3Stat2TT-','Contains Second 6 Country Country O3 Data-',num2str(4));
+    fprintf(fid,'%s\n',o32str);
+    ab=1;
 %% Plot the Geopotential Height Results
    titlestr=strcat('Monthly-Averaged-GeoPotential-Temp-',num2str(yd));
    ikind=1;
@@ -1393,6 +1668,47 @@ if(framecounter==numSelectedFiles)
    iNewChapter=0;
    iCloseChapter=1;
    PlotDataset03Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
-
+%% Now create a section for the Region 1 Median Temperatures
+   titlestr=strcat('Monthly-Averaged-Region1-Temps-',num2str(yd));
+   ikind=10;
+   iAddToReport=1;
+   iNewChapter=1;
+   iCloseChapter=0;
+   PlotDataset03RegionsTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Now create a section for the Region 2 Median Temperatures
+   titlestr=strcat('Monthly-Averaged-Region2-Temps-',num2str(yd));
+   ikind=11;
+   iAddToReport=1;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset03RegionsTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Now create a section for the Region 1 Median Specific Humidity
+   titlestr=strcat('Monthly-Averaged-Region1-SHumidity-',num2str(yd));
+   ikind=12;
+   iAddToReport=1;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset03RegionsTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Now create a section for the Region 2 Median Specific Humidity
+   titlestr=strcat('Monthly-Averaged-Region2-SHumidity-',num2str(yd));
+   ikind=13;
+   iAddToReport=1;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset03RegionsTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Now create a section for the Region 1 Median Ozone Mixing Ratio
+   titlestr=strcat('Monthly-Averaged-Region1-O3Ratio-',num2str(yd));
+   ikind=14;
+   iAddToReport=1;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset03RegionsTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Now create a section for the Region 2 Median Ozone Mixing Ratio
+   titlestr=strcat('Monthly-Averaged-Region2-O3Ratio-',num2str(yd));
+   ikind=15;
+   iAddToReport=1;
+   iNewChapter=0;
+   iCloseChapter=1;
+   PlotDataset03RegionsTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
 end
 

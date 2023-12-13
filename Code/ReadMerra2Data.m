@@ -157,7 +157,7 @@ oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
 %% Set Flags and default values
 % Set some flags to control program execution
 iCreatePDFReport=1;
-iSkipReportFrames=4;
+iSkipReportFrames=8;
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
@@ -1301,10 +1301,56 @@ end
         ROIName9='Texas';
         ROIName10='Peru';
         eval(['cd ' maskpath(1:length(maskpath)-1)]);
-% Load the Mask for ROIName1
-        maskVar='Merra2GermanyMask';
-        load('GermanyMask.mat',maskVar);
-        Merra2WorkingMask1=eval(maskVar);
+% Load the Mask for ROIName1-Gemany
+        maskVar1='Merra2GermanyMask';
+        load('GermanyMask.mat',maskVar1);
+        Merra2WorkingMask1=eval(maskVar1);
+        Merra2WorkingMask1size=sum(sum(Merra2WorkingMask1));
+% Load the Mask for ROIName2-Finland
+        maskVar2='Merra2FinlandMask';
+        load('FinlandMask.mat',maskVar2);
+        Merra2WorkingMask2=eval(maskVar2);
+        Merra2WorkingMask2size=sum(sum(Merra2WorkingMask2));
+% Load the Mask for ROIName3-UK
+        maskVar3='Merra2UKMask';
+        load('UKMask.mat',maskVar3);
+        Merra2WorkingMask3=eval(maskVar3);
+        Merra2WorkingMask3size=sum(sum(Merra2WorkingMask3));
+% Load the Mask for ROIName4-Sudan
+        maskVar4='Merra2SudanMask';
+        load('SudanMask.mat',maskVar4);
+        Merra2WorkingMask4=eval(maskVar4);
+        Merra2WorkingMask4size=sum(sum(Merra2WorkingMask4));
+% Load the Mask for ROIName5-SouthAfrica
+        maskVar5='Merra2SouthAfricaMask';
+        load('SouthAfricaMask.mat',maskVar5);
+        Merra2WorkingMask5=eval(maskVar5);
+        Merra2WorkingMask5size=sum(sum(Merra2WorkingMask5));
+% Load the Mask for ROIName6-India
+        maskVar6='Merra2IndiaMask';
+        load('IndiaMask.mat',maskVar6);
+        Merra2WorkingMask6=eval(maskVar6);
+        Merra2WorkingMask6size=sum(sum(Merra2WorkingMask6));
+% Load the Mask for ROIName7-Australia
+        maskVar7='Merra2AustraliaMask';
+        load('AustraliaMask.mat',maskVar7);
+        Merra2WorkingMask7=eval(maskVar7);
+        Merra2WorkingMask7size=sum(sum(Merra2WorkingMask7));
+% Load the Mask for ROIName8-California
+        maskVar8='Merra2CaliforniaMask';
+        load('CaliforniaMask.mat',maskVar8);
+        Merra2WorkingMask8=eval(maskVar8);
+        Merra2WorkingMask8size=sum(sum(Merra2WorkingMask8));
+% Load the Mask for ROIName9-Texas
+        maskVar9='Merra2TexasMask';
+        load('TexasMask.mat',maskVar9);
+        Merra2WorkingMask9=eval(maskVar9);
+        Merra2WorkingMask9size=sum(sum(Merra2WorkingMask9));
+% Load the Mask for ROIName10-Peru
+        maskVar10='Merra2PeruMask';
+        load('PeruMask.mat',maskVar10);
+        Merra2WorkingMask10=eval(maskVar10);
+        Merra2WorkingMask10size=sum(sum(Merra2WorkingMask10));
         ab=1;
         for nn=1:numSelectedFiles
             nowFile=Merra2FileNames{nn,1}; 
@@ -1805,7 +1851,6 @@ else
 end
 % Set current directory back to the code folder
 eval(['cd ' codepath(1:length(codepath)-1)]);
-
 
 
 ab=2;
