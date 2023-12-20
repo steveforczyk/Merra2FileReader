@@ -157,7 +157,7 @@ oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
 %% Set Flags and default values
 % Set some flags to control program execution
 iCreatePDFReport=1;
-iSkipReportFrames=8;
+iSkipReportFrames=2;
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
