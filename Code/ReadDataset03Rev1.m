@@ -1218,6 +1218,7 @@ if(framecounter<=numSelectedFiles)
     TSNaN(framecounter,1)=fracNaN;  
     iSubtract=1;
     iSubval=273.15;
+%% Make a summary table for the Air Temperature 
  % Compute the Stats for Mask 1-Germany
     sumMaskArea1=sum(sum(RasterAreaGrid.*Merra2WorkingMask1));
     TSValues1=TSValues1.*Merra2WorkingMask1;
@@ -1268,7 +1269,6 @@ if(framecounter<=numSelectedFiles)
     TSValues10=TSValues10.*Merra2WorkingMask10;
     [val01W,val25W,val50W,val75W,val90W,val100W,fraclowW,frachighW,fracgoodW,fracNaNW] = GetWDistributionStats(TSValues10,sumMaskArea10,100,400);
     TSStats(framecounter,10)=val50W;
-    ab=1;
   % East Wind Component(m/s)
     USValues=US.values(:,:,iPress42,iTimeSlice);
     fillvalue=US.FillValue;
