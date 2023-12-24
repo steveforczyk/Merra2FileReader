@@ -53,7 +53,6 @@ hy=ylabel('QV-Kg/Kg','FontWeight','bold');
 set(hy,'FontWeight','bold','FontSize',12);
 legend('Location','NorthEast','FontWeight','bold');
 grid on
-ab=1;
 %% Add a logo
 if(iLogo==1)
     eval(['cd ' govjpegpath(1:length(govjpegpath)-1)]);
@@ -82,7 +81,6 @@ txtstr2=strcat('GoodnessOf Fit adjusted rquare =',num2str(adjrsquare,4),'-RMSE-'
 txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
 set(newaxesh,'Visible','Off');
 pause(chart_time);
-%close('all');
 %% Save the chart
 figstr=strcat(titlestr,'.jpg');
 eval(['cd ' jpegpath(1:length(jpegpath)-1)]);

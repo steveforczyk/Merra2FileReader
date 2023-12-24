@@ -2833,7 +2833,7 @@ elseif(iSelect==2)
         rmse=gofJanRegion2.rmse;
         GofStats1(1,2)=adjrsquare;
         GofStats2(1,2)=rmse;
-        
+
         PlotRegionalQVFit(FitJanQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofJanRegion2,titlestr)
     end
 
@@ -2868,12 +2868,2104 @@ elseif(iSelect==2)
         [FitJanQVRegion4,gofJanRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
         adjrsquare=gofJanRegion4.adjrsquare;
         rmse=gofJanRegion4.rmse;
-        GofStats1(1,3)=adjrsquare;
-        GofStats2(1,3)=rmse;
+        GofStats1(1,4)=adjrsquare;
+        GofStats2(1,4)=rmse;
         PlotRegionalQVFit(FitJanQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofJanRegion4,titlestr)
+    end
+
+  % Continue With Jan Region 5
+    MeasTimes=TimeFrac(:,1);
+    MeasQV=JanQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jan','-FitType-',num2str(ifittype));
+        [FitJanQVRegion5,gofJanRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJanRegion5.adjrsquare;
+        rmse=gofJanRegion5.rmse;
+        GofStats1(1,5)=adjrsquare;
+        GofStats2(1,5)=rmse;
+        PlotRegionalQVFit(FitJanQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofJanRegion5,titlestr)
+    end
+
+% Continue With Jan Region 6  
+    MeasTimes=TimeFrac(:,1);
+    MeasQV=JanQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jan','-FitType-',num2str(ifittype));
+        [FitJanQVRegion6,gofJanRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJanRegion6.adjrsquare;
+        rmse=gofJanRegion6.rmse;
+        GofStats1(1,6)=adjrsquare;
+        GofStats2(1,6)=rmse;
+        PlotRegionalQVFit(FitJanQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofJanRegion6,titlestr)
+    end
+
+ % Continue With Jan Region 7  
+    MeasTimes=TimeFrac(:,1);
+    MeasQV=JanQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jan','-FitType-',num2str(ifittype));
+        [FitJanQVRegion7,gofJanRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJanRegion7.adjrsquare;
+        rmse=gofJanRegion7.rmse;
+        GofStats1(1,7)=adjrsquare;
+        GofStats2(1,7)=rmse;
+        PlotRegionalQVFit(FitJanQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofJanRegion7,titlestr)
+    end
+
+  % Continue With Jan Region 8 
+    MeasTimes=TimeFrac(:,1);
+    MeasQV=JanQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jan','-FitType-',num2str(ifittype));
+        [FitJanQVRegion8,gofJanRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJanRegion8.adjrsquare;
+        rmse=gofJanRegion8.rmse;
+        GofStats1(1,8)=adjrsquare;
+        GofStats2(1,8)=rmse;
+        PlotRegionalQVFit(FitJanQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofJanRegion8,titlestr)
+    end
+
+  % Continue With Jan Region 9
+    MeasTimes=TimeFrac(:,1);
+    MeasQV=JanQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jan','-FitType-',num2str(ifittype));
+        [FitJanQVRegion9,gofJanRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJanRegion9.adjrsquare;
+        rmse=gofJanRegion9.rmse;
+        GofStats1(1,9)=adjrsquare;
+        GofStats2(1,9)=rmse;
+        PlotRegionalQVFit(FitJanQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofJanRegion9,titlestr)
+    end
+
+  % Continue With Jan Region 10
+    MeasTimes=TimeFrac(:,1);
+    MeasQV=JanQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jan','-FitType-',num2str(ifittype));
+        [FitJanQVRegion10,gofJanRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJanRegion10.adjrsquare;
+        rmse=gofJanRegion10.rmse;
+        GofStats1(1,10)=adjrsquare;
+        GofStats2(1,10)=rmse;
+        PlotRegionalQVFit(FitJanQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofJanRegion10,titlestr)
+    end
+
+% Start With Feb for Region 1
+    MeasTimes=TimeFrac(:,2);
+    MeasQV=FebQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Feb','-FitType-',num2str(ifittype));
+        [FitFebQVRegion1,gofFebRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofFebRegion1.adjrsquare;
+        rmse=gofFebRegion1.rmse;
+        GofStats1(2,1)=adjrsquare;
+        GofStats2(2,1)=rmse;
+        PlotRegionalQVFit(FitFebQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofFebRegion1,titlestr)
+    end
+
+% Continue With Feb Region 2
+    MeasTimes=TimeFrac(:,2);
+    MeasQV=FebQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Feb','-FitType-',num2str(ifittype));
+        [FitFebQVRegion2,gofFebRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofFebRegion2.adjrsquare;
+        rmse=gofFebRegion2.rmse;
+        GofStats1(2,2)=adjrsquare;
+        GofStats2(2,2)=rmse;
+        PlotRegionalQVFit(FitFebQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofFebRegion2,titlestr)
+    end
+
+ % Continue With Feb Region 3
+    MeasTimes=TimeFrac(:,2);
+    MeasQV=FebQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Feb','-FitType-',num2str(ifittype));
+        [FitFebQVRegion3,gofFebRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofFebRegion3.adjrsquare;
+        rmse=gofFebRegion3.rmse;
+        GofStats1(2,3)=adjrsquare;
+        GofStats2(2,3)=rmse;
+        PlotRegionalQVFit(FitFebQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofFebRegion3,titlestr)
+    end
+
+  % Continue With Feb Region 4
+    MeasTimes=TimeFrac(:,2);
+    MeasQV=FebQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Feb','-FitType-',num2str(ifittype));
+        [FitFebQVRegion4,gofFebRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofFebRegion4.adjrsquare;
+        rmse=gofFebRegion4.rmse;
+        GofStats1(2,4)=adjrsquare;
+        GofStats2(2,4)=rmse;
+        PlotRegionalQVFit(FitFebQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofFebRegion4,titlestr)
+    end
+
+  % Continue With Feb Region 5
+    MeasTimes=TimeFrac(:,2);
+    MeasQV=FebQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Feb','-FitType-',num2str(ifittype));
+        [FitFebQVRegion5,gofFebRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofFebRegion5.adjrsquare;
+        rmse=gofFebRegion5.rmse;
+        GofStats1(2,5)=adjrsquare;
+        GofStats2(2,5)=rmse;
+        PlotRegionalQVFit(FitFebQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofFebRegion5,titlestr)
+    end
+
+% Continue With Feb Region 6  
+    MeasTimes=TimeFrac(:,2);
+    MeasQV=FebQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Feb','-FitType-',num2str(ifittype));
+        [FitFebQVRegion6,gofFebRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofFebRegion6.adjrsquare;
+        rmse=gofFebRegion6.rmse;
+        GofStats1(2,6)=adjrsquare;
+        GofStats2(2,6)=rmse;
+        PlotRegionalQVFit(FitFebQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofFebRegion6,titlestr)
+    end
+
+ % Continue With Feb Region 7  
+    MeasTimes=TimeFrac(:,2);
+    MeasQV=FebQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Feb','-FitType-',num2str(ifittype));
+        [FitFebQVRegion7,gofFebRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofFebRegion7.adjrsquare;
+        rmse=gofFebRegion7.rmse;
+        GofStats1(2,7)=adjrsquare;
+        GofStats2(2,7)=rmse;
+        PlotRegionalQVFit(FitFebQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofFebRegion7,titlestr)
+    end
+
+  % Continue With Feb Region 8 
+    MeasTimes=TimeFrac(:,2);
+    MeasQV=FebQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Feb','-FitType-',num2str(ifittype));
+        [FitFebQVRegion8,gofFebRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofFebRegion8.adjrsquare;
+        rmse=gofFebRegion8.rmse;
+        GofStats1(2,8)=adjrsquare;
+        GofStats2(2,8)=rmse;
+        PlotRegionalQVFit(FitFebQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofFebRegion8,titlestr)
+    end
+
+  % Continue With Feb Region 9
+    MeasTimes=TimeFrac(:,2);
+    MeasQV=FebQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Feb','-FitType-',num2str(ifittype));
+        [FitFebQVRegion9,gofFebRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofFebRegion9.adjrsquare;
+        rmse=gofFebRegion9.rmse;
+        GofStats1(2,9)=adjrsquare;
+        GofStats2(2,9)=rmse;
+        PlotRegionalQVFit(FitFebQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofFebRegion9,titlestr)
+    end
+
+  % Continue With Feb Region 10
+    MeasTimes=TimeFrac(:,2);
+    MeasQV=FebQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Feb','-FitType-',num2str(ifittype));
+        [FitFebQVRegion10,gofFebRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofFebRegion10.adjrsquare;
+        rmse=gofFebRegion10.rmse;
+        GofStats1(2,10)=adjrsquare;
+        GofStats2(2,10)=rmse;
+        PlotRegionalQVFit(FitFebQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofFebRegion10,titlestr)
+    end
+
+ % Start With Mar for Region 1
+    MeasTimes=TimeFrac(:,3);
+    MeasQV=MarQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Mar','-FitType-',num2str(ifittype));
+        [FitMarQVRegion1,gofMarRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMarRegion1.adjrsquare;
+        rmse=gofMarRegion1.rmse;
+        GofStats1(3,1)=adjrsquare;
+        GofStats2(3,1)=rmse;
+        PlotRegionalQVFit(FitMarQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofMarRegion1,titlestr)
+    end
+
+% Continue With Mar Region 2
+    MeasTimes=TimeFrac(:,3);
+    MeasQV=MarQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Mar','-FitType-',num2str(ifittype));
+        [FitMarQVRegion2,gofMarRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMarRegion2.adjrsquare;
+        rmse=gofMarRegion2.rmse;
+        GofStats1(3,2)=adjrsquare;
+        GofStats2(3,2)=rmse;
+        PlotRegionalQVFit(FitMarQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofMarRegion2,titlestr)
+    end
+
+ % Continue With Mar Region 3
+    MeasTimes=TimeFrac(:,3);
+    MeasQV=MarQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Mar','-FitType-',num2str(ifittype));
+        [FitMarQVRegion3,gofMarRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMarRegion3.adjrsquare;
+        rmse=gofMarRegion3.rmse;
+        GofStats1(3,3)=adjrsquare;
+        GofStats2(3,3)=rmse;
+        PlotRegionalQVFit(FitMarQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofMarRegion3,titlestr)
+    end
+
+  % Continue With Mar Region 4
+    MeasTimes=TimeFrac(:,3);
+    MeasQV=MarQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Mar','-FitType-',num2str(ifittype));
+        [FitMarQVRegion4,gofMarRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMarRegion4.adjrsquare;
+        rmse=gofMarRegion4.rmse;
+        GofStats1(3,4)=adjrsquare;
+        GofStats2(3,4)=rmse;
+        PlotRegionalQVFit(FitMarQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofMarRegion4,titlestr)
+    end
+
+  % Continue With Mar Region 5
+    MeasTimes=TimeFrac(:,3);
+    MeasQV=MarQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Mar','-FitType-',num2str(ifittype));
+        [FitMarQVRegion5,gofMarRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMarRegion5.adjrsquare;
+        rmse=gofMarRegion5.rmse;
+        GofStats1(3,5)=adjrsquare;
+        GofStats2(3,5)=rmse;
+        PlotRegionalQVFit(FitMarQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofMarRegion5,titlestr)
+    end
+
+% Continue With Mar Region 6  
+    MeasTimes=TimeFrac(:,3);
+    MeasQV=MarQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Mar','-FitType-',num2str(ifittype));
+        [FitMarQVRegion6,gofMarRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMarRegion6.adjrsquare;
+        rmse=gofMarRegion6.rmse;
+        GofStats1(3,6)=adjrsquare;
+        GofStats2(3,6)=rmse;
+        PlotRegionalQVFit(FitMarQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofMarRegion6,titlestr)
+    end
+
+ % Continue With Mar Region 7  
+    MeasTimes=TimeFrac(:,3);
+    MeasQV=MarQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Mar','-FitType-',num2str(ifittype));
+        [FitMarQVRegion7,gofMarRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMarRegion7.adjrsquare;
+        rmse=gofMarRegion7.rmse;
+        GofStats1(3,7)=adjrsquare;
+        GofStats2(3,7)=rmse;
+        PlotRegionalQVFit(FitMarQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofMarRegion7,titlestr)
+    end
+
+  % Continue With Mar Region 8 
+    MeasTimes=TimeFrac(:,3);
+    MeasQV=MarQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Mar','-FitType-',num2str(ifittype));
+        [FitMarQVRegion8,gofMarRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMarRegion8.adjrsquare;
+        rmse=gofMarRegion8.rmse;
+        GofStats1(3,8)=adjrsquare;
+        GofStats2(3,8)=rmse;
+        PlotRegionalQVFit(FitMarQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofMarRegion8,titlestr)
+    end
+
+  % Continue With Mar Region 9
+    MeasTimes=TimeFrac(:,3);
+    MeasQV=MarQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Mar','-FitType-',num2str(ifittype));
+        [FitMarQVRegion9,gofMarRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMarRegion9.adjrsquare;
+        rmse=gofMarRegion9.rmse;
+        GofStats1(3,9)=adjrsquare;
+        GofStats2(3,9)=rmse;
+        PlotRegionalQVFit(FitMarQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofMarRegion9,titlestr)
+    end
+
+  % Continue With Mar Region 10
+    MeasTimes=TimeFrac(:,3);
+    MeasQV=MarQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Mar','-FitType-',num2str(ifittype));
+        [FitMarQVRegion10,gofMarRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMarRegion10.adjrsquare;
+        rmse=gofMarRegion10.rmse;
+        GofStats1(3,10)=adjrsquare;
+        GofStats2(3,10)=rmse;
+        PlotRegionalQVFit(FitMarQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofMarRegion10,titlestr)
+    end
+
+ % Start With Apr for Region 1
+    MeasTimes=TimeFrac(:,4);
+    MeasQV=AprQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
+        [FitAprQVRegion1,gofAprRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAprRegion1.adjrsquare;
+        rmse=gofAprRegion1.rmse;
+        GofStats1(4,1)=adjrsquare;
+        GofStats2(4,1)=rmse;
+        PlotRegionalQVFit(FitAprQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofAprRegion1,titlestr)
+    end
+
+% Continue With Apr Region 2
+    MeasTimes=TimeFrac(:,4);
+    MeasQV=AprQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
+        [FitAprQVRegion2,gofAprRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAprRegion2.adjrsquare;
+        rmse=gofAprRegion2.rmse;
+        GofStats1(4,2)=adjrsquare;
+        GofStats2(4,2)=rmse;
+        PlotRegionalQVFit(FitAprQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofAprRegion2,titlestr)
+    end
+
+ % Continue With Apr Region 3
+    MeasTimes=TimeFrac(:,4);
+    MeasQV=AprQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
+        [FitAprQVRegion3,gofAprRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAprRegion3.adjrsquare;
+        rmse=gofAprRegion3.rmse;
+        GofStats1(4,3)=adjrsquare;
+        GofStats2(4,3)=rmse;
+        PlotRegionalQVFit(FitAprQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofAprRegion3,titlestr)
+    end
+
+  % Continue With Apr Region 4
+    MeasTimes=TimeFrac(:,4);
+    MeasQV=AprQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
+        [FitAprQVRegion4,gofAprRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAprRegion4.adjrsquare;
+        rmse=gofAprRegion4.rmse;
+        GofStats1(4,4)=adjrsquare;
+        GofStats2(4,4)=rmse;
+        PlotRegionalQVFit(FitAprQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofAprRegion4,titlestr)
+    end
+
+  % Continue With Apr Region 5
+    MeasTimes=TimeFrac(:,4);
+    MeasQV=AprQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
+        [FitAprQVRegion5,gofAprRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAprRegion5.adjrsquare;
+        rmse=gofAprRegion5.rmse;
+        GofStats1(4,5)=adjrsquare;
+        GofStats2(4,5)=rmse;
+        PlotRegionalQVFit(FitAprQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofAprRegion5,titlestr)
+    end
+
+% Continue With Apr Region 6  
+    MeasTimes=TimeFrac(:,4);
+    MeasQV=AprQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
+        [FitAprQVRegion6,gofAprRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAprRegion6.adjrsquare;
+        rmse=gofAprRegion6.rmse;
+        GofStats1(4,6)=adjrsquare;
+        GofStats2(4,6)=rmse;
+        PlotRegionalQVFit(FitAprQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofAprRegion6,titlestr)
+    end
+
+ % Continue With Apr Region 7  
+    MeasTimes=TimeFrac(:,4);
+    MeasQV=AprQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
+        [FitAprQVRegion7,gofAprRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAprRegion7.adjrsquare;
+        rmse=gofAprRegion7.rmse;
+        GofStats1(4,7)=adjrsquare;
+        GofStats2(4,7)=rmse;
+        PlotRegionalQVFit(FitAprQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofAprRegion7,titlestr)
+    end
+
+  % Continue With Apr Region 8 
+    MeasTimes=TimeFrac(:,4);
+    MeasQV=AprQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
+        [FitAprQVRegion8,gofAprRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAprRegion8.adjrsquare;
+        rmse=gofAprRegion8.rmse;
+        GofStats1(4,8)=adjrsquare;
+        GofStats2(4,8)=rmse;
+        PlotRegionalQVFit(FitAprQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofAprRegion8,titlestr)
+    end
+
+  % Continue With Apr Region 9
+    MeasTimes=TimeFrac(:,4);
+    MeasQV=AprQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
+        [FitAprQVRegion9,gofAprRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAprRegion9.adjrsquare;
+        rmse=gofAprRegion9.rmse;
+        GofStats1(4,9)=adjrsquare;
+        GofStats2(4,9)=rmse;
+        PlotRegionalQVFit(FitAprQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofAprRegion9,titlestr)
+    end
+
+  % Continue With Apr Region 10
+    MeasTimes=TimeFrac(:,4);
+    MeasQV=AprQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
+        [FitAprQVRegion10,gofAprRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAprRegion10.adjrsquare;
+        rmse=gofAprRegion10.rmse;        
+        GofStats1(4,10)=adjrsquare;
+        GofStats2(4,10)=rmse;
+        PlotRegionalQVFit(FitAprQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofAprRegion10,titlestr)
+    end
+
+  % Start With May for Region 1
+    MeasTimes=TimeFrac(:,5);
+    MeasQV=MayQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
+        [FitMayQVRegion1,gofMayRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMayRegion1.adjrsquare;
+        rmse=gofMayRegion1.rmse;
+        GofStats1(5,1)=adjrsquare;
+        GofStats2(5,1)=rmse;
+        PlotRegionalQVFit(FitMayQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofMayRegion1,titlestr)
+    end
+
+% Continue With May Region 2
+    MeasTimes=TimeFrac(:,5);
+    MeasQV=MayQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
+        [FitMayQVRegion2,gofMayRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMayRegion2.adjrsquare;
+        rmse=gofMayRegion2.rmse;
+        GofStats1(5,2)=adjrsquare;
+        GofStats2(5,2)=rmse;
+        PlotRegionalQVFit(FitMayQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofMayRegion2,titlestr)
+    end
+
+ % Continue With May Region 3
+    MeasTimes=TimeFrac(:,5);
+    MeasQV=MayQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
+        [FitMayQVRegion3,gofMayRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMayRegion3.adjrsquare;
+        rmse=gofMayRegion3.rmse;
+        GofStats1(5,3)=adjrsquare;
+        GofStats2(5,3)=rmse;
+        PlotRegionalQVFit(FitMayQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofMayRegion3,titlestr)
+    end
+
+  % Continue With May Region 4
+    MeasTimes=TimeFrac(:,5);
+    MeasQV=MayQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
+        [FitMayQVRegion4,gofMayRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMayRegion4.adjrsquare;
+        rmse=gofMayRegion4.rmse;
+        GofStats1(5,4)=adjrsquare;
+        GofStats2(5,4)=rmse;
+        PlotRegionalQVFit(FitMayQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofMayRegion4,titlestr)
+    end
+
+  % Continue With May Region 5
+    MeasTimes=TimeFrac(:,5);
+    MeasQV=MayQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
+        [FitMayQVRegion5,gofMayRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMayRegion5.adjrsquare;
+        rmse=gofMayRegion5.rmse;
+        GofStats1(5,5)=adjrsquare;
+        GofStats2(5,5)=rmse;
+        PlotRegionalQVFit(FitMayQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofMayRegion5,titlestr)
+    end
+
+% Continue With May Region 6  
+    MeasTimes=TimeFrac(:,5);
+    MeasQV=MayQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
+        [FitMayQVRegion6,gofMayRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMayRegion6.adjrsquare;
+        rmse=gofMayRegion6.rmse;
+        GofStats1(5,6)=adjrsquare;
+        GofStats2(5,6)=rmse;
+        PlotRegionalQVFit(FitMayQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofMayRegion6,titlestr)
+    end
+
+ % Continue With May Region 7  
+    MeasTimes=TimeFrac(:,5);
+    MeasQV=MayQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
+        [FitMayQVRegion7,gofMayRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMayRegion7.adjrsquare;
+        rmse=gofMayRegion7.rmse;
+        GofStats1(5,7)=adjrsquare;
+        GofStats2(5,7)=rmse;
+        PlotRegionalQVFit(FitMayQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofMayRegion7,titlestr)
+    end
+
+  % Continue With May Region 8 
+    MeasTimes=TimeFrac(:,5);
+    MeasQV=MayQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
+        [FitMayQVRegion8,gofMayRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMayRegion8.adjrsquare;
+        rmse=gofMayRegion8.rmse;
+        GofStats1(5,8)=adjrsquare;
+        GofStats2(5,8)=rmse;
+        PlotRegionalQVFit(FitMayQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofMayRegion8,titlestr)
+    end
+
+  % Continue With May Region 9
+    MeasTimes=TimeFrac(:,5);
+    MeasQV=MayQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
+        [FitMayQVRegion9,gofMayRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMayRegion9.adjrsquare;
+        rmse=gofMayRegion9.rmse;
+        GofStats1(5,9)=adjrsquare;
+        GofStats2(5,9)=rmse;
+        PlotRegionalQVFit(FitMayQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofMayRegion9,titlestr)
+    end
+
+  % Continue With May Region 10
+    MeasTimes=TimeFrac(:,5);
+    MeasQV=MayQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
+        [FitMayQVRegion10,gofMayRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofMayRegion10.adjrsquare;
+        rmse=gofMayRegion10.rmse;        
+        GofStats1(5,10)=adjrsquare;
+        GofStats2(5,10)=rmse;
+        PlotRegionalQVFit(FitMayQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofMayRegion10,titlestr)
+    end
+
+  % Start With June for Region 1
+    MeasTimes=TimeFrac(:,6);
+    MeasQV=JunQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-June','-FitType-',num2str(ifittype));
+        [FitJunQVRegion1,gofJunRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJunRegion1.adjrsquare;
+        rmse=gofJunRegion1.rmse;
+        GofStats1(6,1)=adjrsquare;
+        GofStats2(6,1)=rmse;
+        PlotRegionalQVFit(FitJunQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofJunRegion1,titlestr)
+    end
+
+% Continue With Jun Region 2
+    MeasTimes=TimeFrac(:,6);
+    MeasQV=JunQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jun','-FitType-',num2str(ifittype));
+        [FitJunQVRegion2,gofJunRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJunRegion2.adjrsquare;
+        rmse=gofJunRegion2.rmse;
+        GofStats1(6,2)=adjrsquare;
+        GofStats2(6,2)=rmse;
+        PlotRegionalQVFit(FitJunQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofJunRegion2,titlestr)
+    end
+
+ % Continue With Jun Region 3
+    MeasTimes=TimeFrac(:,6);
+    MeasQV=JunQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jun','-FitType-',num2str(ifittype));
+        [FitJunQVRegion3,gofJunRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJunRegion3.adjrsquare;
+        rmse=gofJunRegion3.rmse;
+        GofStats1(6,3)=adjrsquare;
+        GofStats2(6,3)=rmse;
+        PlotRegionalQVFit(FitJunQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofJunRegion3,titlestr)
+    end
+
+  % Continue With Jun Region 4
+    MeasTimes=TimeFrac(:,6);
+    MeasQV=JunQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jun','-FitType-',num2str(ifittype));
+        [FitJunQVRegion4,gofJunRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJunRegion4.adjrsquare;
+        rmse=gofJunRegion4.rmse;
+        GofStats1(6,4)=adjrsquare;
+        GofStats2(6,4)=rmse;
+        PlotRegionalQVFit(FitJunQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofJunRegion4,titlestr)
+    end
+
+  % Continue With Jun Region 5
+    MeasTimes=TimeFrac(:,6);
+    MeasQV=JunQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jun','-FitType-',num2str(ifittype));
+        [FitJunQVRegion5,gofJunRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJunRegion5.adjrsquare;
+        rmse=gofJunRegion5.rmse;
+        GofStats1(6,5)=adjrsquare;
+        GofStats2(6,5)=rmse;
+        PlotRegionalQVFit(FitJunQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofJunRegion5,titlestr)
+    end
+
+% Continue With Jun Region 6  
+    MeasTimes=TimeFrac(:,6);
+    MeasQV=JunQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jun','-FitType-',num2str(ifittype));
+        [FitJunQVRegion6,gofJunRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJunRegion6.adjrsquare;
+        rmse=gofJunRegion6.rmse;
+        GofStats1(6,6)=adjrsquare;
+        GofStats2(6,6)=rmse;
+        PlotRegionalQVFit(FitJunQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofJunRegion6,titlestr)
+    end
+
+ % Continue With JUn Region 7  
+    MeasTimes=TimeFrac(:,6);
+    MeasQV=JunQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jun','-FitType-',num2str(ifittype));
+        [FitJunQVRegion7,gofJunRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJunRegion7.adjrsquare;
+        rmse=gofJunRegion7.rmse;
+        GofStats1(6,7)=adjrsquare;
+        GofStats2(6,7)=rmse;
+        PlotRegionalQVFit(FitJunQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofJunRegion7,titlestr)
+    end
+
+  % Continue With Jun Region 8 
+    MeasTimes=TimeFrac(:,6);
+    MeasQV=JunQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jun','-FitType-',num2str(ifittype));
+        [FitJunQVRegion8,gofJunRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJunRegion8.adjrsquare;
+        rmse=gofJunRegion8.rmse;
+        GofStats1(6,8)=adjrsquare;
+        GofStats2(6,8)=rmse;
+        PlotRegionalQVFit(FitJunQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofJunRegion8,titlestr)
+    end
+
+  % Continue With Jun Region 9
+    MeasTimes=TimeFrac(:,6);
+    MeasQV=JunQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jun','-FitType-',num2str(ifittype));
+        [FitJunQVRegion9,gofJunRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJunRegion9.adjrsquare;
+        rmse=gofJunRegion9.rmse;
+        GofStats1(6,9)=adjrsquare;
+        GofStats2(6,9)=rmse;
+        PlotRegionalQVFit(FitJunQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofJunRegion9,titlestr)
+    end
+
+  % Continue With Jun Region 10
+    MeasTimes=TimeFrac(:,6);
+    MeasQV=JunQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jun','-FitType-',num2str(ifittype));
+        [FitJunQVRegion10,gofJunRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJunRegion10.adjrsquare;
+        rmse=gofJunRegion10.rmse;        
+        GofStats1(6,10)=adjrsquare;
+        GofStats2(6,10)=rmse;
+        PlotRegionalQVFit(FitJunQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofJunRegion10,titlestr)
+    end
+
+  % Start With July for Region 1
+    MeasTimes=TimeFrac(:,7);
+    MeasQV=JulQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-July','-FitType-',num2str(ifittype));
+        [FitJulQVRegion1,gofJulRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJulRegion1.adjrsquare;
+        rmse=gofJulRegion1.rmse;
+        GofStats1(7,1)=adjrsquare;
+        GofStats2(7,1)=rmse;
+        PlotRegionalQVFit(FitJulQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofJulRegion1,titlestr)
+    end
+
+% Continue With July Region 2
+    MeasTimes=TimeFrac(:,7);
+    MeasQV=JulQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jul','-FitType-',num2str(ifittype));
+        [FitJulQVRegion2,gofJulRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJulRegion2.adjrsquare;
+        rmse=gofJulRegion2.rmse;
+        GofStats1(7,2)=adjrsquare;
+        GofStats2(7,2)=rmse;
+        PlotRegionalQVFit(FitJulQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofJulRegion2,titlestr)
+    end
+
+ % Continue With July Region 3
+    MeasTimes=TimeFrac(:,7);
+    MeasQV=JulQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jul','-FitType-',num2str(ifittype));
+        [FitJulQVRegion3,gofJulRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJulRegion3.adjrsquare;
+        rmse=gofJulRegion3.rmse;
+        GofStats1(7,3)=adjrsquare;
+        GofStats2(7,3)=rmse;
+        PlotRegionalQVFit(FitJulQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofJulRegion3,titlestr)
+    end
+
+  % Continue With Jul Region 4
+    MeasTimes=TimeFrac(:,7);
+    MeasQV=JulQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jul','-FitType-',num2str(ifittype));
+        [FitJulQVRegion4,gofJulRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJulRegion4.adjrsquare;
+        rmse=gofJulRegion4.rmse;
+        GofStats1(7,4)=adjrsquare;
+        GofStats2(7,4)=rmse;
+        PlotRegionalQVFit(FitJulQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofJulRegion4,titlestr)
+    end
+
+  % Continue With Jul Region 5
+    MeasTimes=TimeFrac(:,7);
+    MeasQV=JulQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jul','-FitType-',num2str(ifittype));
+        [FitJulQVRegion5,gofJulRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJulRegion5.adjrsquare;
+        rmse=gofJulRegion5.rmse;
+        GofStats1(7,5)=adjrsquare;
+        GofStats2(7,5)=rmse;
+        PlotRegionalQVFit(FitJulQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofJulRegion5,titlestr)
+    end
+
+% Continue With Jul Region 6  
+    MeasTimes=TimeFrac(:,7);
+    MeasQV=JulQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jul','-FitType-',num2str(ifittype));
+        [FitJulQVRegion6,gofJulRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJulRegion6.adjrsquare;
+        rmse=gofJulRegion6.rmse;
+        GofStats1(7,6)=adjrsquare;
+        GofStats2(7,6)=rmse;
+        PlotRegionalQVFit(FitJulQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofJulRegion6,titlestr)
+    end
+
+ % Continue With Jul Region 7  
+    MeasTimes=TimeFrac(:,7);
+    MeasQV=JulQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jul','-FitType-',num2str(ifittype));
+        [FitJulQVRegion7,gofJulRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJulRegion7.adjrsquare;
+        rmse=gofJulRegion7.rmse;
+        GofStats1(7,7)=adjrsquare;
+        GofStats2(7,7)=rmse;
+        PlotRegionalQVFit(FitJulQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofJulRegion7,titlestr)
+    end
+
+  % Continue With Jul Region 8 
+    MeasTimes=TimeFrac(:,7);
+    MeasQV=JulQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jul','-FitType-',num2str(ifittype));
+        [FitJulQVRegion8,gofJulRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJulRegion8.adjrsquare;
+        rmse=gofJulRegion8.rmse;
+        GofStats1(7,8)=adjrsquare;
+        GofStats2(7,8)=rmse;
+        PlotRegionalQVFit(FitJulQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofJulRegion8,titlestr)
+    end
+
+  % Continue With Jul Region 9
+    MeasTimes=TimeFrac(:,7);
+    MeasQV=JulQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jul','-FitType-',num2str(ifittype));
+        [FitJulQVRegion9,gofJulRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJulRegion9.adjrsquare;
+        rmse=gofJulRegion9.rmse;
+        GofStats1(7,9)=adjrsquare;
+        GofStats2(7,9)=rmse;
+        PlotRegionalQVFit(FitJulQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofJulRegion9,titlestr)
+    end
+
+  % Continue With Jul Region 10
+    MeasTimes=TimeFrac(:,7);
+    MeasQV=JulQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Jul','-FitType-',num2str(ifittype));
+        [FitJulQVRegion10,gofJulRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofJulRegion10.adjrsquare;
+        rmse=gofJulRegion10.rmse;        
+        GofStats1(7,10)=adjrsquare;
+        GofStats2(7,10)=rmse;
+        PlotRegionalQVFit(FitJulQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofJulRegion10,titlestr)
+    end
+
+  % Start With Aug for Region 1
+    MeasTimes=TimeFrac(:,8);
+    MeasQV=AugQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Aug','-FitType-',num2str(ifittype));
+        [FitAugQVRegion1,gofAugRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAugRegion1.adjrsquare;
+        rmse=gofAugRegion1.rmse;
+        GofStats1(8,1)=adjrsquare;
+        GofStats2(8,1)=rmse;
+        PlotRegionalQVFit(FitAugQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofAugRegion1,titlestr)
+    end
+
+% Continue With Aug Region 2
+    MeasTimes=TimeFrac(:,8);
+    MeasQV=AugQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Aug','-FitType-',num2str(ifittype));
+        [FitAugQVRegion2,gofAugRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAugRegion2.adjrsquare;
+        rmse=gofAugRegion2.rmse;
+        GofStats1(8,2)=adjrsquare;
+        GofStats2(8,2)=rmse;
+        PlotRegionalQVFit(FitAugQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofAugRegion2,titlestr)
+    end
+
+ % Continue With Aug Region 3
+    MeasTimes=TimeFrac(:,8);
+    MeasQV=AugQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Aug','-FitType-',num2str(ifittype));
+        [FitAugQVRegion3,gofAugRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAugRegion3.adjrsquare;
+        rmse=gofAugRegion3.rmse;
+        GofStats1(8,3)=adjrsquare;
+        GofStats2(8,3)=rmse;
+        PlotRegionalQVFit(FitAugQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofAugRegion3,titlestr)
+    end
+
+  % Continue With Aug Region 4
+    MeasTimes=TimeFrac(:,8);
+    MeasQV=AugQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Aug','-FitType-',num2str(ifittype));
+        [FitAugQVRegion4,gofAugRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAugRegion4.adjrsquare;
+        rmse=gofAugRegion4.rmse;
+        GofStats1(8,4)=adjrsquare;
+        GofStats2(8,4)=rmse;
+        PlotRegionalQVFit(FitAugQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofAugRegion4,titlestr)
+    end
+
+  % Continue With Aug Region 5
+    MeasTimes=TimeFrac(:,8);
+    MeasQV=AugQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Aug','-FitType-',num2str(ifittype));
+        [FitAugQVRegion5,gofAugRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAugRegion5.adjrsquare;
+        rmse=gofAugRegion5.rmse;
+        GofStats1(8,5)=adjrsquare;
+        GofStats2(8,5)=rmse;
+        PlotRegionalQVFit(FitAugQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofAugRegion5,titlestr)
+    end
+
+% Continue With Aug Region 6  
+    MeasTimes=TimeFrac(:,8);
+    MeasQV=AugQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Aug','-FitType-',num2str(ifittype));
+        [FitAugQVRegion6,gofAugRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAugRegion6.adjrsquare;
+        rmse=gofAugRegion6.rmse;
+        GofStats1(8,6)=adjrsquare;
+        GofStats2(8,6)=rmse;
+        PlotRegionalQVFit(FitAugQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofAugRegion6,titlestr)
+    end
+
+ % Continue With Aug Region 7  
+    MeasTimes=TimeFrac(:,8);
+    MeasQV=AugQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Aug','-FitType-',num2str(ifittype));
+        [FitAugQVRegion7,gofAugRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAugRegion7.adjrsquare;
+        rmse=gofAugRegion7.rmse;
+        GofStats1(8,7)=adjrsquare;
+        GofStats2(8,7)=rmse;
+        PlotRegionalQVFit(FitAugQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofAugRegion7,titlestr)
+    end
+
+  % Continue With Aug Region 8 
+    MeasTimes=TimeFrac(:,8);
+    MeasQV=AugQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Aug','-FitType-',num2str(ifittype));
+        [FitAugQVRegion8,gofAugRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAugRegion8.adjrsquare;
+        rmse=gofAugRegion8.rmse;
+        GofStats1(8,8)=adjrsquare;
+        GofStats2(8,8)=rmse;
+        PlotRegionalQVFit(FitAugQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofAugRegion8,titlestr)
+    end
+
+  % Continue With Aug Region 9
+    MeasTimes=TimeFrac(:,8);
+    MeasQV=AugQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Aug','-FitType-',num2str(ifittype));
+        [FitAugQVRegion9,gofAugRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAugRegion9.adjrsquare;
+        rmse=gofAugRegion9.rmse;
+        GofStats1(8,9)=adjrsquare;
+        GofStats2(8,9)=rmse;
+        PlotRegionalQVFit(FitAugQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofAugRegion9,titlestr)
+    end
+
+  % Continue With Aug Region 10
+    MeasTimes=TimeFrac(:,8);
+    MeasQV=AugQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Aug','-FitType-',num2str(ifittype));
+        [FitAugQVRegion10,gofAugRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofAugRegion10.adjrsquare;
+        rmse=gofAugRegion10.rmse;        
+        GofStats1(8,10)=adjrsquare;
+        GofStats2(8,10)=rmse;
+        PlotRegionalQVFit(FitAugQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofAugRegion10,titlestr)
+    end
+
+  % Start With Sep for Region 1
+    MeasTimes=TimeFrac(:,9);
+    MeasQV=SepQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Sep','-FitType-',num2str(ifittype));
+        [FitSepQVRegion1,gofSepRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofSepRegion1.adjrsquare;
+        rmse=gofSepRegion1.rmse;
+        GofStats1(9,1)=adjrsquare;
+        GofStats2(9,1)=rmse;
+        PlotRegionalQVFit(FitSepQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofSepRegion1,titlestr)
+    end
+
+% Continue With Sep Region 2
+    MeasTimes=TimeFrac(:,9);
+    MeasQV=SepQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Sep','-FitType-',num2str(ifittype));
+        [FitSepQVRegion2,gofSepRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofSepRegion2.adjrsquare;
+        rmse=gofSepRegion2.rmse;
+        GofStats1(9,2)=adjrsquare;
+        GofStats2(9,2)=rmse;
+        PlotRegionalQVFit(FitSepQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofSepRegion2,titlestr)
+    end
+
+ % Continue With Sep Region 3
+    MeasTimes=TimeFrac(:,9);
+    MeasQV=SepQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Sep','-FitType-',num2str(ifittype));
+        [FitSepQVRegion3,gofSepRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofSepRegion3.adjrsquare;
+        rmse=gofSepRegion3.rmse;
+        GofStats1(9,3)=adjrsquare;
+        GofStats2(9,3)=rmse;
+        PlotRegionalQVFit(FitSepQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofSepRegion3,titlestr)
+    end
+
+  % Continue With Sep Region 4
+    MeasTimes=TimeFrac(:,9);
+    MeasQV=SepQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Sep','-FitType-',num2str(ifittype));
+        [FitSepQVRegion4,gofSepRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofSepRegion4.adjrsquare;
+        rmse=gofSepRegion4.rmse;
+        GofStats1(9,4)=adjrsquare;
+        GofStats2(9,4)=rmse;
+        PlotRegionalQVFit(FitSepQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofSepRegion4,titlestr)
+    end
+
+  % Continue With Sep Region 5
+    MeasTimes=TimeFrac(:,9);
+    MeasQV=SepQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Sep','-FitType-',num2str(ifittype));
+        [FitSepQVRegion5,gofSepRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofSepRegion5.adjrsquare;
+        rmse=gofSepRegion5.rmse;
+        GofStats1(9,5)=adjrsquare;
+        GofStats2(9,5)=rmse;
+        PlotRegionalQVFit(FitSepQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofSepRegion5,titlestr)
+    end
+
+% Continue With Sep Region 6  
+    MeasTimes=TimeFrac(:,9);
+    MeasQV=SepQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Sep','-FitType-',num2str(ifittype));
+        [FitSepQVRegion6,gofSepRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofSepRegion6.adjrsquare;
+        rmse=gofSepRegion6.rmse;
+        GofStats1(9,6)=adjrsquare;
+        GofStats2(9,6)=rmse;
+        PlotRegionalQVFit(FitSepQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofSepRegion6,titlestr)
+    end
+
+ % Continue With Sep Region 7  
+    MeasTimes=TimeFrac(:,9);
+    MeasQV=SepQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Sep','-FitType-',num2str(ifittype));
+        [FitSepQVRegion7,gofSepRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofSepRegion7.adjrsquare;
+        rmse=gofSepRegion7.rmse;
+        GofStats1(9,7)=adjrsquare;
+        GofStats2(9,7)=rmse;
+        PlotRegionalQVFit(FitSepQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofSepRegion7,titlestr)
+    end
+
+  % Continue With Sep Region 8 
+    MeasTimes=TimeFrac(:,9);
+    MeasQV=SepQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Sep','-FitType-',num2str(ifittype));
+        [FitSepQVRegion8,gofSepRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofSepRegion8.adjrsquare;
+        rmse=gofSepRegion8.rmse;
+        GofStats1(9,8)=adjrsquare;
+        GofStats2(9,8)=rmse;
+        PlotRegionalQVFit(FitSepQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofSepRegion8,titlestr)
+    end
+
+  % Continue With Sep Region 9
+    MeasTimes=TimeFrac(:,9);
+    MeasQV=SepQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Sep','-FitType-',num2str(ifittype));
+        [FitSepQVRegion9,gofSepRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofSepRegion9.adjrsquare;
+        rmse=gofSepRegion9.rmse;
+        GofStats1(9,9)=adjrsquare;
+        GofStats2(9,9)=rmse;
+        PlotRegionalQVFit(FitSepQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofSepRegion9,titlestr)
+    end
+
+  % Continue With Sep Region 10
+    MeasTimes=TimeFrac(:,9);
+    MeasQV=SepQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Sep','-FitType-',num2str(ifittype));
+        [FitSepQVRegion10,gofSepRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofSepRegion10.adjrsquare;
+        rmse=gofSepRegion10.rmse;        
+        GofStats1(9,10)=adjrsquare;
+        GofStats2(9,10)=rmse;
+        PlotRegionalQVFit(FitSepQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofSepRegion10,titlestr)
+    end
+
+ % Start With Oct for Region 1
+    MeasTimes=TimeFrac(:,10);
+    MeasQV=OctQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Oct','-FitType-',num2str(ifittype));
+        [FitOctQVRegion1,gofOctRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofOctRegion1.adjrsquare;
+        rmse=gofOctRegion1.rmse;
+        GofStats1(10,1)=adjrsquare;
+        GofStats2(10,1)=rmse;
+        PlotRegionalQVFit(FitOctQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofOctRegion1,titlestr)
+    end
+
+% Continue With Oct Region 2
+    MeasTimes=TimeFrac(:,10);
+    MeasQV=OctQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Oct','-FitType-',num2str(ifittype));
+        [FitOctQVRegion2,gofOctRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofOctRegion2.adjrsquare;
+        rmse=gofOctRegion2.rmse;
+        GofStats1(10,2)=adjrsquare;
+        GofStats2(10,2)=rmse;
+        PlotRegionalQVFit(FitOctQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofOctRegion2,titlestr)
+    end
+
+ % Continue With Oct Region 3
+    MeasTimes=TimeFrac(:,10);
+    MeasQV=OctQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Oct','-FitType-',num2str(ifittype));
+        [FitOctQVRegion3,gofOctRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofOctRegion3.adjrsquare;
+        rmse=gofOctRegion3.rmse;
+        GofStats1(10,3)=adjrsquare;
+        GofStats2(10,3)=rmse;
+        PlotRegionalQVFit(FitOctQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofOctRegion3,titlestr)
+    end
+
+  % Continue With Oct Region 4
+    MeasTimes=TimeFrac(:,10);
+    MeasQV=OctQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Oct','-FitType-',num2str(ifittype));
+        [FitOctQVRegion4,gofOctRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofOctRegion4.adjrsquare;
+        rmse=gofOctRegion4.rmse;
+        GofStats1(10,4)=adjrsquare;
+        GofStats2(10,4)=rmse;
+        PlotRegionalQVFit(FitOctQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofOctRegion4,titlestr)
+    end
+
+  % Continue With Oct Region 5
+    MeasTimes=TimeFrac(:,10);
+    MeasQV=OctQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Oct','-FitType-',num2str(ifittype));
+        [FitOctQVRegion5,gofOctRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofOctRegion5.adjrsquare;
+        rmse=gofOctRegion5.rmse;
+        GofStats1(10,5)=adjrsquare;
+        GofStats2(10,5)=rmse;
+        PlotRegionalQVFit(FitOctQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofOctRegion5,titlestr)
+    end
+
+% Continue With Oct Region 6  
+    MeasTimes=TimeFrac(:,10);
+    MeasQV=OctQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Oct','-FitType-',num2str(ifittype));
+        [FitOctQVRegion6,gofOctRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofOctRegion6.adjrsquare;
+        rmse=gofOctRegion6.rmse;
+        GofStats1(10,6)=adjrsquare;
+        GofStats2(10,6)=rmse;
+        PlotRegionalQVFit(FitOctQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofOctRegion6,titlestr)
+    end
+
+ % Continue With Oct Region 7  
+    MeasTimes=TimeFrac(:,10);
+    MeasQV=OctQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Oct','-FitType-',num2str(ifittype));
+        [FitOctQVRegion7,gofOctRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofOctRegion7.adjrsquare;
+        rmse=gofOctRegion7.rmse;
+        GofStats1(10,7)=adjrsquare;
+        GofStats2(10,7)=rmse;
+        PlotRegionalQVFit(FitOctQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofOctRegion7,titlestr)
+    end
+
+  % Continue With Oct Region 8 
+    MeasTimes=TimeFrac(:,10);
+    MeasQV=OctQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Oct','-FitType-',num2str(ifittype));
+        [FitOctQVRegion8,gofOctRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofOctRegion8.adjrsquare;
+        rmse=gofOctRegion8.rmse;
+        GofStats1(10,8)=adjrsquare;
+        GofStats2(10,8)=rmse;
+        PlotRegionalQVFit(FitOctQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofOctRegion8,titlestr)
+    end
+
+  % Continue With Oct Region 9
+    MeasTimes=TimeFrac(:,10);
+    MeasQV=OctQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Oct','-FitType-',num2str(ifittype));
+        [FitOctQVRegion9,gofOctRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofOctRegion9.adjrsquare;
+        rmse=gofOctRegion9.rmse;
+        GofStats1(10,9)=adjrsquare;
+        GofStats2(10,9)=rmse;
+        PlotRegionalQVFit(FitOctQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofOctRegion9,titlestr)
+    end
+
+  % Continue With Oct Region 10
+    MeasTimes=TimeFrac(:,10);
+    MeasQV=OctQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Oct','-FitType-',num2str(ifittype));
+        [FitOctQVRegion10,gofOctRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofOctRegion10.adjrsquare;
+        rmse=gofOctRegion10.rmse;        
+        GofStats1(10,10)=adjrsquare;
+        GofStats2(10,10)=rmse;
+        PlotRegionalQVFit(FitOctQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofOctRegion10,titlestr)
+    end
+
+  % Start With Nov for Region 1
+    MeasTimes=TimeFrac(:,11);
+    MeasQV=NovQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Nov','-FitType-',num2str(ifittype));
+        [FitNovQVRegion1,gofNovRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofNovRegion1.adjrsquare;
+        rmse=gofNovRegion1.rmse;
+        GofStats1(11,1)=adjrsquare;
+        GofStats2(11,1)=rmse;
+        PlotRegionalQVFit(FitNovQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofNovRegion1,titlestr)
+    end
+
+% Continue With Nov Region 2
+    MeasTimes=TimeFrac(:,11);
+    MeasQV=NovQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Nov','-FitType-',num2str(ifittype));
+        [FitNovQVRegion2,gofNovRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofNovRegion2.adjrsquare;
+        rmse=gofNovRegion2.rmse;
+        GofStats1(11,2)=adjrsquare;
+        GofStats2(11,2)=rmse;
+        PlotRegionalQVFit(FitNovQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofNovRegion2,titlestr)
+    end
+
+ % Continue With Nov Region 3
+    MeasTimes=TimeFrac(:,11);
+    MeasQV=NovQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Nov','-FitType-',num2str(ifittype));
+        [FitNovQVRegion3,gofNovRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofNovRegion3.adjrsquare;
+        rmse=gofNovRegion3.rmse;
+        GofStats1(11,3)=adjrsquare;
+        GofStats2(11,3)=rmse;
+        PlotRegionalQVFit(FitNovQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofNovRegion3,titlestr)
+    end
+
+  % Continue With Nov Region 4
+    MeasTimes=TimeFrac(:,11);
+    MeasQV=NovQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Nov','-FitType-',num2str(ifittype));
+        [FitNovQVRegion4,gofNovRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofNovRegion4.adjrsquare;
+        rmse=gofNovRegion4.rmse;
+        GofStats1(11,4)=adjrsquare;
+        GofStats2(11,4)=rmse;
+        PlotRegionalQVFit(FitNovQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofNovRegion4,titlestr)
+    end
+
+  % Continue With Nov Region 5
+    MeasTimes=TimeFrac(:,11);
+    MeasQV=NovQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Nov','-FitType-',num2str(ifittype));
+        [FitNovQVRegion5,gofNovRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofNovRegion5.adjrsquare;
+        rmse=gofNovRegion5.rmse;
+        GofStats1(11,5)=adjrsquare;
+        GofStats2(11,5)=rmse;
+        PlotRegionalQVFit(FitNovQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofNovRegion5,titlestr)
+    end
+
+% Continue With Nov Region 6  
+    MeasTimes=TimeFrac(:,11);
+    MeasQV=NovQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Nov','-FitType-',num2str(ifittype));
+        [FitNovQVRegion6,gofNovRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofNovRegion6.adjrsquare;
+        rmse=gofNovRegion6.rmse;
+        GofStats1(11,6)=adjrsquare;
+        GofStats2(11,6)=rmse;
+        PlotRegionalQVFit(FitNovQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofNovRegion6,titlestr)
+    end
+
+ % Continue With Nov Region 7  
+    MeasTimes=TimeFrac(:,11);
+    MeasQV=NovQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Nov','-FitType-',num2str(ifittype));
+        [FitNovQVRegion7,gofNovRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofNovRegion7.adjrsquare;
+        rmse=gofNovRegion7.rmse;
+        GofStats1(11,7)=adjrsquare;
+        GofStats2(11,7)=rmse;
+        PlotRegionalQVFit(FitNovQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofNovRegion7,titlestr)
+    end
+
+  % Continue With Nov Region 8 
+    MeasTimes=TimeFrac(:,11);
+    MeasQV=NovQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Nov','-FitType-',num2str(ifittype));
+        [FitNovQVRegion8,gofNovRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofNovRegion8.adjrsquare;
+        rmse=gofNovRegion8.rmse;
+        GofStats1(11,8)=adjrsquare;
+        GofStats2(11,8)=rmse;
+        PlotRegionalQVFit(FitNovQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofNovRegion8,titlestr)
+    end
+
+  % Continue With Nov Region 9
+    MeasTimes=TimeFrac(:,11);
+    MeasQV=NovQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Nov','-FitType-',num2str(ifittype));
+        [FitNovQVRegion9,gofNovRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofNovRegion9.adjrsquare;
+        rmse=gofNovRegion9.rmse;
+        GofStats1(11,9)=adjrsquare;
+        GofStats2(11,9)=rmse;
+        PlotRegionalQVFit(FitNovQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofNovRegion9,titlestr)
+    end
+
+  % Continue With Nov Region 10
+    MeasTimes=TimeFrac(:,11);
+    MeasQV=NovQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Nov','-FitType-',num2str(ifittype));
+        [FitNovQVRegion10,gofNovRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofNovRegion10.adjrsquare;
+        rmse=gofNovRegion10.rmse;        
+        GofStats1(11,10)=adjrsquare;
+        GofStats2(11,10)=rmse;
+        PlotRegionalQVFit(FitNovQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofNovRegion10,titlestr)
+    end
+
+  % Start With Dec for Region 1
+    MeasTimes=TimeFrac(:,12);
+    MeasQV=DecQV(:,1);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Germany';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Dec','-FitType-',num2str(ifittype));
+        [FitDecQVRegion1,gofDecRegion1] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofDecRegion1.adjrsquare;
+        rmse=gofDecRegion1.rmse;
+        GofStats1(12,1)=adjrsquare;
+        GofStats2(12,1)=rmse;
+        PlotRegionalQVFit(FitDecQVRegion1,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion1,titlestr)
+    end
+
+% Continue With Dec Region 2
+    MeasTimes=TimeFrac(:,12);
+    MeasQV=DecQV(:,2);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Finland';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Dec','-FitType-',num2str(ifittype));
+        [FitDecQVRegion2,gofDecRegion2] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofDecRegion2.adjrsquare;
+        rmse=gofDecRegion2.rmse;
+        GofStats1(12,2)=adjrsquare;
+        GofStats2(12,2)=rmse;
+        PlotRegionalQVFit(FitDecQVRegion2,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion2,titlestr)
+    end
+
+ % Continue With Dec Region 3
+    MeasTimes=TimeFrac(:,12);
+    MeasQV=DecQV(:,3);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='UK';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Dec','-FitType-',num2str(ifittype));
+        [FitDecQVRegion3,gofDecRegion3] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofDecRegion3.adjrsquare;
+        rmse=gofDecRegion3.rmse;
+        GofStats1(12,3)=adjrsquare;
+        GofStats2(12,3)=rmse;
+        PlotRegionalQVFit(FitDecQVRegion3,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion3,titlestr)
+    end
+
+  % Continue With Dec Region 4
+    MeasTimes=TimeFrac(:,12);
+    MeasQV=DecQV(:,4);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Sudan';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Dec','-FitType-',num2str(ifittype));
+        [FitDecQVRegion4,gofDecRegion4] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofDecRegion4.adjrsquare;
+        rmse=gofDecRegion4.rmse;
+        GofStats1(12,4)=adjrsquare;
+        GofStats2(12,4)=rmse;
+        PlotRegionalQVFit(FitDecQVRegion4,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion4,titlestr)
+    end
+
+  % Continue With Dec Region 5
+    MeasTimes=TimeFrac(:,12);
+    MeasQV=DecQV(:,5);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='SouthAfrica';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Dec','-FitType-',num2str(ifittype));
+        [FitDecQVRegion5,gofDecRegion5] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofDecRegion5.adjrsquare;
+        rmse=gofDecRegion5.rmse;
+        GofStats1(12,5)=adjrsquare;
+        GofStats2(12,5)=rmse;
+        PlotRegionalQVFit(FitDecQVRegion5,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion5,titlestr)
+    end
+
+% Continue With Dec Region 6  
+    MeasTimes=TimeFrac(:,12);
+    MeasQV=DecQV(:,6);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='India';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Dec','-FitType-',num2str(ifittype));
+        [FitDecQVRegion6,gofDecRegion6] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofDecRegion6.adjrsquare;
+        rmse=gofDecRegion6.rmse;
+        GofStats1(12,6)=adjrsquare;
+        GofStats2(12,6)=rmse;
+        PlotRegionalQVFit(FitDecQVRegion6,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion6,titlestr)
+    end
+
+ % Continue With Dec Region 7  
+    MeasTimes=TimeFrac(:,12);
+    MeasQV=DecQV(:,7);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Australia';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Dec','-FitType-',num2str(ifittype));
+        [FitDecQVRegion7,gofDecRegion7] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofDecRegion7.adjrsquare;
+        rmse=gofDecRegion7.rmse;
+        GofStats1(12,7)=adjrsquare;
+        GofStats2(12,7)=rmse;
+        PlotRegionalQVFit(FitDecQVRegion7,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion7,titlestr)
+    end
+
+  % Continue With Dec Region 8 
+    MeasTimes=TimeFrac(:,12);
+    MeasQV=DecQV(:,8);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='California';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Dec','-FitType-',num2str(ifittype));
+        [FitDecQVRegion8,gofDecRegion8] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofDecRegion8.adjrsquare;
+        rmse=gofDecRegion8.rmse;
+        GofStats1(12,8)=adjrsquare;
+        GofStats2(12,8)=rmse;
+        PlotRegionalQVFit(FitDecQVRegion8,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion8,titlestr)
+    end
+
+  % Continue With Dec Region 9
+    MeasTimes=TimeFrac(:,12);
+    MeasQV=DecQV(:,9);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Texas';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Dec','-FitType-',num2str(ifittype));
+        [FitDecQVRegion9,gofDecRegion9] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofDecRegion9.adjrsquare;
+        rmse=gofDecRegion9.rmse;
+        GofStats1(12,9)=adjrsquare;
+        GofStats2(12,9)=rmse;
+        PlotRegionalQVFit(FitDecQVRegion9,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion9,titlestr)
+    end
+
+  % Continue With Dec Region 10
+    MeasTimes=TimeFrac(:,12);
+    MeasQV=DecQV(:,10);
+    [MeasTimes,MeasQV] = RemoveMissingValues(MeasTimes,MeasQV);
+    numvals=length(MeasTimes);
+    ifittype=2;
+    numvals=length(MeasTimes);
+    if(numvals>30)
+        RegionName='Peru';
+        titlestr=strcat('FittedQV-Region-',RegionName,'-Month-Dec','-FitType-',num2str(ifittype));
+        [FitDecQVRegion10,gofDecRegion10] = fit(MeasTimes,MeasQV,'poly2',fo);
+        adjrsquare=gofDecRegion10.adjrsquare;
+        rmse=gofDecRegion10.rmse;        
+        GofStats1(12,10)=adjrsquare;
+        GofStats2(12,10)=rmse;
+        PlotRegionalQVFit(FitDecQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion10,titlestr)
     end
 end
 
 
 disp('Run Complete');
+
+
+
+
 ab=1;
