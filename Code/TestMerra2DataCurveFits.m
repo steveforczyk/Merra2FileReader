@@ -21,6 +21,10 @@ global JulTemps AugTemps SepTemps OctTemps NovTemps DecTemps;
 global JanQV FebQV MarQV AprQV MayQV JunQV;
 global JulQV AugQV SepQV OctQV NovQV DecQV;
 global GofStats1 GofStats2;
+global PredTempStart PredTempEnd PredTempChng;
+global fitmonth fitregion;
+global isavefiles MatFileName;
+global MonthLabels RegionLabels;
 
 
 global Merra2ShortFileName;
@@ -41,7 +45,7 @@ global iLogo LogoFileName1 LogoFileName2;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
 global iLogo LogoFileName1 LogoFileName2;
 
-global matpath datapath;
+global matpath datapath ;
 global jpegpath tiffpath moviepath savepath;
 global excelpath ascpath citypath tablepath;
 global ipowerpoint PowerPointFile scaling stretching padding;
@@ -101,9 +105,35 @@ LogoFileName1='Merra2-LogoB.jpg';
 [hor1,vert1,Fz1,Fz2,machine]=SetScreenCoordinates(widd,lend);
 [hor2,vert2,Fz1,Fz2,machine]=SetScreenCoordinates(widd2,lend2);
 chart_time=7;
-iSelect=2;
+%% Set up some Labels
+MonthLabels=cell(12,1);
+MonthLabels{1,1}='Jan';
+MonthLabels{2,1}='Feb';
+MonthLabels{3,1}='Mar';
+MonthLabels{4,1}='Apr';
+MonthLabels{5,1}='May';
+MonthLabels{6,1}='Jun';
+MonthLabels{7,1}='Jul';
+MonthLabels{8,1}='Aug';
+MonthLabels{9,1}='Sep';
+MonthLabels{10,1}='Oct';
+MonthLabels{11,1}='Nov';
+MonthLabels{12,1}='Dec';
+RegionLabels=cell(10,1);
+RegionLabels{1,1}='Germany';
+RegionLabels{2,1}='Finland';
+RegionLabels{3,1}='UK';
+RegionLabels{4,1}='Sudan';
+RegionLabels{5,1}='South-Africa';
+RegionLabels{6,1}='India';
+RegionLabels{7,1}='Australia';
+RegionLabels{8,1}='California';
+RegionLabels{9,1}='Texas';
+RegionLabels{10,1}='Peru';
+iSelect=1;
 if(iSelect==1)
     TempStatsFileName1='FinalCombinedTSSTables.mat';
+    MatFileName='AirTemperatureChanges.mat';
 % Load the Temp Stats Timetables 1 and 2
     eval(['cd ' tablepath(1:length(tablepath)-1)]);
     load(TempStatsFileName1);
@@ -143,6 +173,9 @@ if(iSelect==1)
     TimeFrac=zeros(numYears,12);
     GofStats1=zeros(12,10);
     GofStats2=zeros(12,10);
+    PredTempStart=zeros(12,10);
+    PredTempEnd=zeros(12,10);
+    PredTempChng=zeros(12,10);
 % Now split the data into Months and Regions
     ik1=0;
     ik2=0;
@@ -534,9 +567,13 @@ if(iSelect==1)
             DecTemps(ik12,10)=nowVal10;
         end
     end
+%% Establish if the Curve Fit toolbox is present
+[CurveFitTooolBoxPresent] = ToolboxChecker('Curve Fitting Toolbox');
+ab=1;
 %% Now Fit the monthly data Region by Region and Month By Month
     fo=fitoptions('poly2');
     fo.Normalize='on';
+%    fo.Exclude=2001:2023;
 %% Start with January-Region 1
     MeasTimes=TimeFrac(:,1);
     MeasTemps=JanTemps(:,1);
@@ -549,8 +586,14 @@ if(iSelect==1)
     rmse=gofJanRegion1.rmse;
     GofStats1(1,1)=adjrsquare;
     GofStats2(1,1)=rmse;
+    fitmonth=1;
+    fitregion=1;
     PlotRegionalTempFit(FitJanTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion1,titlestr)
-
+    ab=1;
+    ci = predint(FitJanTempRegion1,2023,0.95);
+    titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
+    PlotRegionalTempConfidence(FitJanTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion1,titlestr2)
+    ab=2;
 % Continue with Region 2
     MeasTimes=TimeFrac(:,1);
     MeasTemps=JanTemps(:,2);
@@ -563,6 +606,8 @@ if(iSelect==1)
     rmse=gofJanRegion2.rmse;
     GofStats1(1,2)=adjrsquare;
     GofStats2(1,2)=rmse;
+    fitmonth=1;
+    fitregion=2;
     PlotRegionalTempFit(FitJanTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion2,titlestr)
 
 % Continue with Region 3
@@ -577,6 +622,8 @@ if(iSelect==1)
     rmse=gofJanRegion3.rmse;
     GofStats1(1,3)=adjrsquare;
     GofStats2(1,3)=rmse;
+    fitmonth=1;
+    fitregion=3;
     PlotRegionalTempFit(FitJanTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion3,titlestr)
 
 % Continue with Region 4
@@ -591,6 +638,8 @@ if(iSelect==1)
     rmse=gofJanRegion4.rmse;
     GofStats1(1,4)=adjrsquare;
     GofStats2(1,4)=rmse;
+    fitmonth=1;
+    fitregion=4;
     PlotRegionalTempFit(FitJanTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion4,titlestr)
 
 % Continue with Region 5
@@ -605,6 +654,8 @@ if(iSelect==1)
     rmse=gofJanRegion5.rmse;
     GofStats1(1,5)=adjrsquare;
     GofStats2(1,5)=rmse;
+    fitmonth=1;
+    fitregion=5;
     PlotRegionalTempFit(FitJanTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion5,titlestr)
 
 % Continue with January-Region 6
@@ -619,6 +670,8 @@ if(iSelect==1)
     rmse=gofJanRegion6.rmse;
     GofStats1(1,6)=adjrsquare;
     GofStats2(1,6)=rmse;
+    fitmonth=1;
+    fitregion=6;
     PlotRegionalTempFit(FitJanTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion6,titlestr)
 
 % Continue with January-Region 7
@@ -633,6 +686,8 @@ if(iSelect==1)
     rmse=gofJanRegion7.rmse;
     GofStats1(1,7)=adjrsquare;
     GofStats2(1,7)=rmse;
+    fitmonth=1;
+    fitregion=7;
     PlotRegionalTempFit(FitJanTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion7,titlestr)
 
 % Continue with January-Region 8
@@ -647,6 +702,8 @@ if(iSelect==1)
     rmse=gofJanRegion8.rmse;
     GofStats1(1,8)=adjrsquare;
     GofStats2(1,8)=rmse;
+    fitmonth=1;
+    fitregion=8;
     PlotRegionalTempFit(FitJanTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion8,titlestr)
 
 % Continue with January-Region 9
@@ -661,6 +718,8 @@ if(iSelect==1)
     rmse=gofJanRegion9.rmse;
     GofStats1(1,9)=adjrsquare;
     GofStats2(1,9)=rmse;
+    fitmonth=1;
+    fitregion=9;
     PlotRegionalTempFit(FitJanTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion9,titlestr)
 
 % Continue with January-Region 10
@@ -675,6 +734,8 @@ if(iSelect==1)
     rmse=gofJanRegion10.rmse;
     GofStats1(1,10)=adjrsquare;
     GofStats2(1,10)=rmse;
+    fitmonth=1;
+    fitregion=10;
     PlotRegionalTempFit(FitJanTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion10,titlestr)
 
 %% Continue with February-Region 1
@@ -689,6 +750,8 @@ if(iSelect==1)
     rmse=gofFebRegion1.rmse;
     GofStats1(2,1)=adjrsquare;
     GofStats2(2,1)=rmse;
+    fitmonth=2;
+    fitregion=1;
     PlotRegionalTempFit(FitFebTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion1,titlestr)
 
 % Continue with February-Region 2
@@ -703,6 +766,8 @@ if(iSelect==1)
     rmse=gofFebRegion2.rmse;
     GofStats1(2,2)=adjrsquare;
     GofStats2(2,2)=rmse;
+    fitmonth=2;
+    fitregion=2;
     PlotRegionalTempFit(FitFebTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion2,titlestr)
 
 % Continue with February-Region 3
@@ -717,6 +782,8 @@ if(iSelect==1)
     rmse=gofFebRegion3.rmse;
     GofStats1(2,3)=adjrsquare;
     GofStats2(2,3)=rmse;
+    fitmonth=2;
+    fitregion=3;
     PlotRegionalTempFit(FitFebTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion3,titlestr)
 
 % Continue with February-Region 4
@@ -731,6 +798,8 @@ if(iSelect==1)
     rmse=gofFebRegion4.rmse;
     GofStats1(2,4)=adjrsquare;
     GofStats2(2,4)=rmse;
+    fitmonth=2;
+    fitregion=4;
     PlotRegionalTempFit(FitFebTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion4,titlestr)
 
 % Continue with February-Region 5
@@ -745,6 +814,8 @@ if(iSelect==1)
     rmse=gofFebRegion5.rmse;
     GofStats1(2,5)=adjrsquare;
     GofStats2(2,5)=rmse;
+    fitmonth=2;
+    fitregion=5;
     PlotRegionalTempFit(FitFebTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion5,titlestr)
 
 % Continue with February-Region 6
@@ -759,6 +830,8 @@ if(iSelect==1)
     rmse=gofFebRegion6.rmse;
     GofStats1(2,6)=adjrsquare;
     GofStats2(2,6)=rmse;
+    fitmonth=2;
+    fitregion=6;
     PlotRegionalTempFit(FitFebTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion6,titlestr)
 
 % Continue with February-Region 7
@@ -773,6 +846,8 @@ if(iSelect==1)
     rmse=gofFebRegion7.rmse;
     GofStats1(2,7)=adjrsquare;
     GofStats2(2,7)=rmse;
+    fitmonth=2;
+    fitregion=7;
     PlotRegionalTempFit(FitFebTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion7,titlestr)
 
 % Continue with February-Region 8
@@ -787,6 +862,8 @@ if(iSelect==1)
     rmse=gofFebRegion8.rmse;
     GofStats1(2,8)=adjrsquare;
     GofStats2(2,8)=rmse;
+    fitmonth=2;
+    fitregion=8;
     PlotRegionalTempFit(FitFebTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion8,titlestr)
 
 % Continue with February-Region 9
@@ -801,6 +878,8 @@ if(iSelect==1)
     rmse=gofFebRegion9.rmse;
     GofStats1(2,9)=adjrsquare;
     GofStats2(2,9)=rmse;
+    fitmonth=2;
+    fitregion=9;
     PlotRegionalTempFit(FitFebTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion9,titlestr)
 
 % Continue with February-Region 10
@@ -815,6 +894,8 @@ if(iSelect==1)
     rmse=gofFebRegion10.rmse;
     GofStats1(2,10)=adjrsquare;
     GofStats2(2,10)=rmse;
+    fitmonth=2;
+    fitregion=10;
     PlotRegionalTempFit(FitFebTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion10,titlestr)
 
 %% Continue with March-Region 1
@@ -829,6 +910,8 @@ if(iSelect==1)
     rmse=gofMarRegion1.rmse;
     GofStats1(3,1)=adjrsquare;
     GofStats2(3,1)=rmse;
+    fitmonth=3;
+    fitregion=1;
     PlotRegionalTempFit(FitMarTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion1,titlestr)
 
 % Continue with March-Region 2
@@ -843,6 +926,8 @@ if(iSelect==1)
     rmse=gofMarRegion2.rmse;
     GofStats1(3,2)=adjrsquare;
     GofStats2(3,2)=rmse;
+    fitmonth=3;
+    fitregion=2;
     PlotRegionalTempFit(FitMarTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion2,titlestr)
 
 % Continue with March-Region 3
@@ -857,6 +942,8 @@ if(iSelect==1)
     rmse=gofMarRegion2.rmse;
     GofStats1(3,3)=adjrsquare;
     GofStats2(3,3)=rmse;
+    fitmonth=3;
+    fitregion=3;
     PlotRegionalTempFit(FitMarTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion3,titlestr)
 
 % Continue with March-Region 4
@@ -871,6 +958,8 @@ if(iSelect==1)
     rmse=gofMarRegion4.rmse;
     GofStats1(3,4)=adjrsquare;
     GofStats2(3,4)=rmse;
+    fitmonth=3;
+    fitregion=4;
     PlotRegionalTempFit(FitMarTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion4,titlestr)
 
 % Continue with March-Region 5
@@ -885,6 +974,8 @@ if(iSelect==1)
     rmse=gofMarRegion5.rmse;
     GofStats1(3,5)=adjrsquare;
     GofStats2(3,5)=rmse;
+    fitmonth=3;
+    fitregion=5;
     PlotRegionalTempFit(FitMarTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion5,titlestr)
 
 % Continue with March-Region 6
@@ -899,6 +990,8 @@ if(iSelect==1)
     rmse=gofMarRegion6.rmse;
     GofStats1(3,6)=adjrsquare;
     GofStats2(3,6)=rmse;
+    fitmonth=3;
+    fitregion=6;
     PlotRegionalTempFit(FitMarTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion6,titlestr)
 
 % Continue with March-Region 7
@@ -913,6 +1006,8 @@ if(iSelect==1)
     rmse=gofMarRegion7.rmse;
     GofStats1(3,7)=adjrsquare;
     GofStats2(3,7)=rmse;
+    fitmonth=3;
+    fitregion=7;
     PlotRegionalTempFit(FitMarTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion7,titlestr)
 
 % Continue with March-Region 8
@@ -927,6 +1022,8 @@ if(iSelect==1)
     rmse=gofMarRegion8.rmse;
     GofStats1(3,8)=adjrsquare;
     GofStats2(3,8)=rmse;
+    fitmonth=3;
+    fitregion=8;
     PlotRegionalTempFit(FitMarTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion8,titlestr)
 
 % Continue with March-Region 9
@@ -941,6 +1038,8 @@ if(iSelect==1)
     rmse=gofMarRegion9.rmse;
     GofStats1(3,9)=adjrsquare;
     GofStats2(3,9)=rmse;
+    fitmonth=3;
+    fitregion=9;
     PlotRegionalTempFit(FitMarTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion9,titlestr)
 
 % Continue with March-Region 10
@@ -955,6 +1054,8 @@ if(iSelect==1)
     rmse=gofMarRegion10.rmse;
     GofStats1(3,10)=adjrsquare;
     GofStats2(3,10)=rmse;
+    fitmonth=3;
+    fitregion=10;
     PlotRegionalTempFit(FitMarTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion10,titlestr)
 
 %% Continue with April-Region 1
@@ -969,6 +1070,8 @@ if(iSelect==1)
     rmse=gofAprRegion1.rmse;
     GofStats1(4,1)=adjrsquare;
     GofStats2(4,1)=rmse;
+    fitmonth=4;
+    fitregion=1;
     PlotRegionalTempFit(FitMarTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion1,titlestr)
 
 % Continue with April-Region 2
@@ -983,6 +1086,8 @@ if(iSelect==1)
     rmse=gofAprRegion2.rmse;
     GofStats1(4,2)=adjrsquare;
     GofStats2(4,2)=rmse;
+    fitmonth=4;
+    fitregion=2;
     PlotRegionalTempFit(FitAprTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion2,titlestr)
 
 % Continue with April-Region 3
@@ -997,6 +1102,8 @@ if(iSelect==1)
     rmse=gofAprRegion2.rmse;
     GofStats1(4,3)=adjrsquare;
     GofStats2(4,3)=rmse;
+    fitmonth=4;
+    fitregion=3;
     PlotRegionalTempFit(FitAprTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion3,titlestr)
 
 % Continue with April-Region 4
@@ -1011,6 +1118,8 @@ if(iSelect==1)
     rmse=gofAprRegion4.rmse;
     GofStats1(4,4)=adjrsquare;
     GofStats2(4,4)=rmse;
+    fitmonth=4;
+    fitregion=4;
     PlotRegionalTempFit(FitAprTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion4,titlestr)
 
 % Continue with Apr-Region 5
@@ -1025,6 +1134,8 @@ if(iSelect==1)
     rmse=gofAprRegion5.rmse;
     GofStats1(4,5)=adjrsquare;
     GofStats2(4,5)=rmse;
+    fitmonth=4;
+    fitregion=5;
     PlotRegionalTempFit(FitAprTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion5,titlestr)
 
 % Continue with Apr-Region 6
@@ -1039,6 +1150,8 @@ if(iSelect==1)
     rmse=gofAprRegion6.rmse;
     GofStats1(4,6)=adjrsquare;
     GofStats2(4,6)=rmse;
+    fitmonth=4;
+    fitregion=6;
     PlotRegionalTempFit(FitAprTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion6,titlestr)
 
 % Continue with April-Region 7
@@ -1053,6 +1166,8 @@ if(iSelect==1)
     rmse=gofAprRegion7.rmse;
     GofStats1(4,7)=adjrsquare;
     GofStats2(4,7)=rmse;
+    fitmonth=4;
+    fitregion=7;
     PlotRegionalTempFit(FitAprTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion7,titlestr)
 
 % Continue with April-Region 8
@@ -1067,6 +1182,8 @@ if(iSelect==1)
     rmse=gofAprRegion8.rmse;
     GofStats1(4,8)=adjrsquare;
     GofStats2(4,8)=rmse;
+    fitmonth=4;
+    fitregion=8;
     PlotRegionalTempFit(FitAprTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion8,titlestr)
 
 % Continue with Apr-Region 9
@@ -1081,6 +1198,8 @@ if(iSelect==1)
     rmse=gofAprRegion9.rmse;
     GofStats1(4,9)=adjrsquare;
     GofStats2(4,9)=rmse;
+    fitmonth=4;
+    fitregion=9;
     PlotRegionalTempFit(FitAprTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion9,titlestr)
 
 % Continue with April-Region 10
@@ -1095,6 +1214,8 @@ if(iSelect==1)
     rmse=gofAprRegion10.rmse;
     GofStats1(4,10)=adjrsquare;
     GofStats2(4,10)=rmse;
+    fitmonth=4;
+    fitregion=10;
     PlotRegionalTempFit(FitAprTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion10,titlestr)
 
 %% Continue with May-Region 1
@@ -1109,6 +1230,8 @@ if(iSelect==1)
     rmse=gofMayRegion1.rmse;
     GofStats1(5,1)=adjrsquare;
     GofStats2(5,1)=rmse;
+    fitmonth=5;
+    fitregion=1;
     PlotRegionalTempFit(FitMayTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion1,titlestr)
 
 % Continue with May-Region 2
@@ -1123,6 +1246,8 @@ if(iSelect==1)
     rmse=gofMayRegion2.rmse;
     GofStats1(5,2)=adjrsquare;
     GofStats2(5,2)=rmse;
+    fitmonth=5;
+    fitregion=2;
     PlotRegionalTempFit(FitMayTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion2,titlestr)
 
 % Continue with May-Region 3
@@ -1137,6 +1262,8 @@ if(iSelect==1)
     rmse=gofMayRegion2.rmse;
     GofStats1(5,3)=adjrsquare;
     GofStats2(5,3)=rmse;
+    fitmonth=5;
+    fitregion=3;
     PlotRegionalTempFit(FitMayTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion3,titlestr)
 
 % Continue with May-Region 4
@@ -1151,6 +1278,8 @@ if(iSelect==1)
     rmse=gofMayRegion4.rmse;
     GofStats1(5,4)=adjrsquare;
     GofStats2(5,4)=rmse;
+    fitmonth=5;
+    fitregion=4;
     PlotRegionalTempFit(FitMayTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion4,titlestr)
 
 % Continue with May-Region 5
@@ -1165,6 +1294,8 @@ if(iSelect==1)
     rmse=gofMayRegion5.rmse;
     GofStats1(5,5)=adjrsquare;
     GofStats2(5,5)=rmse;
+    fitmonth=5;
+    fitregion=5;
     PlotRegionalTempFit(FitMayTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion5,titlestr)
 
 % Continue with May-Region 6
@@ -1179,6 +1310,8 @@ if(iSelect==1)
     rmse=gofMayRegion6.rmse;
     GofStats1(5,6)=adjrsquare;
     GofStats2(5,6)=rmse;
+    fitmonth=5;
+    fitregion=6;
     PlotRegionalTempFit(FitMayTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion6,titlestr)
 
 % Continue with May-Region 7
@@ -1193,6 +1326,8 @@ if(iSelect==1)
     rmse=gofMayRegion7.rmse;
     GofStats1(5,7)=adjrsquare;
     GofStats2(5,7)=rmse;
+    fitmonth=5;
+    fitregion=7;
     PlotRegionalTempFit(FitMayTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion7,titlestr)
 
 % Continue with May-Region 8
@@ -1207,6 +1342,8 @@ if(iSelect==1)
     rmse=gofMayRegion8.rmse;
     GofStats1(5,8)=adjrsquare;
     GofStats2(5,8)=rmse;
+    fitmonth=5;
+    fitregion=8;
     PlotRegionalTempFit(FitMayTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion8,titlestr)
 
 % Continue with May-Region 9
@@ -1221,6 +1358,8 @@ if(iSelect==1)
     rmse=gofMayRegion9.rmse;
     GofStats1(5,9)=adjrsquare;
     GofStats2(5,9)=rmse;
+    fitmonth=5;
+    fitregion=9;
     PlotRegionalTempFit(FitMayTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion9,titlestr)
 
 % Continue with May-Region 10
@@ -1235,6 +1374,8 @@ if(iSelect==1)
     rmse=gofMayRegion10.rmse;
     GofStats1(5,10)=adjrsquare;
     GofStats2(5,10)=rmse;
+    fitmonth=5;
+    fitregion=10;
     PlotRegionalTempFit(FitMayTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion10,titlestr)
 
 %% Continue with Jun-Region 1
@@ -1249,6 +1390,8 @@ if(iSelect==1)
     rmse=gofJunRegion1.rmse;
     GofStats1(6,1)=adjrsquare;
     GofStats2(6,1)=rmse;
+    fitmonth=6;
+    fitregion=1;
     PlotRegionalTempFit(FitJunTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion1,titlestr)
 
 % Continue with Jun-Region 2
@@ -1263,6 +1406,8 @@ if(iSelect==1)
     rmse=gofJunRegion2.rmse;
     GofStats1(6,2)=adjrsquare;
     GofStats2(6,2)=rmse;
+    fitmonth=6;
+    fitregion=2;
     PlotRegionalTempFit(FitJunTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion2,titlestr)
 
 % Continue with Jun-Region 3
@@ -1277,6 +1422,8 @@ if(iSelect==1)
     rmse=gofJunRegion2.rmse;
     GofStats1(6,3)=adjrsquare;
     GofStats2(6,3)=rmse;
+    fitmonth=6;
+    fitregion=3;
     PlotRegionalTempFit(FitJunTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion3,titlestr)
 
 % Continue with Jun-Region 4
@@ -1291,6 +1438,8 @@ if(iSelect==1)
     rmse=gofJunRegion4.rmse;
     GofStats1(6,4)=adjrsquare;
     GofStats2(6,4)=rmse;
+    fitmonth=6;
+    fitregion=4;
     PlotRegionalTempFit(FitJunTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion4,titlestr)
 
 % Continue with Jun-Region 5
@@ -1305,6 +1454,8 @@ if(iSelect==1)
     rmse=gofJunRegion5.rmse;
     GofStats1(6,5)=adjrsquare;
     GofStats2(6,5)=rmse;
+    fitmonth=6;
+    fitregion=5;
     PlotRegionalTempFit(FitJunTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion5,titlestr)
 
 % Continue with Jun-Region 6
@@ -1319,6 +1470,8 @@ if(iSelect==1)
     rmse=gofJunRegion6.rmse;
     GofStats1(6,6)=adjrsquare;
     GofStats2(6,6)=rmse;
+    fitmonth=6;
+    fitregion=6;
     PlotRegionalTempFit(FitJunTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion6,titlestr)
 
 % Continue with Jun-Region 7
@@ -1333,6 +1486,8 @@ if(iSelect==1)
     rmse=gofJunRegion7.rmse;
     GofStats1(6,7)=adjrsquare;
     GofStats2(6,7)=rmse;
+    fitmonth=6;
+    fitregion=7;
     PlotRegionalTempFit(FitJunTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion7,titlestr)
 
 % Continue with Jun-Region 8
@@ -1347,6 +1502,8 @@ if(iSelect==1)
     rmse=gofJunRegion8.rmse;
     GofStats1(6,8)=adjrsquare;
     GofStats2(6,8)=rmse;
+    fitmonth=6;
+    fitregion=8;
     PlotRegionalTempFit(FitJunTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion8,titlestr)
 
 % Continue with Jun-Region 9
@@ -1361,6 +1518,8 @@ if(iSelect==1)
     rmse=gofJunRegion9.rmse;
     GofStats1(6,9)=adjrsquare;
     GofStats2(6,9)=rmse;
+    fitmonth=6;
+    fitregion=9;
     PlotRegionalTempFit(FitJunTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion9,titlestr)
 
 % Continue with Jun-Region 10
@@ -1375,6 +1534,8 @@ if(iSelect==1)
     rmse=gofJunRegion10.rmse;
     GofStats1(6,10)=adjrsquare;
     GofStats2(6,10)=rmse;
+    fitmonth=6;
+    fitregion=10;
     PlotRegionalTempFit(FitJunTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion10,titlestr)
 
 %% Continue with July-Region 1
@@ -1389,6 +1550,8 @@ if(iSelect==1)
     rmse=gofJulRegion1.rmse;
     GofStats1(7,1)=adjrsquare;
     GofStats2(7,1)=rmse;
+    fitmonth=7;
+    fitregion=1;
     PlotRegionalTempFit(FitJulTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion1,titlestr)
 
 % Continue with Jul-Region 2
@@ -1403,6 +1566,8 @@ if(iSelect==1)
     rmse=gofJulRegion2.rmse;
     GofStats1(7,2)=adjrsquare;
     GofStats2(7,2)=rmse;
+    fitmonth=7;
+    fitregion=2;
     PlotRegionalTempFit(FitJulTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion2,titlestr)
 
 % Continue with Jul-Region 3
@@ -1417,6 +1582,8 @@ if(iSelect==1)
     rmse=gofJulRegion2.rmse;
     GofStats1(7,3)=adjrsquare;
     GofStats2(7,3)=rmse;
+    fitmonth=7;
+    fitregion=3;
     PlotRegionalTempFit(FitJulTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion3,titlestr)
 
 % Continue with Jul-Region 4
@@ -1431,6 +1598,8 @@ if(iSelect==1)
     rmse=gofJulRegion4.rmse;
     GofStats1(7,4)=adjrsquare;
     GofStats2(7,4)=rmse;
+    fitmonth=7;
+    fitregion=4;
     PlotRegionalTempFit(FitJulTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion4,titlestr)
 
 % Continue with Jul-Region 5
@@ -1445,6 +1614,8 @@ if(iSelect==1)
     rmse=gofJulRegion5.rmse;
     GofStats1(7,5)=adjrsquare;
     GofStats2(7,5)=rmse;
+    fitmonth=7;
+    fitregion=5;
     PlotRegionalTempFit(FitJulTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion5,titlestr)
 
 % Continue with Jul-Region 6
@@ -1459,6 +1630,8 @@ if(iSelect==1)
     rmse=gofJulRegion6.rmse;
     GofStats1(7,6)=adjrsquare;
     GofStats2(7,6)=rmse;
+    fitmonth=7;
+    fitregion=6;
     PlotRegionalTempFit(FitJulTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion6,titlestr)
 
 % Continue with Jul-Region 7
@@ -1473,6 +1646,8 @@ if(iSelect==1)
     rmse=gofJulRegion7.rmse;
     GofStats1(7,7)=adjrsquare;
     GofStats2(7,7)=rmse;
+    fitmonth=7;
+    fitregion=7;
     PlotRegionalTempFit(FitJulTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion7,titlestr)
 
 % Continue with Jul-Region 8
@@ -1487,6 +1662,8 @@ if(iSelect==1)
     rmse=gofJulRegion8.rmse;
     GofStats1(7,8)=adjrsquare;
     GofStats2(7,8)=rmse;
+    fitmonth=7;
+    fitregion=8;
     PlotRegionalTempFit(FitJulTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion8,titlestr)
 
 % Continue with Jul-Region 9
@@ -1501,6 +1678,8 @@ if(iSelect==1)
     rmse=gofJulRegion9.rmse;
     GofStats1(7,9)=adjrsquare;
     GofStats2(7,9)=rmse;
+    fitmonth=7;
+    fitregion=9;
     PlotRegionalTempFit(FitJulTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion9,titlestr)
 
 % Continue with Jul-Region 10
@@ -1515,6 +1694,8 @@ if(iSelect==1)
     rmse=gofJulRegion10.rmse;
     GofStats1(7,10)=adjrsquare;
     GofStats2(7,10)=rmse;
+    fitmonth=7;
+    fitregion=10;
     PlotRegionalTempFit(FitJulTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion10,titlestr)
 
 %% Continue with August-Region 1
@@ -1531,6 +1712,8 @@ if(iSelect==1)
         rmse=gofAugRegion1.rmse;
         GofStats1(8,1)=adjrsquare;
         GofStats2(8,1)=rmse;
+        fitmonth=8;
+        fitregion=1;
         PlotRegionalTempFit(FitAugTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion1,titlestr)
     end
 
@@ -1548,6 +1731,8 @@ if(iSelect==1)
         rmse=gofAugRegion2.rmse;
         GofStats1(8,2)=adjrsquare;
         GofStats2(8,2)=rmse;
+        fitmonth=8;
+        fitregion=2;
         PlotRegionalTempFit(FitAugTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion2,titlestr)
     end
 
@@ -1565,6 +1750,8 @@ if(iSelect==1)
         rmse=gofAugRegion2.rmse;
         GofStats1(8,3)=adjrsquare;
         GofStats2(8,3)=rmse;
+        fitmonth=8;
+        fitregion=3;
         PlotRegionalTempFit(FitAugTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion3,titlestr)
     end
 
@@ -1582,6 +1769,8 @@ if(iSelect==1)
         rmse=gofAugRegion4.rmse;
         GofStats1(8,4)=adjrsquare;
         GofStats2(8,4)=rmse;
+        fitmonth=8;
+        fitregion=4;
         PlotRegionalTempFit(FitAugTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion4,titlestr)
     end
 
@@ -1599,6 +1788,8 @@ if(iSelect==1)
         rmse=gofAugRegion5.rmse;
         GofStats1(8,5)=adjrsquare;
         GofStats2(8,5)=rmse;
+        fitmonth=8;
+        fitregion=5;
         PlotRegionalTempFit(FitAugTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion5,titlestr)
     end
 
@@ -1617,6 +1808,8 @@ if(iSelect==1)
         rmse=gofAugRegion6.rmse;
         GofStats1(8,6)=adjrsquare;
         GofStats2(8,6)=rmse;
+        fitmonth=8;
+        fitregion=6;
         PlotRegionalTempFit(FitAugTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion6,titlestr)
     end
 
@@ -1633,6 +1826,8 @@ if(iSelect==1)
         rmse=gofAugRegion7.rmse;
         GofStats1(8,7)=adjrsquare;
         GofStats2(8,7)=rmse;
+        fitmonth=8;
+        fitregion=7;
         PlotRegionalTempFit(FitAugTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion7,titlestr)
     end
 
@@ -1649,6 +1844,8 @@ if(iSelect==1)
         rmse=gofAugRegion8.rmse;
         GofStats1(8,8)=adjrsquare;
         GofStats2(8,8)=rmse;
+        fitmonth=8;
+        fitregion=8;
         PlotRegionalTempFit(FitAugTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion8,titlestr)
     end
 
@@ -1665,6 +1862,8 @@ if(iSelect==1)
         rmse=gofAugRegion9.rmse;
         GofStats1(8,9)=adjrsquare;
         GofStats2(8,9)=rmse;
+        fitmonth=8;
+        fitregion=9;
         PlotRegionalTempFit(FitAugTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion9,titlestr)
     end
 
@@ -1681,6 +1880,8 @@ if(iSelect==1)
         rmse=gofAugRegion10.rmse;
         GofStats1(8,10)=adjrsquare;
         GofStats2(8,10)=rmse;
+        fitmonth=8;
+        fitregion=10;
         PlotRegionalTempFit(FitAugTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion10,titlestr)
     end
 
@@ -1698,6 +1899,8 @@ if(iSelect==1)
         rmse=gofSepRegion1.rmse;
         GofStats1(9,1)=adjrsquare;
         GofStats2(9,1)=rmse;
+        fitmonth=9;
+        fitregion=1;
         PlotRegionalTempFit(FitSepTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion1,titlestr)
     end
 
@@ -1715,6 +1918,8 @@ if(iSelect==1)
         rmse=gofSepRegion2.rmse;
         GofStats1(9,2)=adjrsquare;
         GofStats2(9,2)=rmse;
+        fitmonth=9;
+        fitregion=2;
         PlotRegionalTempFit(FitSepTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion2,titlestr)
     end
 
@@ -1732,6 +1937,8 @@ if(iSelect==1)
         rmse=gofSepRegion2.rmse;
         GofStats1(9,3)=adjrsquare;
         GofStats2(9,3)=rmse;
+        fitmonth=9;
+        fitregion=3;
         PlotRegionalTempFit(FitSepTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion3,titlestr)
     end
 
@@ -1749,6 +1956,8 @@ if(iSelect==1)
         rmse=gofSepRegion4.rmse;
         GofStats1(9,4)=adjrsquare;
         GofStats2(9,4)=rmse;
+        fitmonth=9;
+        fitregion=4;
         PlotRegionalTempFit(FitSepTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion4,titlestr)
     end
 
@@ -1766,6 +1975,8 @@ if(iSelect==1)
         rmse=gofSepRegion5.rmse;
         GofStats1(9,5)=adjrsquare;
         GofStats2(9,5)=rmse;
+        fitmonth=9;
+        fitregion=5;
         PlotRegionalTempFit(FitSepTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion5,titlestr)
     end
 
@@ -1783,6 +1994,8 @@ if(iSelect==1)
         rmse=gofSepRegion6.rmse;
         GofStats1(9,6)=adjrsquare;
         GofStats2(9,6)=rmse;
+        fitmonth=9;
+        fitregion=6;
         PlotRegionalTempFit(FitSepTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion6,titlestr)
     end
 
@@ -1800,6 +2013,8 @@ if(iSelect==1)
         rmse=gofSepRegion7.rmse;
         GofStats1(9,7)=adjrsquare;
         GofStats2(9,7)=rmse;
+        fitmonth=9;
+        fitregion=7;
         PlotRegionalTempFit(FitSepTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion7,titlestr)
     end
 
@@ -1817,6 +2032,8 @@ if(iSelect==1)
         rmse=gofSepRegion8.rmse;
         GofStats1(9,8)=adjrsquare;
         GofStats2(9,8)=rmse;
+        fitmonth=9;
+        fitregion=8;
         PlotRegionalTempFit(FitSepTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion8,titlestr)
     end
 
@@ -1834,6 +2051,8 @@ if(iSelect==1)
         rmse=gofSepRegion9.rmse;
         GofStats1(9,9)=adjrsquare;
         GofStats2(9,9)=rmse;
+        fitmonth=9;
+        fitregion=9;
         PlotRegionalTempFit(FitSepTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion9,titlestr)
     end
 
@@ -1851,6 +2070,8 @@ if(iSelect==1)
         rmse=gofSepRegion10.rmse;
         GofStats1(9,10)=adjrsquare;
         GofStats2(9,10)=rmse;
+        fitmonth=9;
+        fitregion=10;
         PlotRegionalTempFit(FitSepTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion10,titlestr)
     end
 
@@ -1868,6 +2089,8 @@ if(iSelect==1)
         rmse=gofOctRegion1.rmse;
         GofStats1(10,1)=adjrsquare;
         GofStats2(10,1)=rmse;
+        fitmonth=10;
+        fitregion=1;
         PlotRegionalTempFit(FitOctTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion1,titlestr)
     end
 
@@ -1885,6 +2108,8 @@ if(iSelect==1)
         rmse=gofOctRegion2.rmse;
         GofStats1(10,2)=adjrsquare;
         GofStats2(10,2)=rmse;
+        fitmonth=10;
+        fitregion=2;
         PlotRegionalTempFit(FitOctTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion2,titlestr)
     end
 
@@ -1902,6 +2127,8 @@ if(iSelect==1)
         rmse=gofOctRegion2.rmse;
         GofStats1(10,3)=adjrsquare;
         GofStats2(10,3)=rmse;
+        fitmonth=10;
+        fitregion=3;
         PlotRegionalTempFit(FitOctTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion3,titlestr)
     end
 
@@ -1919,6 +2146,8 @@ if(iSelect==1)
         rmse=gofOctRegion4.rmse;
         GofStats1(10,4)=adjrsquare;
         GofStats2(10,4)=rmse;
+        fitmonth=10;
+        fitregion=4;
         PlotRegionalTempFit(FitOctTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion4,titlestr)
     end
 
@@ -1936,6 +2165,8 @@ if(iSelect==1)
         rmse=gofOctRegion5.rmse;
         GofStats1(10,5)=adjrsquare;
         GofStats2(10,5)=rmse;
+        fitmonth=10;
+        fitregion=5;
         PlotRegionalTempFit(FitOctTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion5,titlestr)
     end
 
@@ -1953,6 +2184,8 @@ if(iSelect==1)
         rmse=gofOctRegion6.rmse;
         GofStats1(10,6)=adjrsquare;
         GofStats2(10,6)=rmse;
+        fitmonth=10;
+        fitregion=6;
         PlotRegionalTempFit(FitOctTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion6,titlestr)
     end
 
@@ -1970,6 +2203,8 @@ if(iSelect==1)
         rmse=gofOctRegion7.rmse;
         GofStats1(10,7)=adjrsquare;
         GofStats2(10,7)=rmse;
+        fitmonth=10;
+        fitregion=7;
         PlotRegionalTempFit(FitOctTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion7,titlestr)
     end
 
@@ -1987,6 +2222,8 @@ if(iSelect==1)
         rmse=gofOctRegion8.rmse;
         GofStats1(10,8)=adjrsquare;
         GofStats2(10,8)=rmse;
+        fitmonth=10;
+        fitregion=8;
         PlotRegionalTempFit(FitOctTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion8,titlestr)
     end
 
@@ -2004,6 +2241,8 @@ if(iSelect==1)
         rmse=gofOctRegion9.rmse;
         GofStats1(10,9)=adjrsquare;
         GofStats2(10,9)=rmse;
+        fitmonth=10;
+        fitregion=9;
         PlotRegionalTempFit(FitOctTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion9,titlestr)
     end
 
@@ -2021,6 +2260,8 @@ if(iSelect==1)
         rmse=gofOctRegion10.rmse;
         GofStats1(10,10)=adjrsquare;
         GofStats2(10,10)=rmse;
+        fitmonth=10;
+        fitregion=10;
         PlotRegionalTempFit(FitOctTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion10,titlestr)
     end
 
@@ -2038,6 +2279,8 @@ if(iSelect==1)
         rmse=gofNovRegion1.rmse;
         GofStats1(11,1)=adjrsquare;
         GofStats2(11,1)=rmse;
+        fitmonth=11;
+        fitregion=1;
         PlotRegionalTempFit(FitNovTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion1,titlestr)
     end
 
@@ -2055,6 +2298,8 @@ if(iSelect==1)
         rmse=gofNovRegion2.rmse;
         GofStats1(11,2)=adjrsquare;
         GofStats2(11,2)=rmse;
+        fitmonth=11;
+        fitregion=2;
         PlotRegionalTempFit(FitNovTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion2,titlestr)
     end
 
@@ -2072,6 +2317,8 @@ if(iSelect==1)
         rmse=gofNovRegion2.rmse;
         GofStats1(11,3)=adjrsquare;
         GofStats2(11,3)=rmse;
+        fitmonth=11;
+        fitregion=3;
         PlotRegionalTempFit(FitNovTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion3,titlestr)
     end
 
@@ -2089,6 +2336,8 @@ if(iSelect==1)
         rmse=gofNovRegion4.rmse;
         GofStats1(11,4)=adjrsquare;
         GofStats2(11,4)=rmse;
+        fitmonth=11;
+        fitregion=4;
         PlotRegionalTempFit(FitNovTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion4,titlestr)
     end
 
@@ -2106,6 +2355,8 @@ if(iSelect==1)
         rmse=gofNovRegion5.rmse;
         GofStats1(11,5)=adjrsquare;
         GofStats2(11,5)=rmse;
+        fitmonth=11;
+        fitregion=5;
         PlotRegionalTempFit(FitNovTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion5,titlestr)
     end
 
@@ -2123,6 +2374,8 @@ if(iSelect==1)
         rmse=gofNovRegion6.rmse;
         GofStats1(11,6)=adjrsquare;
         GofStats2(11,6)=rmse;
+        fitmonth=11;
+        fitregion=6;
         PlotRegionalTempFit(FitNovTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion6,titlestr)
     end
 
@@ -2140,6 +2393,8 @@ if(iSelect==1)
         rmse=gofNovRegion7.rmse;
         GofStats1(11,7)=adjrsquare;
         GofStats2(11,7)=rmse;
+        fitmonth=11;
+        fitregion=7;
         PlotRegionalTempFit(FitNovTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion7,titlestr)
     end
 
@@ -2157,6 +2412,8 @@ if(iSelect==1)
         rmse=gofNovRegion8.rmse;
         GofStats1(11,8)=adjrsquare;
         GofStats2(11,8)=rmse;
+        fitmonth=11;
+        fitregion=8;
         PlotRegionalTempFit(FitNovTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion8,titlestr)
     end
 
@@ -2174,6 +2431,8 @@ if(iSelect==1)
         rmse=gofNovRegion9.rmse;
         GofStats1(11,9)=adjrsquare;
         GofStats2(11,9)=rmse;
+        fitmonth=11;
+        fitregion=9;
         PlotRegionalTempFit(FitNovTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion9,titlestr)
     end
 
@@ -2191,6 +2450,8 @@ if(iSelect==1)
         rmse=gofNovRegion10.rmse;
         GofStats1(11,10)=adjrsquare;
         GofStats2(11,10)=rmse;
+        fitmonth=11;
+        fitregion=10;
         PlotRegionalTempFit(FitNovTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion10,titlestr)
     end
 
@@ -2208,6 +2469,8 @@ if(iSelect==1)
         rmse=gofDecRegion1.rmse;
         GofStats1(12,1)=adjrsquare;
         GofStats2(12,1)=rmse;
+        fitmonth=12;
+        fitregion=1;
         PlotRegionalTempFit(FitDecTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion1,titlestr)
     end
 
@@ -2225,6 +2488,8 @@ if(iSelect==1)
         rmse=gofDecRegion2.rmse;
         GofStats1(12,2)=adjrsquare;
         GofStats2(12,2)=rmse;
+        fitmonth=12;
+        fitregion=2;
         PlotRegionalTempFit(FitDecTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion2,titlestr)
     end
 
@@ -2242,6 +2507,8 @@ if(iSelect==1)
         rmse=gofDecRegion2.rmse;
         GofStats1(12,3)=adjrsquare;
         GofStats2(12,3)=rmse;
+        fitmonth=12;
+        fitregion=3;
         PlotRegionalTempFit(FitDecTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion3,titlestr)
     end
 
@@ -2259,6 +2526,8 @@ if(iSelect==1)
         rmse=gofDecRegion4.rmse;
         GofStats1(12,4)=adjrsquare;
         GofStats2(12,4)=rmse;
+        fitmonth=12;
+        fitregion=4;
         PlotRegionalTempFit(FitDecTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion4,titlestr)
     end
 
@@ -2276,6 +2545,8 @@ if(iSelect==1)
         rmse=gofDecRegion5.rmse;
         GofStats1(12,5)=adjrsquare;
         GofStats2(12,5)=rmse;
+        fitmonth=12;
+        fitregion=5;
         PlotRegionalTempFit(FitDecTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion5,titlestr)
     end
 
@@ -2293,6 +2564,8 @@ if(iSelect==1)
         rmse=gofDecRegion6.rmse;
         GofStats1(12,6)=adjrsquare;
         GofStats2(12,6)=rmse;
+        fitmonth=12;
+        fitregion=6;
         PlotRegionalTempFit(FitDecTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion6,titlestr)
     end
 
@@ -2310,6 +2583,8 @@ if(iSelect==1)
         rmse=gofDecRegion7.rmse;
         GofStats1(12,7)=adjrsquare;
         GofStats2(12,7)=rmse;
+        fitmonth=12;
+        fitregion=7;
         PlotRegionalTempFit(FitDecTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion7,titlestr)
     end
 
@@ -2327,6 +2602,8 @@ if(iSelect==1)
         rmse=gofDecRegion8.rmse;
         GofStats1(12,8)=adjrsquare;
         GofStats2(12,8)=rmse;
+        fitmonth=12;
+        fitregion=8;
         PlotRegionalTempFit(FitDecTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion8,titlestr)
     end
 
@@ -2344,6 +2621,8 @@ if(iSelect==1)
         rmse=gofDecRegion9.rmse;
         GofStats1(12,9)=adjrsquare;
         GofStats2(12,9)=rmse;
+        fitmonth=12;
+        fitregion=9;
         PlotRegionalTempFit(FitDecTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion9,titlestr)
     end
 
@@ -2361,6 +2640,8 @@ if(iSelect==1)
         rmse=gofDecRegion10.rmse;
         GofStats1(12,10)=adjrsquare;
         GofStats2(12,10)=rmse;
+        fitmonth=12;
+        fitregion=10;
         PlotRegionalTempFit(FitDecTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion10,titlestr)
     end
 elseif(iSelect==2)
@@ -4961,8 +5242,26 @@ elseif(iSelect==2)
         PlotRegionalQVFit(FitDecQVRegion10,MeasTimes,MeasQV,RegionName,ifittype,gofDecRegion10,titlestr)
     end
 end
-
-
+% Save run data
+isavefiles=1;
+if(isavefiles==1)
+    eval(['cd ' savepath(1:length(savepath)-1)]);
+    actionstr='save';
+    varstr1='GofStats1 GofStats2 ';
+    varstr2=' PredTempStart PredTempEnd PredTempChng';
+    varstr=strcat(varstr1,varstr2);
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+    eval(cmdString)
+    dispstr=strcat('Wrote Matlab File-',MatFileName);
+    disp(dispstr);
+else
+%     dispstr=strcat('Did Not Save Matlab File-',MatFileName);
+%     disp(dispstr);
+end
+%% Plot the Avergage Temperature Changes
+titlestr='AvgTempChanges-1980-2020';
+DisplayMonthlyAvgTemps(titlestr)
 disp('Run Complete');
 
 

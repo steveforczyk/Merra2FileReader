@@ -1361,7 +1361,7 @@ end
             disp(dispstr)
         end
         igo=0;
-    elseif(indx==4)
+    elseif(indx==4)% M2T1NXOCN
         ReadDataset04()  
     elseif(indx==7)
         ReadDataset07() 

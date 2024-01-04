@@ -1,17 +1,13 @@
-function PlotRegionalTempFit(FitTemp,MeasTimes,MeasTemps,RegionName,ifittype,gof,titlestr)
+function PlotRegionalTempConfidence(FitTemp,MeasTimes,MeasTemps,RegionName,ifittype,gof,titlestr)
 % This routine will plot the fit of a region temperature over time along
-% with the actual measured data
+% with the actual measured data along with a confidence fit
 % 
 % Written By: Stephen Forczyk
-% Created: Dec 14,2023
-% Revised: Dec 16,2023 added Gof data to plot
-% Revised: Jan 2,2024 added simple estimate of temp change in region
-% by default the start data is 1980 and the end date is 2020
+% Created: Dec 26,2023
+% Revised: ------
 % Classification: Public Domain/Unclassified
 
 global TimeFrac startYearstr endYearstr;
-global PredTempStart PredTempEnd PredTempChng;
-global fitmonth fitregion;
 
 global fid;
 global widd2 lend2;
@@ -40,18 +36,21 @@ global shapefilepath Countryshapepath figpath pressurepath averaged1Daypath;
 global mappath gridpath countyshapepath nationalshapepath summarypath;
 global DayMonthNonLeapYear DayMonthLeapYear CalendarFileName;
 
-
-
 % Determine string for fit type
 if(ifittype==1)
     fitstr='Polyfit Order 1';
 elseif(ifittype==2)
     fitstr='Polyfit Order 2';
 end
+p12 = predint(FitTemp,MeasTimes,0.95,'observation','on');
 eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
 movie_figure1=figure('position',[hor1 vert1 widd lend]);
 set(gcf,'MenuBar','none');
 plot(FitTemp,MeasTimes,MeasTemps);
+hold on
+plot(MeasTimes,p12,'r--');
+hold off
+legend off
 ht=title(titlestr);
 hx=xlabel('Date-Years');
 set(hx,'FontWeight','bold','FontSize',12);
@@ -59,12 +58,6 @@ hy=ylabel('Temp In Deg-C','FontWeight','bold');
 set(hy,'FontWeight','bold','FontSize',12);
 legend('Location','NorthEast','FontWeight','bold');
 grid on
-% Do a simple check on global warning
-FutureDates=(1980:40:2020).';
-TempLimits=FitTemp(FutureDates);
-PredTempStart(fitmonth,fitregion)=TempLimits(1,1);
-PredTempEnd(fitmonth,fitregion)=TempLimits(2,1);
-PredTempChng(fitmonth,fitregion)=TempLimits(2,1)-TempLimits(1,1);
 ab=1;
 %% Add a logo
 if(iLogo==1)
