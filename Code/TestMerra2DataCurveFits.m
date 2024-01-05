@@ -5261,6 +5261,7 @@ else
 end
 %% Plot the Avergage Temperature Changes
 titlestr='AvgTempChanges-1980-2020';
+
 DisplayMonthlyAvgTemps(titlestr)
 disp('Run Complete');
 

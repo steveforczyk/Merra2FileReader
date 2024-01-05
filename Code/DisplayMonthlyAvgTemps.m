@@ -61,6 +61,7 @@ chart_time=7;
 eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
 movie_figure1=figure('position',[hor1 vert1 widd lend]);
 set(gcf,'MenuBar','none');
+set(gca,'Position',[.16 .18  .70 .70]);
 imagesc(PredTempChng);
 % MonthLabels=cell(12,1);
 % MonthLabels{1,1}='Jan';
