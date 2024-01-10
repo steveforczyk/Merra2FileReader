@@ -52,7 +52,7 @@ global CountyBoundaries StateFIPSFile;
 global StateFIPSCodes NationalCountiesShp;
 global USAStatesShapeFileList USAStatesFileName GridFileName;
 global UrbanAreasShapeFile NorthAmericaLakes ;
-global idebug isavefiles ;
+global idebug isavefiles icurvefit;
 global iPrimeRoads iCountyRoads iCommonRoads iStateRecRoads iUSRoads iStateRoads;
 global iLakes;
 global NumProcFiles ProcFileList iPrintTimingInfo iSkipReportFrames;
@@ -69,6 +69,7 @@ global PressureFileName ;
 global SelectedFiles numSelectedFiles path1;
 global iLogo LogoFileName1 LogoFileName2;
 global iSeaOnly iLandOnly;
+global iPostProcessDataset3;
 global numtimeslice;
 
 global fid;
@@ -161,6 +162,7 @@ iSkipReportFrames=2;
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
+icurvefit=1;
 ifixedImagePaths=1;
 isaveJpeg=1; % Set to 0 to not save jpegs (not recommended),1=print to save (slow)
 % 2= Quick save using screencapture (recommended)
@@ -183,6 +185,7 @@ iPress42=1;
 iPress72=1;
 iSeaOnly=0;
 iLandOnly=1;
+iPostProcessDataset3=1;
 PascalsToMilliBars=1/1000;
 PascalsToPsi=14.696/101325;
 % Select a Time Slice
@@ -952,6 +955,7 @@ end
             close(vTemp7);
         end
         igo=0;
+%% Process Data from M2T1NXADG_5.12.4
     elseif(indx==2)% M2T1NXADG_5.12.4
         [Merra2FileNames,nowpath] = uigetfile('*.nc4','Select Multiple Files', ...
         'MultiSelect', 'on');
@@ -1069,7 +1073,7 @@ end
     maskVar5=char(SelectedMaskData{5,2});
     load(maskFile5,maskVar5);
     Merra2WorkingMask5=eval(maskVar5);
-%% Load in the Sea Area Masks if the iSeaSalt option is set to 1
+% Load in the Sea Area Masks if the iSeaSalt option is set to 1
    if(iSeaSalt>0)
  % Load in the Sea Mask File
         eval(['cd ' oceanmappath(1:length(oceanmappath)-1)]);
@@ -1262,103 +1266,119 @@ end
         igo=0;
         end
         igo=0;
+ %% Process Data from M2IUNPANA_5.12.4
     elseif(indx==3)% M2IUNPANA_5.12.4
-        [Merra2FileNames,nowpath] = uigetfile('*.nc4','Select Multiple Files', ...
-        'MultiSelect', 'on');
-        Merra2FileNames=Merra2FileNames';
-        numSelectedFiles=length(Merra2FileNames);
-        [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
-        Merra2FileNames=NewFileList;
-        numSelectedFiles=length(Merra2FileNames);
-        fprintf(fid,'\n');
-        fprintf(fid,'%s\n','----- List of Files to Be processed-----');
-        for nn=1:numSelectedFiles
-            nowFile=Merra2FileNames{nn,1};
-            filestr='File Num';            
-            fprintf(fid,'%s\n',nowFile);
-        end       
-        fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
-        tpstr=strcat('Process time-',TimeSlices{iTimeSlice,1});
-        pslice=iPress42;
-        heightkm=PressureLevel42(iPress42,3);
-        prslevlstr=strcat('Pressure Level-',num2str(iPress),'-Height Km=',num2str(heightkm));
-        fprintf(fid,'%s\n',tpstr);
-        fprintf(fid,'%s\n',prslevlstr);
-        fprintf(fid,'\n');
+        if(iPostProcessDataset3<1)
+            [Merra2FileNames,nowpath] = uigetfile('*.nc4','Select Multiple Files', ...
+            'MultiSelect', 'on');
+            Merra2FileNames=Merra2FileNames';
+            numSelectedFiles=length(Merra2FileNames);
+            [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
+            Merra2FileNames=NewFileList;
+            numSelectedFiles=length(Merra2FileNames);
+            fprintf(fid,'\n');
+            fprintf(fid,'%s\n','----- List of Files to Be processed-----');
+            for nn=1:numSelectedFiles
+                nowFile=Merra2FileNames{nn,1};
+                filestr='File Num';            
+                fprintf(fid,'%s\n',nowFile);
+            end       
+            fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
+            tpstr=strcat('Process time-',TimeSlices{iTimeSlice,1});
+            pslice=iPress42;
+            heightkm=PressureLevel42(iPress42,3);
+            prslevlstr=strcat('Pressure Level-',num2str(iPress),'-Height Km=',num2str(heightkm));
+            fprintf(fid,'%s\n',tpstr);
+            fprintf(fid,'%s\n',prslevlstr);
+            fprintf(fid,'\n');
 %  Add the intro section of the PDF report for this dataset
-        if((iCreatePDFReport==1) && (RptGenPresent==1))
-            CreateMerra2Dataset03Report
-        end
+            if((iCreatePDFReport==1) && (RptGenPresent==1))
+                CreateMerra2Dataset03Report
+            end
 % Add in Country Masks-(Pre Selected List)
-        ROIName1='Germany';
-        ROIName2='Finland';
-        ROIName3='UK';
-        ROIName4='Sudan';
-        ROIName5='SouthAfrica';
-        ROIName6='India';
-        ROIName7='Australia';
-        ROIName8='California';
-        ROIName9='Texas';
-        ROIName10='Peru';
-        eval(['cd ' maskpath(1:length(maskpath)-1)]);
+            ROIName1='Germany';
+            ROIName2='Finland';
+            ROIName3='UK';
+            ROIName4='Sudan';
+            ROIName5='SouthAfrica';
+            ROIName6='India';
+            ROIName7='Australia';
+            ROIName8='California';
+            ROIName9='Texas';
+            ROIName10='Peru';
+            eval(['cd ' maskpath(1:length(maskpath)-1)]);
 % Load the Mask for ROIName1-Gemany
-        maskVar1='Merra2GermanyMask';
-        load('GermanyMask.mat',maskVar1);
-        Merra2WorkingMask1=eval(maskVar1);
-        Merra2WorkingMask1size=sum(sum(Merra2WorkingMask1));
+            maskVar1='Merra2GermanyMask';
+            load('GermanyMask.mat',maskVar1);
+            Merra2WorkingMask1=eval(maskVar1);
+            Merra2WorkingMask1size=sum(sum(Merra2WorkingMask1));
 % Load the Mask for ROIName2-Finland
-        maskVar2='Merra2FinlandMask';
-        load('FinlandMask.mat',maskVar2);
-        Merra2WorkingMask2=eval(maskVar2);
-        Merra2WorkingMask2size=sum(sum(Merra2WorkingMask2));
+            maskVar2='Merra2FinlandMask';
+            load('FinlandMask.mat',maskVar2);
+            Merra2WorkingMask2=eval(maskVar2);
+            Merra2WorkingMask2size=sum(sum(Merra2WorkingMask2));
 % Load the Mask for ROIName3-UK
-        maskVar3='Merra2UKMask';
-        load('UKMask.mat',maskVar3);
-        Merra2WorkingMask3=eval(maskVar3);
-        Merra2WorkingMask3size=sum(sum(Merra2WorkingMask3));
+            maskVar3='Merra2UKMask';
+            load('UKMask.mat',maskVar3);
+            Merra2WorkingMask3=eval(maskVar3);
+            Merra2WorkingMask3size=sum(sum(Merra2WorkingMask3));
 % Load the Mask for ROIName4-Sudan
-        maskVar4='Merra2SudanMask';
-        load('SudanMask.mat',maskVar4);
-        Merra2WorkingMask4=eval(maskVar4);
-        Merra2WorkingMask4size=sum(sum(Merra2WorkingMask4));
+            maskVar4='Merra2SudanMask';
+            load('SudanMask.mat',maskVar4);
+            Merra2WorkingMask4=eval(maskVar4);
+            Merra2WorkingMask4size=sum(sum(Merra2WorkingMask4));
 % Load the Mask for ROIName5-SouthAfrica
-        maskVar5='Merra2SouthAfricaMask';
-        load('SouthAfricaMask.mat',maskVar5);
-        Merra2WorkingMask5=eval(maskVar5);
-        Merra2WorkingMask5size=sum(sum(Merra2WorkingMask5));
+            maskVar5='Merra2SouthAfricaMask';
+            load('SouthAfricaMask.mat',maskVar5);
+            Merra2WorkingMask5=eval(maskVar5);
+            Merra2WorkingMask5size=sum(sum(Merra2WorkingMask5));
 % Load the Mask for ROIName6-India
-        maskVar6='Merra2IndiaMask';
-        load('IndiaMask.mat',maskVar6);
-        Merra2WorkingMask6=eval(maskVar6);
-        Merra2WorkingMask6size=sum(sum(Merra2WorkingMask6));
+            maskVar6='Merra2IndiaMask';
+            load('IndiaMask.mat',maskVar6);
+            Merra2WorkingMask6=eval(maskVar6);
+            Merra2WorkingMask6size=sum(sum(Merra2WorkingMask6));
 % Load the Mask for ROIName7-Australia
-        maskVar7='Merra2AustraliaMask';
-        load('AustraliaMask.mat',maskVar7);
-        Merra2WorkingMask7=eval(maskVar7);
-        Merra2WorkingMask7size=sum(sum(Merra2WorkingMask7));
+            maskVar7='Merra2AustraliaMask';
+            load('AustraliaMask.mat',maskVar7);
+            Merra2WorkingMask7=eval(maskVar7);
+            Merra2WorkingMask7size=sum(sum(Merra2WorkingMask7));
 % Load the Mask for ROIName8-California
-        maskVar8='Merra2CaliforniaMask';
-        load('CaliforniaMask.mat',maskVar8);
-        Merra2WorkingMask8=eval(maskVar8);
-        Merra2WorkingMask8size=sum(sum(Merra2WorkingMask8));
+            maskVar8='Merra2CaliforniaMask';
+            load('CaliforniaMask.mat',maskVar8);
+            Merra2WorkingMask8=eval(maskVar8);
+            Merra2WorkingMask8size=sum(sum(Merra2WorkingMask8));
 % Load the Mask for ROIName9-Texas
-        maskVar9='Merra2TexasMask';
-        load('TexasMask.mat',maskVar9);
-        Merra2WorkingMask9=eval(maskVar9);
-        Merra2WorkingMask9size=sum(sum(Merra2WorkingMask9));
+            maskVar9='Merra2TexasMask';
+            load('TexasMask.mat',maskVar9);
+            Merra2WorkingMask9=eval(maskVar9);
+            Merra2WorkingMask9size=sum(sum(Merra2WorkingMask9));
 % Load the Mask for ROIName10-Peru
-        maskVar10='Merra2PeruMask';
-        load('PeruMask.mat',maskVar10);
-        Merra2WorkingMask10=eval(maskVar10);
-        Merra2WorkingMask10size=sum(sum(Merra2WorkingMask10));
-        ab=1;
-        for nn=1:numSelectedFiles
-            nowFile=Merra2FileNames{nn,1}; 
-            framecounter=framecounter+1;
-            ReadDataset03Rev1(nowFile,nowpath)
-            dispstr=strcat('Finished Processing File-',nowFile,'-which is file-',num2str(nn),...
-                '-of-',num2str(numSelectedFiles),'-Files');
-            disp(dispstr)
+            maskVar10='Merra2PeruMask';
+            load('PeruMask.mat',maskVar10);
+            Merra2WorkingMask10=eval(maskVar10);
+            Merra2WorkingMask10size=sum(sum(Merra2WorkingMask10));
+            ab=1;
+            for nn=1:numSelectedFiles
+                nowFile=Merra2FileNames{nn,1}; 
+                framecounter=framecounter+1;
+                ReadDataset03Rev1(nowFile,nowpath)
+                dispstr=strcat('Finished Processing File-',nowFile,'-which is file-',num2str(nn),...
+                    '-of-',num2str(numSelectedFiles),'-Files');
+                disp(dispstr)
+            end
+        end
+        iSelect=2;
+        if(iPostProcessDataset3==1)
+            eval(['cd ' tablepath(1:length(tablepath)-1)])  
+            [TableFile,nowpath] = uigetfile('*.mat','Select One File', ...
+            'MultiSelect', 'off');
+            load(TableFile);
+            if(iSelect==1)
+                PerformAirTemperatureCurvefits()
+            else
+                PerformSpecificHumidityCurvefits()
+            end
+            ab=1;
         end
         igo=0;
     elseif(indx==4)% M2T1NXOCN

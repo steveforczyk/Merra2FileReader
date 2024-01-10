@@ -1,4 +1,4 @@
-function DisplayMonthlyAvgTemps(titlestr)
+function DisplayMonthlyAvgTemps(titlestr,ifittype)
 % This function will plot the monthly average temperature changes
 % Currently the plot expect data for 12 months and 10 Regions
 %
@@ -9,6 +9,7 @@ function DisplayMonthlyAvgTemps(titlestr)
 
 global PredTempStart PredTempEnd PredTempChng;
 global MonthLabels RegionLabels;
+global pslice heightkm DataCollectionTime;
 
 global fid;
 global widd2 lend2;
@@ -56,7 +57,7 @@ LogoFileName1='Merra2-LogoB.jpg';
 % Set up parameters for graphs that will center them on the screen
 [hor1,vert1,Fz1,Fz2,machine]=SetScreenCoordinates(widd,lend);
 [hor2,vert2,Fz1,Fz2,machine]=SetScreenCoordinates(widd2,lend2);
-chart_time=7;
+chart_time=5;
 
 eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
 movie_figure1=figure('position',[hor1 vert1 widd lend]);
@@ -87,6 +88,12 @@ imagesc(PredTempChng);
 % RegionLabels{8,1}='California';
 % RegionLabels{9,1}='Texas';
 % RegionLabels{10,1}='Peru';
+% Determine string for fit type
+if(ifittype==1)
+    fitstr='Polyfit Order 1';
+elseif(ifittype==2)
+    fitstr='Polyfit Order 2';
+end
 
 set(gca,'YTick',[1 2 3 4 5 6 7 8 9 10 11 12]);
 set(gca,'YTickLabels',MonthLabels);
@@ -109,6 +116,16 @@ if(iLogo==1)
     imshow(x);
     set(ha2,'handlevisibility','off','visible','off')
 end
+% Set up an axis for writing text at the bottom of the chart
+newaxesh=axes('Position',[0 0 1 1]);
+set(newaxesh,'XLim',[0 1],'YLim',[0 1]);
+tx1=.10;
+ty1=.05;
+txtstr1=strcat('-Data Collection Time-',DataCollectionTime,'-preslevel-',num2str(pslice),...
+    '-heightkm-',num2str(heightkm),'-fittype-',fitstr);
+txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',12);
+
+set(newaxesh,'Visible','Off');
 %% Save the chart
 figstr=strcat(titlestr,'.jpg');
 eval(['cd ' jpegpath(1:length(jpegpath)-1)]);

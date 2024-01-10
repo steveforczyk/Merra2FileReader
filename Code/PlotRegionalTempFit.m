@@ -12,6 +12,7 @@ function PlotRegionalTempFit(FitTemp,MeasTimes,MeasTemps,RegionName,ifittype,gof
 global TimeFrac startYearstr endYearstr;
 global PredTempStart PredTempEnd PredTempChng;
 global fitmonth fitregion;
+global pslice heightkm DataCollectionTime;
 
 global fid;
 global widd2 lend2;
@@ -86,11 +87,12 @@ newaxesh=axes('Position',[0 0 1 1]);
 set(newaxesh,'XLim',[0 1],'YLim',[0 1]);
 tx1=.10;
 ty1=.05;
-txtstr1=strcat('Fitted Data from-',startYearstr,'-to-',endYearstr,'-fittype-',fitstr);
+txtstr1=strcat('Fitted Data from-',startYearstr,'-to-',endYearstr,'-fittype-',fitstr,...
+    '-Data Collection Time-',DataCollectionTime);
 txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',12);
 tx2=.10;
 ty2=.02;
-txtstr2=strcat('GoodnessOf Fit adjusted rquare =',num2str(adjrsquare,4),'-RMSE-',num2str(rmse,4));
+txtstr2=strcat('Goodness Of Fit adjusted rquare =',num2str(adjrsquare,4),'-RMSE-',num2str(rmse,4));
 txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
 set(newaxesh,'Visible','Off');
 pause(chart_time);
