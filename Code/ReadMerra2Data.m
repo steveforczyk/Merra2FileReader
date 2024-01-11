@@ -12,6 +12,8 @@
 % Revised: Oct 10,2023 Add Sea Mask Files
 % Revised: Oct 27-Oct 30 added ReadDatatset03 code
 % fixed
+% Revised: Jan 2024 added routine to compute avergage changes in Air Temp
+% and specific humidity across the 1980 thru 2023 period
 % Classification: Unclassified/Public Domain
 %% Set Up Globals
 global Datasets;

@@ -5505,8 +5505,8 @@ else
 %     disp(dispstr);
 end
 %% Plot the Avergage Temperature Changes
-titlestr='AvgTempChanges-1980-2020';
-DisplayMonthlyAvgTemps(titlestr,ifittype)
+titlestr='AvgQVChanges-1980-2020';
+DisplayMonthlyAvgQV(titlestr,ifittype)
 disp('Run Complete');
 
 
