@@ -14,6 +14,7 @@
 % fixed
 % Revised: Jan 2024 added routine to compute avergage changes in Air Temp
 % and specific humidity across the 1980 thru 2023 period
+% Revised: Jan 17,2024 made a few revisions to run code on new PC
 % Classification: Unclassified/Public Domain
 %% Set Up Globals
 global Datasets;
