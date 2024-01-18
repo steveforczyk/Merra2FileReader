@@ -23,7 +23,6 @@ global jpegpath govjpegpath;
 global iLogo LogoFileName1 LogoFileName2;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
 global iLogo LogoFileName1 LogoFileName2;
-global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
 global iLogo LogoFileName1 LogoFileName2;
 if((iCreatePDFReport==1) && (RptGenPresent==1))
     import mlreportgen.dom.*;

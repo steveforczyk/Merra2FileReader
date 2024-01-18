@@ -37,7 +37,7 @@ global Merra2WorkingMask1 Merra2WorkingMask2 Merra2WorkingMask3;
 global Merra2WorkingMask4 Merra2WorkingMask5;
 global Merra2WorkingMask6 Merra2WorkingMask7;
 global Merra2WorkingMask8 Merra2WorkingMask9 Merra2WorkingMask10;
-global TSStats;
+global TSStats iMonthForPDF;
 global Merra2WorkingSeaMask1 Merra2WorkingSeaMask2 Merra2WorkingSeaMask3;
 global Merra2WorkingSeaMask4 Merra2WorkingSeaMask5;
 global ROIName1 ROIName2 ROIName3 ROIName4 ROIName5;
@@ -413,6 +413,8 @@ iPrintTimingInfo=1;
 iDustCalc=2;% Calculate Dust emission
 iSeaSaltCalc=1;%Calculate Sea Salt totals
 DustROICountry='Sudan';
+%% Control Flags Dataset 03
+iMonthForPDF=1;
 %% Set up some initial data
 NumProcFiles=0;
 ProcFileList=cell(1,4);

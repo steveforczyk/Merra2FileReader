@@ -4,14 +4,16 @@ function PlotRegionalTempConfidence(FitTemp,MeasTimes,MeasTemps,RegionName,ifitt
 % 
 % Written By: Stephen Forczyk
 % Created: Dec 26,2023
-% Revised: ------
+% Revised: Jan 17,2024 added logic to produce chapter in PDF report
+% for one selected month for all regions (this is to hold down size of PDF
+% created)
 % Classification: Public Domain/Unclassified
 
 global TimeFrac startYearstr endYearstr;
 global pslice heightkm DataCollectionTime;
 global PredTempStart PredTempEnd PredTempChng;
 global fitmonth fitregion;
-global pslice heightkm DataCollectionTime;
+global iMonthForPDF;
 
 
 global fid;
@@ -110,4 +112,46 @@ typestr='-djpeg';
 [cmdString]=MyStrcat2(actionstr,typestr,figstr);
 eval(cmdString);
 close('all');
+%% Add data to PDF Report
+if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1) && (fitmonth==iMonthForPDF))
+    if(iNewChapter)
+        headingstr1='Average Air Temp Changes For One Month By Region';
+        chapter = Chapter("Title",headingstr1);
+    end
+    sectionstr='AirTemp Changes From 1980-2023';
+    add(chapter,Section(sectionstr));
+    eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
+    imdata = imread(figstr);
+    [nhigh,nwid,~]=size(imdata);
+    image = mlreportgen.report.FormalImage();
+    image.Image = which(figstr);
+    pdftxtstr='Dateset03-Avg Temp Changes For Selected Month and Region';
+    pdftext = Text(pdftxtstr);
+    pdftext.Color = 'red';
+    image.Caption = pdftext;
+    nhighs=floor(nhigh/2.5);
+    nwids=floor(nwid/2.5);
+    heightstr=strcat(num2str(nhighs),'px');
+    widthstr=strcat(num2str(nwids),'px');
+    image.Height = heightstr;
+    image.Width = widthstr;
+    image.ScaleToFit=0;
+    add(chapter,image);
+% Now add some text -start by decribing the with a basic description of the
+% variable being plotted
+    parastr1='This chart shows the change in  Air Temp by month and region.';
+    parastr2='Basically the curve fit data is used to generate a smooth estimate of the 50 percentile Air Temp values in each estimate.';
+    parastr3=' A difference in the estimate for 2020 and 1980 is called the change.';
+    parastr4=strcat('Data displayed is for time-',DataCollectionTime);
+    parastr5=strcat('The selected pressure level was-',num2str(heightkm,2),'-in km.');
+    parastr6='Typically a low altitude was used but in mountainous regions many NaN values can be returned.';
+    parastr9=strcat(parastr1,parastr2,parastr3,parastr4,parastr5,parastr6);
+    p1 = Paragraph(parastr9);
+    p1.Style = {OuterMargin("0pt", "0pt","10pt","10pt")};
+    add(chapter,p1);
+    if(iCloseChapter==1)
+        add(rpt,chapter);
+    end
+    close('all')
+end
 end

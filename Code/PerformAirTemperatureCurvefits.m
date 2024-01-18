@@ -28,6 +28,7 @@ global fitmonth fitregion;
 global isavefiles MatFileName;
 global MonthLabels RegionLabels;
 global pslice heightkm DataCollectionTime;
+global iMonthForPDF;
 
 
 global Merra2ShortFileName;
@@ -1408,7 +1409,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Finland';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-June','-FitType-',num2str(ifittype));
     [FitJunTempRegion2,gofJunRegion2] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJunRegion2.adjrsquare;
     rmse=gofJunRegion2.rmse;
@@ -1416,7 +1416,6 @@ ab=1;
     GofStats2(6,2)=rmse;
     fitmonth=6;
     fitregion=2;
-%    PlotRegionalTempFit(FitJunTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion2,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion2,fitconf,titlestr2)
 
