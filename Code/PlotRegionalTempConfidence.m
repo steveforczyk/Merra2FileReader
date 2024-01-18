@@ -43,6 +43,12 @@ global shapefilepath Countryshapepath figpath pressurepath averaged1Daypath;
 global mappath gridpath countyshapepath nationalshapepath summarypath;
 global DayMonthNonLeapYear DayMonthLeapYear CalendarFileName;
 
+
+if((iCreatePDFReport==1) && (RptGenPresent==1))
+    import mlreportgen.dom.*;
+    import mlreportgen.report.*;
+end
+
 % Determine string for fit type
 if(ifittype==1)
     fitstr='Polyfit Order 1';
@@ -72,6 +78,7 @@ TempLimits=FitTemp(FutureDates);
 PredTempStart(fitmonth,fitregion)=TempLimits(1,1);
 PredTempEnd(fitmonth,fitregion)=TempLimits(2,1);
 PredTempChng(fitmonth,fitregion)=TempLimits(2,1)-TempLimits(1,1);
+currentChange=TempLimits(2,1)-TempLimits(1,1);
 ab=1;
 %% Add a logo
 if(iLogo==1)
@@ -113,12 +120,25 @@ typestr='-djpeg';
 eval(cmdString);
 close('all');
 %% Add data to PDF Report
+iNewChapter=0;
+iAddToReport=0;
+iCloseChapter=0;
+if((fitmonth==iMonthForPDF) && (fitregion<10))
+    iAddToReport=1;
+    iCloseChapter=0;
+elseif((fitregion==10) && (fitmonth==iMonthForPDF))
+    iAddToReport=1;
+    iCloseChapter=1;
+end
+if((fitmonth==iMonthForPDF) && (fitregion==1))
+    iNewChapter=1;
+end
 if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1) && (fitmonth==iMonthForPDF))
     if(iNewChapter)
         headingstr1='Average Air Temp Changes For One Month By Region';
         chapter = Chapter("Title",headingstr1);
     end
-    sectionstr='AirTemp Changes From 1980-2023';
+    sectionstr=strcat('AirTemp Changes From 1980-2023','for region-',num2str(fitregion));
     add(chapter,Section(sectionstr));
     eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
     imdata = imread(figstr);
@@ -139,16 +159,24 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1) && (fitmont
     add(chapter,image);
 % Now add some text -start by decribing the with a basic description of the
 % variable being plotted
-    parastr1='This chart shows the change in  Air Temp by month and region.';
-    parastr2='Basically the curve fit data is used to generate a smooth estimate of the 50 percentile Air Temp values in each estimate.';
-    parastr3=' A difference in the estimate for 2020 and 1980 is called the change.';
+    parastr1=strcat('This chart shows the change in  Air Temp For Month-',num2str(fitmonth),'-and region-',num2str(fitregion),'.');
+    parastr2='Basically the curve fit data is used to generate a smooth estimate of the 50 percentile Air Temp values in thr selected time period.';
+    parastr3=' A difference in the estimate for 2020 and 1980 is called the air temperature change.';
     parastr4=strcat('Data displayed is for time-',DataCollectionTime);
     parastr5=strcat('The selected pressure level was-',num2str(heightkm,2),'-in km.');
     parastr6='Typically a low altitude was used but in mountainous regions many NaN values can be returned.';
-    parastr9=strcat(parastr1,parastr2,parastr3,parastr4,parastr5,parastr6);
+    parastr7=strcat(' For the month and region shown above the estimates temperature change is-',num2str(currentChange),'-Deg C.');
+    parastr9=strcat(parastr1,parastr2,parastr3,parastr4,parastr5,parastr6,parastr7);
     p1 = Paragraph(parastr9);
     p1.Style = {OuterMargin("0pt", "0pt","10pt","10pt")};
     add(chapter,p1);
+%   fprintf(fid,'\n');
+%   flagstr=strcat('fitmonth-',num2str(fitmonth),'-fitregion-',num2str(fitregion));
+%   fprintf(fid,'%s\n',flagstr);
+%   flagstr2=strcat('iNewChapter-',num2str(iNewChapter),'iAddToReport-',num2str(iAddToReport),...
+%          '-iCloseChapter-',num2str(iCloseChapter));
+%   fprintf(fid,'%s\n',flagstr2);
+%              fprintf(fid,'\n');
     if(iCloseChapter==1)
         add(rpt,chapter);
     end

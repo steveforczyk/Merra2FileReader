@@ -935,7 +935,7 @@ ab=1;
     GofStats1(3,2)=adjrsquare;
     GofStats2(3,2)=rmse;
     fitmonth=3;
-    fitregion=2
+    fitregion=2;
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion2,fitconf,titlestr2)
 
