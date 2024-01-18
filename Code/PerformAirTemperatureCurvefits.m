@@ -4,7 +4,9 @@ function PerformAirTemperatureCurvefits()
 % for 10 separate regions and 12 months for the period 1980-2022
 % Written By: Stephen Forczyk
 % Created: Jan 5,2024
-% Revised: 
+% Revised: Jan 17,2024 moved calculation of Tempchanges to the
+% PlotRegionalTempConfidence.m function-delete call to
+% PlotRegionalTempFit.m function
 % Classification: Unclassified/Public Domain
 global TimeFrac startYearstr endYearstr;
 global YearMonthStr YearStr MonthStr framecounter numSelectedFiles;
@@ -579,6 +581,7 @@ ab=1;
 %% Now Fit the monthly data Region by Region and Month By Month
     fo=fitoptions('poly2');
     fo.Normalize='on';
+    fitconf=0.75;
 %    fo.Exclude=2001:2023;
 %% Start with January-Region 1
     MeasTimes=TimeFrac(:,1);
@@ -586,7 +589,7 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Germany';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
+     titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January'); titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
     [FitJanTempRegion1,gofJanRegion1] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJanRegion1.adjrsquare;
     rmse=gofJanRegion1.rmse;
@@ -594,10 +597,9 @@ ab=1;
     GofStats2(1,1)=rmse;
     fitmonth=1;
     fitregion=1;
-    PlotRegionalTempFit(FitJanTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion1,titlestr)
-%    ci = predint(FitJanTempRegion1,2023,0.95);
+%    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
+%   PlotRegionalTempFit(FitJanTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion1,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
-    fitconf=0.75;
     PlotRegionalTempConfidence(FitJanTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion1,fitconf,titlestr2)
 
 % Continue with Region 2
@@ -606,7 +608,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Finland';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
     [FitJanTempRegion2,gofJanRegion2] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJanRegion2.adjrsquare;
     rmse=gofJanRegion2.rmse;
@@ -614,10 +615,8 @@ ab=1;
     GofStats2(1,2)=rmse;
     fitmonth=1;
     fitregion=2;
-    PlotRegionalTempFit(FitJanTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion2,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
     PlotRegionalTempConfidence(FitJanTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion2,fitconf,titlestr2)
-
 
 % Continue with Region 3
     MeasTimes=TimeFrac(:,1);
@@ -625,7 +624,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='UK';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
     [FitJanTempRegion3,gofJanRegion3] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJanRegion3.adjrsquare;
     rmse=gofJanRegion3.rmse;
@@ -633,7 +631,6 @@ ab=1;
     GofStats2(1,3)=rmse;
     fitmonth=1;
     fitregion=3;
-    PlotRegionalTempFit(FitJanTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion3,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
     PlotRegionalTempConfidence(FitJanTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion3,fitconf,titlestr2)
 
@@ -643,7 +640,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Sudan';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
     [FitJanTempRegion4,gofJanRegion4] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJanRegion4.adjrsquare;
     rmse=gofJanRegion4.rmse;
@@ -651,7 +647,6 @@ ab=1;
     GofStats2(1,4)=rmse;
     fitmonth=1;
     fitregion=4;
-    PlotRegionalTempFit(FitJanTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion4,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
     PlotRegionalTempConfidence(FitJanTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion4,fitconf,titlestr2)
 
@@ -661,7 +656,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='SouthAfrica';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
     [FitJanTempRegion5,gofJanRegion5] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJanRegion5.adjrsquare;
     rmse=gofJanRegion5.rmse;
@@ -669,7 +663,6 @@ ab=1;
     GofStats2(1,5)=rmse;
     fitmonth=1;
     fitregion=5;
-    PlotRegionalTempFit(FitJanTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion5,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
     PlotRegionalTempConfidence(FitJanTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion5,fitconf,titlestr2)
 
@@ -679,7 +672,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='India';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
     [FitJanTempRegion6,gofJanRegion6] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJanRegion6.adjrsquare;
     rmse=gofJanRegion6.rmse;
@@ -687,7 +679,6 @@ ab=1;
     GofStats2(1,6)=rmse;
     fitmonth=1;
     fitregion=6;
-    PlotRegionalTempFit(FitJanTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion6,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
     PlotRegionalTempConfidence(FitJanTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion6,fitconf,titlestr2)
 
@@ -697,7 +688,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Australia';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
     [FitJanTempRegion7,gofJanRegion7] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJanRegion7.adjrsquare;
     rmse=gofJanRegion7.rmse;
@@ -705,7 +695,6 @@ ab=1;
     GofStats2(1,7)=rmse;
     fitmonth=1;
     fitregion=7;
-    PlotRegionalTempFit(FitJanTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion7,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
     PlotRegionalTempConfidence(FitJanTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion7,fitconf,titlestr2)
 
@@ -715,7 +704,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='California';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
     [FitJanTempRegion8,gofJanRegion8] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJanRegion8.adjrsquare;
     rmse=gofJanRegion8.rmse;
@@ -723,7 +711,6 @@ ab=1;
     GofStats2(1,8)=rmse;
     fitmonth=1;
     fitregion=8;
-    PlotRegionalTempFit(FitJanTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion8,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
     PlotRegionalTempConfidence(FitJanTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion8,fitconf,titlestr2)
 
@@ -733,7 +720,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Texas';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
     [FitJanTempRegion9,gofJanRegion9] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJanRegion9.adjrsquare;
     rmse=gofJanRegion9.rmse;
@@ -741,7 +727,6 @@ ab=1;
     GofStats2(1,9)=rmse;
     fitmonth=1;
     fitregion=9;
-    PlotRegionalTempFit(FitJanTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion9,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
     PlotRegionalTempConfidence(FitJanTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion9,fitconf,titlestr2)
 
@@ -751,7 +736,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Peru';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-January');
     [FitJanTempRegion10,gofJanRegion10] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJanRegion10.adjrsquare;
     rmse=gofJanRegion10.rmse;
@@ -759,7 +743,6 @@ ab=1;
     GofStats2(1,10)=rmse;
     fitmonth=1;
     fitregion=10;
-    PlotRegionalTempFit(FitJanTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion10,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JanuaryConf');
     PlotRegionalTempConfidence(FitJanTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJanRegion10,fitconf,titlestr2)
 
@@ -769,7 +752,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Germany';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-February');
     [FitFebTempRegion1,gofFebRegion1] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofFebRegion1.adjrsquare;
     rmse=gofFebRegion1.rmse;
@@ -777,7 +759,6 @@ ab=1;
     GofStats2(2,1)=rmse;
     fitmonth=2;
     fitregion=1;
-    PlotRegionalTempFit(FitFebTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion1,titlestr) 
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-FebruaryConf');
     PlotRegionalTempConfidence(FitFebTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion1,fitconf,titlestr2)
 
@@ -787,7 +768,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Finland';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-February');
     [FitFebTempRegion2,gofFebRegion2] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofFebRegion2.adjrsquare;
     rmse=gofFebRegion2.rmse;
@@ -795,7 +775,6 @@ ab=1;
     GofStats2(2,2)=rmse;
     fitmonth=2;
     fitregion=2;
-    PlotRegionalTempFit(FitFebTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion2,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-FebruaryConf');
     PlotRegionalTempConfidence(FitFebTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion2,fitconf,titlestr2)
 
@@ -805,7 +784,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='UK';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-February');
     [FitFebTempRegion3,gofFebRegion3] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofFebRegion3.adjrsquare;
     rmse=gofFebRegion3.rmse;
@@ -813,7 +791,6 @@ ab=1;
     GofStats2(2,3)=rmse;
     fitmonth=2;
     fitregion=3;
-    PlotRegionalTempFit(FitFebTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion3,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-FebruaryConf');
     PlotRegionalTempConfidence(FitFebTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion3,fitconf,titlestr2)
 
@@ -823,7 +800,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Sudan';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-February');
     [FitFebTempRegion4,gofFebRegion4] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofFebRegion4.adjrsquare;
     rmse=gofFebRegion4.rmse;
@@ -831,7 +807,6 @@ ab=1;
     GofStats2(2,4)=rmse;
     fitmonth=2;
     fitregion=4;
-    PlotRegionalTempFit(FitFebTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion4,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-FebruaryConf');
     PlotRegionalTempConfidence(FitFebTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion4,fitconf,titlestr2)
 
@@ -841,7 +816,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='SouthAfrica';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-February');
     [FitFebTempRegion5,gofFebRegion5] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofFebRegion5.adjrsquare;
     rmse=gofFebRegion5.rmse;
@@ -849,7 +823,6 @@ ab=1;
     GofStats2(2,5)=rmse;
     fitmonth=2;
     fitregion=5;
-    PlotRegionalTempFit(FitFebTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion5,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-FebruaryConf');
     PlotRegionalTempConfidence(FitFebTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion5,fitconf,titlestr2)
 
@@ -859,7 +832,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='India';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-February');
     [FitFebTempRegion6,gofFebRegion6] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofFebRegion6.adjrsquare;
     rmse=gofFebRegion6.rmse;
@@ -867,7 +839,6 @@ ab=1;
     GofStats2(2,6)=rmse;
     fitmonth=2;
     fitregion=6;
-    PlotRegionalTempFit(FitFebTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion6,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-FebruaryConf');
     PlotRegionalTempConfidence(FitFebTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion6,fitconf,titlestr2)
 
@@ -877,7 +848,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Australia';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-February');
     [FitFebTempRegion7,gofFebRegion7] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofFebRegion7.adjrsquare;
     rmse=gofFebRegion7.rmse;
@@ -885,7 +855,6 @@ ab=1;
     GofStats2(2,7)=rmse;
     fitmonth=2;
     fitregion=7;
-    PlotRegionalTempFit(FitFebTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion7,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-FebruaryConf');
     PlotRegionalTempConfidence(FitFebTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion7,fitconf,titlestr2)
 
@@ -895,7 +864,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='California';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-February');
     [FitFebTempRegion8,gofFebRegion8] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofFebRegion8.adjrsquare;
     rmse=gofFebRegion8.rmse;
@@ -903,7 +871,6 @@ ab=1;
     GofStats2(2,8)=rmse;
     fitmonth=2;
     fitregion=8;
-    PlotRegionalTempFit(FitFebTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion8,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-FebruaryConf');
     PlotRegionalTempConfidence(FitFebTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion8,fitconf,titlestr2)
 
@@ -913,7 +880,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Texas';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-February');
     [FitFebTempRegion9,gofFebRegion9] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofFebRegion9.adjrsquare;
     rmse=gofFebRegion9.rmse;
@@ -921,7 +887,6 @@ ab=1;
     GofStats2(2,9)=rmse;
     fitmonth=2;
     fitregion=9;
-    PlotRegionalTempFit(FitFebTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion9,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-FebruaryConf');
     PlotRegionalTempConfidence(FitFebTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion9,fitconf,titlestr2)
 
@@ -931,7 +896,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Peru';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-February');
     [FitFebTempRegion10,gofFebRegion10] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofFebRegion10.adjrsquare;
     rmse=gofFebRegion10.rmse;
@@ -939,7 +903,6 @@ ab=1;
     GofStats2(2,10)=rmse;
     fitmonth=2;
     fitregion=10;
-    PlotRegionalTempFit(FitFebTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion10,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-FebruaryConf');
     PlotRegionalTempConfidence(FitFebTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofFebRegion10,fitconf,titlestr2)
 
@@ -949,7 +912,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Germany';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-March','-FitType-',num2str(ifittype));
     [FitMarTempRegion1,gofMarRegion1] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMarRegion1.adjrsquare;
     rmse=gofMarRegion1.rmse;
@@ -957,7 +919,6 @@ ab=1;
     GofStats2(3,1)=rmse;
     fitmonth=3;
     fitregion=1;
-    PlotRegionalTempFit(FitMarTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion1,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion1,fitconf,titlestr2)
 
@@ -967,15 +928,13 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Finland';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-March','-FitType-',num2str(ifittype));
     [FitMarTempRegion2,gofMarRegion2] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMarRegion2.adjrsquare;
     rmse=gofMarRegion2.rmse;
     GofStats1(3,2)=adjrsquare;
     GofStats2(3,2)=rmse;
     fitmonth=3;
-    fitregion=2;
-    PlotRegionalTempFit(FitMarTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion2,titlestr)
+    fitregion=2
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion2,fitconf,titlestr2)
 
@@ -985,7 +944,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='UK';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-March','-FitType-',num2str(ifittype));
     [FitMarTempRegion3,gofMarRegion3] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMarRegion2.adjrsquare;
     rmse=gofMarRegion2.rmse;
@@ -993,7 +951,6 @@ ab=1;
     GofStats2(3,3)=rmse;
     fitmonth=3;
     fitregion=3;
-    PlotRegionalTempFit(FitMarTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion3,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion3,fitconf,titlestr2)
 
@@ -1003,7 +960,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Sudan';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-March','-FitType-',num2str(ifittype));
     [FitMarTempRegion4,gofMarRegion4] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMarRegion4.adjrsquare;
     rmse=gofMarRegion4.rmse;
@@ -1011,7 +967,6 @@ ab=1;
     GofStats2(3,4)=rmse;
     fitmonth=3;
     fitregion=4;
-    PlotRegionalTempFit(FitMarTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion4,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion4,fitconf,titlestr2)
 
@@ -1021,7 +976,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='SouthAfrica';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-March','-FitType-',num2str(ifittype));
     [FitMarTempRegion5,gofMarRegion5] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMarRegion5.adjrsquare;
     rmse=gofMarRegion5.rmse;
@@ -1029,7 +983,6 @@ ab=1;
     GofStats2(3,5)=rmse;
     fitmonth=3;
     fitregion=5;
-    PlotRegionalTempFit(FitMarTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion5,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion5,fitconf,titlestr2)
 
@@ -1039,7 +992,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='India';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-March','-FitType-',num2str(ifittype));
     [FitMarTempRegion6,gofMarRegion6] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMarRegion6.adjrsquare;
     rmse=gofMarRegion6.rmse;
@@ -1047,7 +999,6 @@ ab=1;
     GofStats2(3,6)=rmse;
     fitmonth=3;
     fitregion=6;
-    PlotRegionalTempFit(FitMarTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion6,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion6,fitconf,titlestr2)
 
@@ -1057,7 +1008,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Australia';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-March','-FitType-',num2str(ifittype));
     [FitMarTempRegion7,gofMarRegion7] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMarRegion7.adjrsquare;
     rmse=gofMarRegion7.rmse;
@@ -1065,7 +1015,6 @@ ab=1;
     GofStats2(3,7)=rmse;
     fitmonth=3;
     fitregion=7;
-    PlotRegionalTempFit(FitMarTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion7,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion7,fitconf,titlestr2)
 
@@ -1075,7 +1024,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='California';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-March','-FitType-',num2str(ifittype));
     [FitMarTempRegion8,gofMarRegion8] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMarRegion8.adjrsquare;
     rmse=gofMarRegion8.rmse;
@@ -1083,7 +1031,6 @@ ab=1;
     GofStats2(3,8)=rmse;
     fitmonth=3;
     fitregion=8;
-    PlotRegionalTempFit(FitMarTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion8,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion8,fitconf,titlestr2)
 
@@ -1093,7 +1040,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Texas';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-March','-FitType-',num2str(ifittype));
     [FitMarTempRegion9,gofMarRegion9] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMarRegion9.adjrsquare;
     rmse=gofMarRegion9.rmse;
@@ -1101,7 +1047,6 @@ ab=1;
     GofStats2(3,9)=rmse;
     fitmonth=3;
     fitregion=9;
-    PlotRegionalTempFit(FitMarTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion9,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion9,fitconf,titlestr2)
 
@@ -1111,7 +1056,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Peru';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-March','-FitType-',num2str(ifittype));
     [FitMarTempRegion10,gofMarRegion10] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMarRegion10.adjrsquare;
     rmse=gofMarRegion10.rmse;
@@ -1119,7 +1063,6 @@ ab=1;
     GofStats2(3,10)=rmse;
     fitmonth=3;
     fitregion=10;
-    PlotRegionalTempFit(FitMarTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion10,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MarchConf');
     PlotRegionalTempConfidence(FitMarTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion10,fitconf,titlestr2)
 
@@ -1129,7 +1072,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Germany';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
     [FitAprTempRegion1,gofAprRegion1] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofAprRegion1.adjrsquare;
     rmse=gofAprRegion1.rmse;
@@ -1137,7 +1079,6 @@ ab=1;
     GofStats2(4,1)=rmse;
     fitmonth=4;
     fitregion=1;
-    PlotRegionalTempFit(FitMarTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofMarRegion1,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AprilConf');
     PlotRegionalTempConfidence(FitAprTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion1,fitconf,titlestr2)
 
@@ -1147,7 +1088,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Finland';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
     [FitAprTempRegion2,gofAprRegion2] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofAprRegion2.adjrsquare;
     rmse=gofAprRegion2.rmse;
@@ -1155,7 +1095,6 @@ ab=1;
     GofStats2(4,2)=rmse;
     fitmonth=4;
     fitregion=2;
-    PlotRegionalTempFit(FitAprTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion2,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AprilConf');
     PlotRegionalTempConfidence(FitAprTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion2,fitconf,titlestr2)
 
@@ -1165,7 +1104,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='UK';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
     [FitAprTempRegion3,gofAprRegion3] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofAprRegion2.adjrsquare;
     rmse=gofAprRegion2.rmse;
@@ -1173,7 +1111,6 @@ ab=1;
     GofStats2(4,3)=rmse;
     fitmonth=4;
     fitregion=3;
-    PlotRegionalTempFit(FitAprTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion3,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AprilConf');
     PlotRegionalTempConfidence(FitAprTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion3,fitconf,titlestr2)
 
@@ -1183,7 +1120,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Sudan';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-Apr','-FitType-',num2str(ifittype));
     [FitAprTempRegion4,gofAprRegion4] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofAprRegion4.adjrsquare;
     rmse=gofAprRegion4.rmse;
@@ -1191,7 +1127,6 @@ ab=1;
     GofStats2(4,4)=rmse;
     fitmonth=4;
     fitregion=4;
-    PlotRegionalTempFit(FitAprTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion4,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AprilConf');
     PlotRegionalTempConfidence(FitAprTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion4,fitconf,titlestr2)
 
@@ -1201,7 +1136,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='SouthAfrica';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-April','-FitType-',num2str(ifittype));
     [FitAprTempRegion5,gofAprRegion5] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofAprRegion5.adjrsquare;
     rmse=gofAprRegion5.rmse;
@@ -1209,7 +1143,6 @@ ab=1;
     GofStats2(4,5)=rmse;
     fitmonth=4;
     fitregion=5;
-    PlotRegionalTempFit(FitAprTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion5,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AprilConf');
     PlotRegionalTempConfidence(FitAprTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion5,fitconf,titlestr2)
 
@@ -1219,7 +1152,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='India';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-April','-FitType-',num2str(ifittype));
     [FitAprTempRegion6,gofAprRegion6] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofAprRegion6.adjrsquare;
     rmse=gofAprRegion6.rmse;
@@ -1227,7 +1159,6 @@ ab=1;
     GofStats2(4,6)=rmse;
     fitmonth=4;
     fitregion=6;
-    PlotRegionalTempFit(FitAprTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion6,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AprilConf');
     PlotRegionalTempConfidence(FitAprTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion6,fitconf,titlestr2)
 
@@ -1237,7 +1168,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Australia';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-April','-FitType-',num2str(ifittype));
     [FitAprTempRegion7,gofAprRegion7] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofAprRegion7.adjrsquare;
     rmse=gofAprRegion7.rmse;
@@ -1245,7 +1175,6 @@ ab=1;
     GofStats2(4,7)=rmse;
     fitmonth=4;
     fitregion=7;
-    PlotRegionalTempFit(FitAprTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion7,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AprilConf');
     PlotRegionalTempConfidence(FitAprTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion7,fitconf,titlestr2)
 
@@ -1255,7 +1184,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='California';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-April','-FitType-',num2str(ifittype));
     [FitAprTempRegion8,gofAprRegion8] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofAprRegion8.adjrsquare;
     rmse=gofAprRegion8.rmse;
@@ -1263,7 +1191,6 @@ ab=1;
     GofStats2(4,8)=rmse;
     fitmonth=4;
     fitregion=8;
-    PlotRegionalTempFit(FitAprTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion8,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AprilConf');
     PlotRegionalTempConfidence(FitAprTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion8,fitconf,titlestr2)
 
@@ -1273,7 +1200,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Texas';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-April','-FitType-',num2str(ifittype));
     [FitAprTempRegion9,gofAprRegion9] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofAprRegion9.adjrsquare;
     rmse=gofAprRegion9.rmse;
@@ -1281,7 +1207,6 @@ ab=1;
     GofStats2(4,9)=rmse;
     fitmonth=4;
     fitregion=9;
-    PlotRegionalTempFit(FitAprTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion9,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AprilConf');
     PlotRegionalTempConfidence(FitAprTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion9,fitconf,titlestr2)
 
@@ -1291,7 +1216,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Peru';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-April','-FitType-',num2str(ifittype));
     [FitAprTempRegion10,gofAprRegion10] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofAprRegion10.adjrsquare;
     rmse=gofAprRegion10.rmse;
@@ -1299,7 +1223,6 @@ ab=1;
     GofStats2(4,10)=rmse;
     fitmonth=4;
     fitregion=10;
-    PlotRegionalTempFit(FitAprTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion10,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AprilConf');
     PlotRegionalTempConfidence(FitAprTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofAprRegion10,fitconf,titlestr2)
 
@@ -1309,7 +1232,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Germany';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
     [FitMayTempRegion1,gofMayRegion1] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMayRegion1.adjrsquare;
     rmse=gofMayRegion1.rmse;
@@ -1317,7 +1239,6 @@ ab=1;
     GofStats2(5,1)=rmse;
     fitmonth=5;
     fitregion=1;
-    PlotRegionalTempFit(FitMayTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion1,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MayConf');
     PlotRegionalTempConfidence(FitMayTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion1,fitconf,titlestr2)
 
@@ -1327,7 +1248,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Finland';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
     [FitMayTempRegion2,gofMayRegion2] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMayRegion2.adjrsquare;
     rmse=gofMayRegion2.rmse;
@@ -1335,7 +1255,6 @@ ab=1;
     GofStats2(5,2)=rmse;
     fitmonth=5;
     fitregion=2;
-    PlotRegionalTempFit(FitMayTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion2,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MayConf');
     PlotRegionalTempConfidence(FitMayTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion2,fitconf,titlestr2)
 
@@ -1345,7 +1264,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='UK';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
     [FitMayTempRegion3,gofMayRegion3] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMayRegion2.adjrsquare;
     rmse=gofMayRegion2.rmse;
@@ -1353,7 +1271,6 @@ ab=1;
     GofStats2(5,3)=rmse;
     fitmonth=5;
     fitregion=3;
-    PlotRegionalTempFit(FitMayTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion3,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MayConf');
     PlotRegionalTempConfidence(FitMayTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion3,fitconf,titlestr2)
 
@@ -1363,7 +1280,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Sudan';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
     [FitMayTempRegion4,gofMayRegion4] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMayRegion4.adjrsquare;
     rmse=gofMayRegion4.rmse;
@@ -1371,7 +1287,6 @@ ab=1;
     GofStats2(5,4)=rmse;
     fitmonth=5;
     fitregion=4;
-    PlotRegionalTempFit(FitMayTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion4,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MayConf');
     PlotRegionalTempConfidence(FitMayTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion4,fitconf,titlestr2)
 
@@ -1381,7 +1296,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='SouthAfrica';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
     [FitMayTempRegion5,gofMayRegion5] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMayRegion5.adjrsquare;
     rmse=gofMayRegion5.rmse;
@@ -1389,7 +1303,6 @@ ab=1;
     GofStats2(5,5)=rmse;
     fitmonth=5;
     fitregion=5;
-    PlotRegionalTempFit(FitMayTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion5,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MayConf');
     PlotRegionalTempConfidence(FitMayTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion5,fitconf,titlestr2)
 
@@ -1399,7 +1312,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='India';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
     [FitMayTempRegion6,gofMayRegion6] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMayRegion6.adjrsquare;
     rmse=gofMayRegion6.rmse;
@@ -1407,7 +1319,6 @@ ab=1;
     GofStats2(5,6)=rmse;
     fitmonth=5;
     fitregion=6;
-    PlotRegionalTempFit(FitMayTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion6,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MayConf');
     PlotRegionalTempConfidence(FitMayTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion6,fitconf,titlestr2)
 
@@ -1417,7 +1328,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Australia';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
     [FitMayTempRegion7,gofMayRegion7] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMayRegion7.adjrsquare;
     rmse=gofMayRegion7.rmse;
@@ -1425,7 +1335,6 @@ ab=1;
     GofStats2(5,7)=rmse;
     fitmonth=5;
     fitregion=7;
-    PlotRegionalTempFit(FitMayTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion7,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MayConf');
     PlotRegionalTempConfidence(FitMayTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion7,fitconf,titlestr2)
 
@@ -1435,7 +1344,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='California';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
     [FitMayTempRegion8,gofMayRegion8] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMayRegion8.adjrsquare;
     rmse=gofMayRegion8.rmse;
@@ -1443,7 +1351,6 @@ ab=1;
     GofStats2(5,8)=rmse;
     fitmonth=5;
     fitregion=8;
-    PlotRegionalTempFit(FitMayTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion8,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MayConf');
     PlotRegionalTempConfidence(FitMayTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion8,fitconf,titlestr2)
 
@@ -1453,7 +1360,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Texas';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
     [FitMayTempRegion9,gofMayRegion9] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMayRegion9.adjrsquare;
     rmse=gofMayRegion9.rmse;
@@ -1461,7 +1367,6 @@ ab=1;
     GofStats2(5,9)=rmse;
     fitmonth=5;
     fitregion=9;
-    PlotRegionalTempFit(FitMayTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion9,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MayConf');
     PlotRegionalTempConfidence(FitMayTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion9,fitconf,titlestr2)
 
@@ -1471,7 +1376,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Peru';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-May','-FitType-',num2str(ifittype));
     [FitMayTempRegion10,gofMayRegion10] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofMayRegion10.adjrsquare;
     rmse=gofMayRegion10.rmse;
@@ -1479,7 +1383,6 @@ ab=1;
     GofStats2(5,10)=rmse;
     fitmonth=5;
     fitregion=10;
-    PlotRegionalTempFit(FitMayTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion10,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-MayConf');
     PlotRegionalTempConfidence(FitMayTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofMayRegion10,fitconf,titlestr2)
 
@@ -1489,7 +1392,6 @@ ab=1;
     [MeasTimes,MeasTemps] = RemoveMissingValues(MeasTimes,MeasTemps);
     ifittype=2;
     RegionName='Germany';
-    titlestr=strcat('FittedTemp-Region-',RegionName,'-Month-Jun','-FitType-',num2str(ifittype));
     [FitJunTempRegion1,gofJunRegion1] = fit(MeasTimes,MeasTemps,'poly2',fo);
     adjrsquare=gofJunRegion1.adjrsquare;
     rmse=gofJunRegion1.rmse;
@@ -1497,7 +1399,6 @@ ab=1;
     GofStats2(6,1)=rmse;
     fitmonth=6;
     fitregion=1;
-    PlotRegionalTempFit(FitJunTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion1,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion1,fitconf,titlestr2)
 
@@ -1515,7 +1416,7 @@ ab=1;
     GofStats2(6,2)=rmse;
     fitmonth=6;
     fitregion=2;
-    PlotRegionalTempFit(FitJunTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion2,titlestr)
+%    PlotRegionalTempFit(FitJunTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion2,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion2,fitconf,titlestr2)
 
@@ -1533,7 +1434,7 @@ ab=1;
     GofStats2(6,3)=rmse;
     fitmonth=6;
     fitregion=3;
-    PlotRegionalTempFit(FitJunTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion3,titlestr)
+%    PlotRegionalTempFit(FitJunTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion3,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion3,fitconf,titlestr2)
 
@@ -1551,7 +1452,7 @@ ab=1;
     GofStats2(6,4)=rmse;
     fitmonth=6;
     fitregion=4;
-    PlotRegionalTempFit(FitJunTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion4,titlestr)
+%    PlotRegionalTempFit(FitJunTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion4,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion4,fitconf,titlestr2)
 
@@ -1569,7 +1470,7 @@ ab=1;
     GofStats2(6,5)=rmse;
     fitmonth=6;
     fitregion=5;
-    PlotRegionalTempFit(FitJunTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion5,titlestr)
+%    PlotRegionalTempFit(FitJunTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion5,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion5,fitconf,titlestr2)
 
@@ -1587,7 +1488,7 @@ ab=1;
     GofStats2(6,6)=rmse;
     fitmonth=6;
     fitregion=6;
-    PlotRegionalTempFit(FitJunTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion6,titlestr)
+%    PlotRegionalTempFit(FitJunTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion6,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion6,fitconf,titlestr2)
 
@@ -1605,7 +1506,7 @@ ab=1;
     GofStats2(6,7)=rmse;
     fitmonth=6;
     fitregion=7;
-    PlotRegionalTempFit(FitJunTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion7,titlestr)
+%    PlotRegionalTempFit(FitJunTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion7,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion7,fitconf,titlestr2)
 
@@ -1623,7 +1524,7 @@ ab=1;
     GofStats2(6,8)=rmse;
     fitmonth=6;
     fitregion=8;
-    PlotRegionalTempFit(FitJunTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion8,titlestr)
+%    PlotRegionalTempFit(FitJunTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion8,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion8,fitconf,titlestr2)
 
@@ -1641,7 +1542,7 @@ ab=1;
     GofStats2(6,9)=rmse;
     fitmonth=6;
     fitregion=9;
-    PlotRegionalTempFit(FitJunTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion9,titlestr)
+%    PlotRegionalTempFit(FitJunTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion9,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion9,fitconf,titlestr2)
 
@@ -1659,7 +1560,7 @@ ab=1;
     GofStats2(6,10)=rmse;
     fitmonth=6;
     fitregion=10;
-    PlotRegionalTempFit(FitJunTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion10,titlestr)
+%    PlotRegionalTempFit(FitJunTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion10,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JuneConf');
     PlotRegionalTempConfidence(FitJunTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJunRegion10,fitconf,titlestr2)
 
@@ -1677,7 +1578,7 @@ ab=1;
     GofStats2(7,1)=rmse;
     fitmonth=7;
     fitregion=1;
-    PlotRegionalTempFit(FitJulTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion1,titlestr)
+%    PlotRegionalTempFit(FitJulTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion1,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JulyConf');
     PlotRegionalTempConfidence(FitJulTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion1,fitconf,titlestr2)
 
@@ -1695,7 +1596,7 @@ ab=1;
     GofStats2(7,2)=rmse;
     fitmonth=7;
     fitregion=2;
-    PlotRegionalTempFit(FitJulTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion2,titlestr)
+%    PlotRegionalTempFit(FitJulTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion2,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JulyConf');
     PlotRegionalTempConfidence(FitJulTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion2,fitconf,titlestr2)
 
@@ -1713,7 +1614,7 @@ ab=1;
     GofStats2(7,3)=rmse;
     fitmonth=7;
     fitregion=3;
-    PlotRegionalTempFit(FitJulTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion3,titlestr)
+%    PlotRegionalTempFit(FitJulTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion3,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JulyConf');
     PlotRegionalTempConfidence(FitJulTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion3,fitconf,titlestr2)
 
@@ -1731,7 +1632,7 @@ ab=1;
     GofStats2(7,4)=rmse;
     fitmonth=7;
     fitregion=4;
-    PlotRegionalTempFit(FitJulTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion4,titlestr)
+%    PlotRegionalTempFit(FitJulTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion4,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JulyConf');
     PlotRegionalTempConfidence(FitJulTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion4,fitconf,titlestr2)
 
@@ -1749,7 +1650,7 @@ ab=1;
     GofStats2(7,5)=rmse;
     fitmonth=7;
     fitregion=5;
-    PlotRegionalTempFit(FitJulTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion5,titlestr)
+%    PlotRegionalTempFit(FitJulTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion5,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JulyConf');
     PlotRegionalTempConfidence(FitJulTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion5,fitconf,titlestr2)
 
@@ -1767,7 +1668,7 @@ ab=1;
     GofStats2(7,6)=rmse;
     fitmonth=7;
     fitregion=6;
-    PlotRegionalTempFit(FitJulTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion6,titlestr)
+%    PlotRegionalTempFit(FitJulTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion6,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JulyConf');
     PlotRegionalTempConfidence(FitJulTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion6,fitconf,titlestr2)
 
@@ -1785,7 +1686,7 @@ ab=1;
     GofStats2(7,7)=rmse;
     fitmonth=7;
     fitregion=7;
-    PlotRegionalTempFit(FitJulTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion7,titlestr)
+%    PlotRegionalTempFit(FitJulTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion7,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JulyConf');
     PlotRegionalTempConfidence(FitJulTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion7,fitconf,titlestr2)
 
@@ -1803,7 +1704,7 @@ ab=1;
     GofStats2(7,8)=rmse;
     fitmonth=7;
     fitregion=8;
-    PlotRegionalTempFit(FitJulTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion8,titlestr)
+%    PlotRegionalTempFit(FitJulTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion8,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JulyConf');
     PlotRegionalTempConfidence(FitJulTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion8,fitconf,titlestr2)
 
@@ -1821,7 +1722,7 @@ ab=1;
     GofStats2(7,9)=rmse;
     fitmonth=7;
     fitregion=9;
-    PlotRegionalTempFit(FitJulTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion9,titlestr)
+%    PlotRegionalTempFit(FitJulTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion9,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JulyConf');
     PlotRegionalTempConfidence(FitJulTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion9,fitconf,titlestr2)
 
@@ -1839,7 +1740,7 @@ ab=1;
     GofStats2(7,10)=rmse;
     fitmonth=7;
     fitregion=10;
-    PlotRegionalTempFit(FitJulTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion10,titlestr)
+%    PlotRegionalTempFit(FitJulTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion10,titlestr)
     titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-JulyConf');
     PlotRegionalTempConfidence(FitJulTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofJulRegion10,fitconf,titlestr2)
 
@@ -1859,7 +1760,7 @@ ab=1;
         GofStats2(8,1)=rmse;
         fitmonth=8;
         fitregion=1;
-        PlotRegionalTempFit(FitAugTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion1,titlestr)
+%        PlotRegionalTempFit(FitAugTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion1,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AugConf');
         PlotRegionalTempConfidence(FitAugTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion1,fitconf,titlestr2)
     end
@@ -1880,7 +1781,7 @@ ab=1;
         GofStats2(8,2)=rmse;
         fitmonth=8;
         fitregion=2;
-        PlotRegionalTempFit(FitAugTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion2,titlestr)
+%        PlotRegionalTempFit(FitAugTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion2,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AugConf');
         PlotRegionalTempConfidence(FitAugTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion2,fitconf,titlestr2)
     end
@@ -1901,7 +1802,7 @@ ab=1;
         GofStats2(8,3)=rmse;
         fitmonth=8;
         fitregion=3;
-        PlotRegionalTempFit(FitAugTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion3,titlestr)
+%        PlotRegionalTempFit(FitAugTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion3,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AugConf');
         PlotRegionalTempConfidence(FitAugTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion3,fitconf,titlestr2)
     end
@@ -1922,7 +1823,7 @@ ab=1;
         GofStats2(8,4)=rmse;
         fitmonth=8;
         fitregion=4;
-        PlotRegionalTempFit(FitAugTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion4,titlestr)
+%        PlotRegionalTempFit(FitAugTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion4,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AugConf');
         PlotRegionalTempConfidence(FitAugTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion4,fitconf,titlestr2)
     end
@@ -1943,7 +1844,7 @@ ab=1;
         GofStats2(8,5)=rmse;
         fitmonth=8;
         fitregion=5;
-        PlotRegionalTempFit(FitAugTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion5,titlestr)
+%        PlotRegionalTempFit(FitAugTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion5,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AugConf');
         PlotRegionalTempConfidence(FitAugTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion5,fitconf,titlestr2)
     end
@@ -1965,7 +1866,7 @@ ab=1;
         GofStats2(8,6)=rmse;
         fitmonth=8;
         fitregion=6;
-        PlotRegionalTempFit(FitAugTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion6,titlestr)
+%        PlotRegionalTempFit(FitAugTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion6,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AugConf');
         PlotRegionalTempConfidence(FitAugTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion6,fitconf,titlestr2)
     end
@@ -1985,7 +1886,7 @@ ab=1;
         GofStats2(8,7)=rmse;
         fitmonth=8;
         fitregion=7;
-        PlotRegionalTempFit(FitAugTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion7,titlestr)
+%        PlotRegionalTempFit(FitAugTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion7,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AugConf');
         PlotRegionalTempConfidence(FitAugTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion7,fitconf,titlestr2)
     end
@@ -2005,7 +1906,7 @@ ab=1;
         GofStats2(8,8)=rmse;
         fitmonth=8;
         fitregion=8;
-        PlotRegionalTempFit(FitAugTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion8,titlestr)
+%        PlotRegionalTempFit(FitAugTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion8,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AugConf');
         PlotRegionalTempConfidence(FitAugTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion8,fitconf,titlestr2)
     end
@@ -2025,7 +1926,7 @@ ab=1;
         GofStats2(8,9)=rmse;
         fitmonth=8;
         fitregion=9;
-        PlotRegionalTempFit(FitAugTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion9,titlestr)
+ %       PlotRegionalTempFit(FitAugTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion9,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AugConf');
         PlotRegionalTempConfidence(FitAugTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion9,fitconf,titlestr2)
     end
@@ -2045,7 +1946,7 @@ ab=1;
         GofStats2(8,10)=rmse;
         fitmonth=8;
         fitregion=10;
-        PlotRegionalTempFit(FitAugTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion10,titlestr)
+ %       PlotRegionalTempFit(FitAugTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion10,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-AugConf');
         PlotRegionalTempConfidence(FitAugTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofAugRegion10,fitconf,titlestr2)
     end
@@ -2066,7 +1967,7 @@ ab=1;
         GofStats2(9,1)=rmse;
         fitmonth=9;
         fitregion=1;
-        PlotRegionalTempFit(FitSepTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion1,titlestr)
+ %       PlotRegionalTempFit(FitSepTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion1,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-SepConf');
         PlotRegionalTempConfidence(FitSepTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion1,fitconf,titlestr2)
     end
@@ -2087,7 +1988,7 @@ ab=1;
         GofStats2(9,2)=rmse;
         fitmonth=9;
         fitregion=2;
-        PlotRegionalTempFit(FitSepTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion2,titlestr)
+%        PlotRegionalTempFit(FitSepTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion2,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-SepConf');
         PlotRegionalTempConfidence(FitSepTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion2,fitconf,titlestr2)
     end
@@ -2108,7 +2009,7 @@ ab=1;
         GofStats2(9,3)=rmse;
         fitmonth=9;
         fitregion=3;
-        PlotRegionalTempFit(FitSepTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion3,titlestr)
+%        PlotRegionalTempFit(FitSepTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion3,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-SepConf');
         PlotRegionalTempConfidence(FitSepTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion3,fitconf,titlestr2)
     end
@@ -2129,7 +2030,7 @@ ab=1;
         GofStats2(9,4)=rmse;
         fitmonth=9;
         fitregion=4;
-        PlotRegionalTempFit(FitSepTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion4,titlestr)
+%        PlotRegionalTempFit(FitSepTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion4,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-SepConf');
         PlotRegionalTempConfidence(FitSepTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion4,fitconf,titlestr2)
     end
@@ -2150,7 +2051,7 @@ ab=1;
         GofStats2(9,5)=rmse;
         fitmonth=9;
         fitregion=5;
-        PlotRegionalTempFit(FitSepTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion5,titlestr)
+%        PlotRegionalTempFit(FitSepTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion5,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-SepConf');
         PlotRegionalTempConfidence(FitSepTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion5,fitconf,titlestr2)
     end
@@ -2171,7 +2072,7 @@ ab=1;
         GofStats2(9,6)=rmse;
         fitmonth=9;
         fitregion=6;
-        PlotRegionalTempFit(FitSepTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion6,titlestr)
+%        PlotRegionalTempFit(FitSepTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion6,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-SepConf');
         PlotRegionalTempConfidence(FitSepTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion6,fitconf,titlestr2)
     end
@@ -2192,7 +2093,7 @@ ab=1;
         GofStats2(9,7)=rmse;
         fitmonth=9;
         fitregion=7;
-        PlotRegionalTempFit(FitSepTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion7,titlestr)
+%        PlotRegionalTempFit(FitSepTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion7,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-SepConf');
         PlotRegionalTempConfidence(FitSepTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion7,fitconf,titlestr2)
     end
@@ -2213,7 +2114,7 @@ ab=1;
         GofStats2(9,8)=rmse;
         fitmonth=9;
         fitregion=8;
-        PlotRegionalTempFit(FitSepTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion8,titlestr)
+%        PlotRegionalTempFit(FitSepTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion8,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-SepConf');
         PlotRegionalTempConfidence(FitSepTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion8,fitconf,titlestr2)
     end
@@ -2234,7 +2135,7 @@ ab=1;
         GofStats2(9,9)=rmse;
         fitmonth=9;
         fitregion=9;
-        PlotRegionalTempFit(FitSepTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion9,titlestr)
+%        PlotRegionalTempFit(FitSepTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion9,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-SepConf');
         PlotRegionalTempConfidence(FitSepTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion9,fitconf,titlestr2)
     end
@@ -2255,7 +2156,7 @@ ab=1;
         GofStats2(9,10)=rmse;
         fitmonth=9;
         fitregion=10;
-        PlotRegionalTempFit(FitSepTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion10,titlestr)
+%        PlotRegionalTempFit(FitSepTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion10,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-SepConf');
         PlotRegionalTempConfidence(FitSepTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofSepRegion10,fitconf,titlestr2)
     end
@@ -2276,7 +2177,7 @@ ab=1;
         GofStats2(10,1)=rmse;
         fitmonth=10;
         fitregion=1;
-        PlotRegionalTempFit(FitOctTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion1,titlestr)
+%        PlotRegionalTempFit(FitOctTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion1,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-OctConf');
         PlotRegionalTempConfidence(FitOctTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion1,fitconf,titlestr2)
     end
@@ -2297,7 +2198,7 @@ ab=1;
         GofStats2(10,2)=rmse;
         fitmonth=10;
         fitregion=2;
-        PlotRegionalTempFit(FitOctTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion2,titlestr)
+%        PlotRegionalTempFit(FitOctTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion2,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-OctConf');
         PlotRegionalTempConfidence(FitOctTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion2,fitconf,titlestr2)
     end
@@ -2318,7 +2219,7 @@ ab=1;
         GofStats2(10,3)=rmse;
         fitmonth=10;
         fitregion=3;
-        PlotRegionalTempFit(FitOctTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion3,titlestr)
+%        PlotRegionalTempFit(FitOctTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion3,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-OctConf');
         PlotRegionalTempConfidence(FitOctTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion3,fitconf,titlestr2)
     end
@@ -2339,7 +2240,7 @@ ab=1;
         GofStats2(10,4)=rmse;
         fitmonth=10;
         fitregion=4;
-        PlotRegionalTempFit(FitOctTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion4,titlestr)
+%        PlotRegionalTempFit(FitOctTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion4,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-OctConf');
         PlotRegionalTempConfidence(FitOctTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion4,fitconf,titlestr2)
     end
@@ -2360,7 +2261,7 @@ ab=1;
         GofStats2(10,5)=rmse;
         fitmonth=10;
         fitregion=5;
-        PlotRegionalTempFit(FitOctTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion5,titlestr)
+%        PlotRegionalTempFit(FitOctTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion5,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-OctConf');
         PlotRegionalTempConfidence(FitOctTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion5,fitconf,titlestr2)
     end
@@ -2381,7 +2282,7 @@ ab=1;
         GofStats2(10,6)=rmse;
         fitmonth=10;
         fitregion=6;
-        PlotRegionalTempFit(FitOctTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion6,titlestr)
+%        PlotRegionalTempFit(FitOctTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion6,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-OctConf');
         PlotRegionalTempConfidence(FitOctTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion6,fitconf,titlestr2)
     end
@@ -2402,7 +2303,7 @@ ab=1;
         GofStats2(10,7)=rmse;
         fitmonth=10;
         fitregion=7;
-        PlotRegionalTempFit(FitOctTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion7,titlestr)
+%        PlotRegionalTempFit(FitOctTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion7,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-OctConf');
         PlotRegionalTempConfidence(FitOctTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion7,fitconf,titlestr2)
     end
@@ -2423,7 +2324,7 @@ ab=1;
         GofStats2(10,8)=rmse;
         fitmonth=10;
         fitregion=8;
-        PlotRegionalTempFit(FitOctTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion8,titlestr)
+%        PlotRegionalTempFit(FitOctTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion8,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-OctConf');
         PlotRegionalTempConfidence(FitOctTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion8,fitconf,titlestr2)
     end
@@ -2444,7 +2345,7 @@ ab=1;
         GofStats2(10,9)=rmse;
         fitmonth=10;
         fitregion=9;
-        PlotRegionalTempFit(FitOctTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion9,titlestr)
+ %       PlotRegionalTempFit(FitOctTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion9,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-OctConf');
         PlotRegionalTempConfidence(FitOctTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion9,fitconf,titlestr2)
     end
@@ -2465,7 +2366,7 @@ ab=1;
         GofStats2(10,10)=rmse;
         fitmonth=10;
         fitregion=10;
-        PlotRegionalTempFit(FitOctTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion10,titlestr)
+%        PlotRegionalTempFit(FitOctTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion10,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-OctConf');
         PlotRegionalTempConfidence(FitOctTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofOctRegion10,fitconf,titlestr2)
     end
@@ -2486,7 +2387,7 @@ ab=1;
         GofStats2(11,1)=rmse;
         fitmonth=11;
         fitregion=1;
-        PlotRegionalTempFit(FitNovTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion1,titlestr)
+%        PlotRegionalTempFit(FitNovTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion1,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-NovConf');
         PlotRegionalTempConfidence(FitNovTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion1,fitconf,titlestr2)
     end
@@ -2507,7 +2408,7 @@ ab=1;
         GofStats2(11,2)=rmse;
         fitmonth=11;
         fitregion=2;
-        PlotRegionalTempFit(FitNovTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion2,titlestr)
+ %       PlotRegionalTempFit(FitNovTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion2,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-NovConf');
         PlotRegionalTempConfidence(FitNovTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion2,fitconf,titlestr2)
     end
@@ -2528,7 +2429,7 @@ ab=1;
         GofStats2(11,3)=rmse;
         fitmonth=11;
         fitregion=3;
-        PlotRegionalTempFit(FitNovTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion3,titlestr)
+%        PlotRegionalTempFit(FitNovTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion3,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-NovConf');
         PlotRegionalTempConfidence(FitNovTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion3,fitconf,titlestr2)
     end
@@ -2570,7 +2471,7 @@ ab=1;
         GofStats2(11,5)=rmse;
         fitmonth=11;
         fitregion=5;
-        PlotRegionalTempFit(FitNovTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion5,titlestr)
+  %      PlotRegionalTempFit(FitNovTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion5,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-NovConf');
         PlotRegionalTempConfidence(FitNovTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion5,fitconf,titlestr2)
     end
@@ -2591,7 +2492,7 @@ ab=1;
         GofStats2(11,6)=rmse;
         fitmonth=11;
         fitregion=6;
-        PlotRegionalTempFit(FitNovTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion6,titlestr)
+ %       PlotRegionalTempFit(FitNovTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion6,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-NovConf');
         PlotRegionalTempConfidence(FitNovTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion6,fitconf,titlestr2)
     end
@@ -2612,7 +2513,7 @@ ab=1;
         GofStats2(11,7)=rmse;
         fitmonth=11;
         fitregion=7;
-        PlotRegionalTempFit(FitNovTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion7,titlestr)
+%        PlotRegionalTempFit(FitNovTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion7,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-NovConf');
         PlotRegionalTempConfidence(FitNovTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion7,fitconf,titlestr2)
     end
@@ -2633,7 +2534,7 @@ ab=1;
         GofStats2(11,8)=rmse;
         fitmonth=11;
         fitregion=8;
-        PlotRegionalTempFit(FitNovTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion8,titlestr)
+%        PlotRegionalTempFit(FitNovTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion8,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-NovConf');
         PlotRegionalTempConfidence(FitNovTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion8,fitconf,titlestr2)
     end
@@ -2654,7 +2555,7 @@ ab=1;
         GofStats2(11,9)=rmse;
         fitmonth=11;
         fitregion=9;
-        PlotRegionalTempFit(FitNovTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion9,titlestr)
+%        PlotRegionalTempFit(FitNovTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion9,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-NovConf');
         PlotRegionalTempConfidence(FitNovTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion9,fitconf,titlestr2)
     end
@@ -2675,7 +2576,7 @@ ab=1;
         GofStats2(11,10)=rmse;
         fitmonth=11;
         fitregion=10;
-        PlotRegionalTempFit(FitNovTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion10,titlestr)
+%        PlotRegionalTempFit(FitNovTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion10,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-NovConf');
         PlotRegionalTempConfidence(FitNovTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofNovRegion10,fitconf,titlestr2)
     end
@@ -2696,7 +2597,7 @@ ab=1;
         GofStats2(12,1)=rmse;
         fitmonth=12;
         fitregion=1;
-        PlotRegionalTempFit(FitDecTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion1,titlestr)
+%        PlotRegionalTempFit(FitDecTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion1,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-DecConf');
         PlotRegionalTempConfidence(FitDecTempRegion1,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion1,fitconf,titlestr2)
     end
@@ -2717,7 +2618,7 @@ ab=1;
         GofStats2(12,2)=rmse;
         fitmonth=12;
         fitregion=2;
-        PlotRegionalTempFit(FitDecTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion2,titlestr)
+%        PlotRegionalTempFit(FitDecTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion2,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-DecConf');
         PlotRegionalTempConfidence(FitDecTempRegion2,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion2,fitconf,titlestr2)
     end
@@ -2738,7 +2639,7 @@ ab=1;
         GofStats2(12,3)=rmse;
         fitmonth=12;
         fitregion=3;
-        PlotRegionalTempFit(FitDecTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion3,titlestr)
+ %       PlotRegionalTempFit(FitDecTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion3,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-DecConf');
         PlotRegionalTempConfidence(FitDecTempRegion3,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion3,fitconf,titlestr2)
     end
@@ -2759,7 +2660,7 @@ ab=1;
         GofStats2(12,4)=rmse;
         fitmonth=12;
         fitregion=4;
-        PlotRegionalTempFit(FitDecTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion4,titlestr)
+  %      PlotRegionalTempFit(FitDecTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion4,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-DecConf');
         PlotRegionalTempConfidence(FitDecTempRegion4,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion4,fitconf,titlestr2)
     end
@@ -2780,7 +2681,7 @@ ab=1;
         GofStats2(12,5)=rmse;
         fitmonth=12;
         fitregion=5;
-        PlotRegionalTempFit(FitDecTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion5,titlestr)
+%        PlotRegionalTempFit(FitDecTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion5,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-DecConf');
         PlotRegionalTempConfidence(FitDecTempRegion5,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion5,fitconf,titlestr2)
     end
@@ -2801,7 +2702,7 @@ ab=1;
         GofStats2(12,6)=rmse;
         fitmonth=12;
         fitregion=6;
-        PlotRegionalTempFit(FitDecTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion6,titlestr)
+%        PlotRegionalTempFit(FitDecTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion6,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-DecConf');
         PlotRegionalTempConfidence(FitDecTempRegion6,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion6,fitconf,titlestr2)
     end
@@ -2822,7 +2723,7 @@ ab=1;
         GofStats2(12,7)=rmse;
         fitmonth=12;
         fitregion=7;
-        PlotRegionalTempFit(FitDecTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion7,titlestr)
+%        PlotRegionalTempFit(FitDecTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion7,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-DecConf');
         PlotRegionalTempConfidence(FitDecTempRegion7,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion7,fitconf,titlestr2)
     end
@@ -2843,7 +2744,7 @@ ab=1;
         GofStats2(12,8)=rmse;
         fitmonth=12;
         fitregion=8;
-        PlotRegionalTempFit(FitDecTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion8,titlestr)
+%        PlotRegionalTempFit(FitDecTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion8,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-DecConf');
         PlotRegionalTempConfidence(FitDecTempRegion8,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion8,fitconf,titlestr2)
     end
@@ -2864,7 +2765,7 @@ ab=1;
         GofStats2(12,9)=rmse;
         fitmonth=12;
         fitregion=9;
-        PlotRegionalTempFit(FitDecTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion9,titlestr)
+%        PlotRegionalTempFit(FitDecTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion9,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-DecConf');
         PlotRegionalTempConfidence(FitDecTempRegion9,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion9,fitconf,titlestr2)
     end
@@ -2885,7 +2786,7 @@ ab=1;
         GofStats2(12,10)=rmse;
         fitmonth=12;
         fitregion=10;
-        PlotRegionalTempFit(FitDecTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion10,titlestr)
+%        PlotRegionalTempFit(FitDecTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion10,titlestr)
         titlestr2=strcat('FittedTemp-Region-',RegionName,'-FitType-',num2str(ifittype),'-DecConf');
         PlotRegionalTempConfidence(FitDecTempRegion10,MeasTimes,MeasTemps,RegionName,ifittype,gofDecRegion10,fitconf,titlestr2)
     end
@@ -5505,8 +5406,13 @@ else
 %     disp(dispstr);
 end
 %% Plot the Avergage Temperature Changes
-titlestr='AvgQVChanges-1980-2020';
-DisplayMonthlyAvgQV(titlestr,ifittype)
+if(iSelect==1)
+    titlestr='AvgAirTempChanges-1980-2020';
+    iAddToReport=1;
+    iNewChapter=1;
+    iCloseChapter=1;
+    DisplayMonthlyAvgTemps(titlestr,ifittype,iAddToReport,iNewChapter,iCloseChapter)
+end
 disp('Run Complete');
 
 

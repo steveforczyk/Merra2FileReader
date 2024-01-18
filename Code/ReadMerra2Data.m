@@ -1370,7 +1370,7 @@ end
                 disp(dispstr)
             end
         end
-        iSelect=2;
+        iSelect=1;
         if(iPostProcessDataset3==1)
             eval(['cd ' tablepath(1:length(tablepath)-1)])  
             [TableFile,nowpath] = uigetfile('*.mat','Select One File', ...

@@ -9,6 +9,10 @@ function PlotRegionalTempConfidence(FitTemp,MeasTimes,MeasTemps,RegionName,ifitt
 
 global TimeFrac startYearstr endYearstr;
 global pslice heightkm DataCollectionTime;
+global PredTempStart PredTempEnd PredTempChng;
+global fitmonth fitregion;
+global pslice heightkm DataCollectionTime;
+
 
 global fid;
 global widd2 lend2;
@@ -59,6 +63,13 @@ hy=ylabel('Temp In Deg-C','FontWeight','bold');
 set(hy,'FontWeight','bold','FontSize',12);
 legend('Location','NorthEast','FontWeight','bold');
 grid on
+
+% Do a simple check on global warnming
+FutureDates=(1980:40:2020).';
+TempLimits=FitTemp(FutureDates);
+PredTempStart(fitmonth,fitregion)=TempLimits(1,1);
+PredTempEnd(fitmonth,fitregion)=TempLimits(2,1);
+PredTempChng(fitmonth,fitregion)=TempLimits(2,1)-TempLimits(1,1);
 ab=1;
 %% Add a logo
 if(iLogo==1)
@@ -79,10 +90,10 @@ rmse=gof.rmse;
 newaxesh=axes('Position',[0 0 1 1]);
 set(newaxesh,'XLim',[0 1],'YLim',[0 1]);
 tx1=.10;
-ty1=.05;
+ty1=.04;
 txtstr1=strcat('Fitted Data from-',startYearstr,'-to-',endYearstr,'-fittype-',fitstr,...
     '-Data Collection Time-',DataCollectionTime);
-txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',12);
+txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',10);
 tx2=.10;
 ty2=.02;
 txtstr2=strcat('Goodness Of Fit adjusted rquare =',num2str(adjrsquare,4),'-RMSE-',num2str(rmse,4),...

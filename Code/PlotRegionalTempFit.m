@@ -60,7 +60,7 @@ hy=ylabel('Temp In Deg-C','FontWeight','bold');
 set(hy,'FontWeight','bold','FontSize',12);
 legend('Location','NorthEast','FontWeight','bold');
 grid on
-% Do a simple check on global warning
+% Do a simple check on global warnming
 FutureDates=(1980:40:2020).';
 TempLimits=FitTemp(FutureDates);
 PredTempStart(fitmonth,fitregion)=TempLimits(1,1);

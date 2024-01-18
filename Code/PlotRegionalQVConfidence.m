@@ -62,7 +62,7 @@ hy=ylabel('QV-Kg/Kg','FontWeight','bold');
 set(hy,'FontWeight','bold','FontSize',12);
 legend('Location','NorthEast','FontWeight','bold');
 grid on
-% Do a simple check on global warning
+% Do a simple check on global Specific Humidity Changes
 FutureDates=(1980:40:2020).';
 QVLimits=FitQV(FutureDates);
 PredQVStart(fitmonth,fitregion)=QVLimits(1,1);
