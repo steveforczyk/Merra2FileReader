@@ -4,7 +4,8 @@ function PerformSpecificHumidityCurvefits()
 % for 10 separate regions and 12 months for the period 1980-2022
 % Written By: Stephen Forczyk
 % Created: Jan 8,2024
-% Revised: 
+% Revised: Jan 18,2024 modified code to add additgonal plots to the
+% PDF file if created.
 % Classification: Unclassified/Public Domain
 
 global TimeFrac startYearstr endYearstr;
@@ -17,6 +18,7 @@ global QVStats QVStatsTable QVStatTT QVStats2Table QVStat2TT;
 global O3Stats O3StatsTable O3StatTT O3Stats2Table O3Stat2TT;
 global TempStatsFileName1 TempStatsFileName2;
 global QVSStatsFileName1;
+global iSelectSet3;
 global JanTemps FebTemps MarTemps AprTemps MayTemps JunTemps;
 global JulTemps AugTemps SepTemps OctTemps NovTemps DecTemps;
 global JanQV FebQV MarQV AprQV MayQV JunQV;
@@ -132,8 +134,7 @@ RegionLabels{6,1}='India';
 RegionLabels{7,1}='Australia';
 RegionLabels{8,1}='California';
 RegionLabels{9,1}='Texas';
-RegionLabels{10,1}='Peru';
-iSelect=2;  
+RegionLabels{10,1}='Peru'; 
 
 QVSStatsFileName1='FinalCombinedQVSTables.mat';
 jpegpath='K:\Merra-2\netCDF\Dataset03\Jpeg_Test2\';

@@ -21,6 +21,7 @@ global Datasets;
 global BandDataS MetaDataS;
 global LatSpacing LonSpacing RasterAreas;
 global RasterLats RasterLons COThighlimit;
+global iSelectSet3;
 global minTauValue PressureLevel42 PressureLevel72 iPress42 iPress72;
 global PressureLevelUsed PressureLabels42 PressureLabels72 framecounter;
 global TauCliMeansArray MeansTable MeansTimeTable;
@@ -37,17 +38,19 @@ global Merra2WorkingMask1 Merra2WorkingMask2 Merra2WorkingMask3;
 global Merra2WorkingMask4 Merra2WorkingMask5;
 global Merra2WorkingMask6 Merra2WorkingMask7;
 global Merra2WorkingMask8 Merra2WorkingMask9 Merra2WorkingMask10;
-global TSStats iMonthForPDF;
+global TSStats iMonthForPDF TableFile;
 global Merra2WorkingSeaMask1 Merra2WorkingSeaMask2 Merra2WorkingSeaMask3;
 global Merra2WorkingSeaMask4 Merra2WorkingSeaMask5;
 global ROIName1 ROIName2 ROIName3 ROIName4 ROIName5;
 global ROIName6 ROIName7 ROIName8 ROIName9 ROIName10;
+global Dataset3Masks;
 global Merra2WorkingSeaBoundary1Lat Merra2WorkingSeaBoundary1Lon Merra2WorkingSeaBoundary1Area;
 global Merra2WorkingSeaBoundary2Lat Merra2WorkingSeaBoundary2Lon Merra2WorkingSeaBoundary2Area;
 global Merra2WorkingSeaBoundary3Lat Merra2WorkingSeaBoundary3Lon Merra2WorkingSeaBoundary3Area;
 global Merra2WorkingSeaBoundary4Lat Merra2WorkingSeaBoundary4Lon Merra2WorkingSeaBoundary4Area;
 global Merra2WorkingSeaBoundary5Lat Merra2WorkingSeaBoundary5Lon Merra2WorkingSeaBoundary5Area;
 global SeaSaltVarCorr;
+global Dataset3TempChanges;
 
 global Merra2DataPaths Merra2Path MerraDataCollectionTimes;
 global CountyBoundaryFile;
@@ -191,6 +194,7 @@ iLandOnly=1;
 iPostProcessDataset3=1;
 PascalsToMilliBars=1/1000;
 PascalsToPsi=14.696/101325;
+iSelectSet3=1;
 % Select a Time Slice
 iTimeSlice=2;
 LogoFileName1='Merra2-LogoB.jpg';
@@ -1268,11 +1272,34 @@ end
             disp(dispstr)
         end
         else
-        igo=0;
+            igo=0;
         end
         igo=0;
  %% Process Data from M2IUNPANA_5.12.4
     elseif(indx==3)% M2IUNPANA_5.12.4
+            Dataset3TempChanges=zeros(12,10);
+ % Add in Country Masks-(Pre Selected List)
+            Dataset3Masks=cell(10,1);
+            ROIName1='Germany';
+            ROIName2='Finland';
+            ROIName3='UK';
+            ROIName4='Sudan';
+            ROIName5='SouthAfrica';
+            ROIName6='India';
+            ROIName7='Australia';
+            ROIName8='California';
+            ROIName9='Texas';
+            ROIName10='Peru';
+            Dataset3Masks{1,1}='Germany';
+            Dataset3Masks{2,1}='Finland';
+            Dataset3Masks{3,1}='UK';
+            Dataset3Masks{4,1}='Sudan';
+            Dataset3Masks{5,1}='SouthAfrica';
+            Dataset3Masks{6,1}='India';
+            Dataset3Masks{7,1}='Australia';
+            Dataset3Masks{8,1}='California';
+            Dataset3Masks{9,1}='Texas';
+            Dataset3Masks{10,1}='Peru';
         if(iPostProcessDataset3<1)
             [Merra2FileNames,nowpath] = uigetfile('*.nc4','Select Multiple Files', ...
             'MultiSelect', 'on');
@@ -1300,17 +1327,10 @@ end
             if((iCreatePDFReport==1) && (RptGenPresent==1))
                 CreateMerra2Dataset03Report
             end
-% Add in Country Masks-(Pre Selected List)
-            ROIName1='Germany';
-            ROIName2='Finland';
-            ROIName3='UK';
-            ROIName4='Sudan';
-            ROIName5='SouthAfrica';
-            ROIName6='India';
-            ROIName7='Australia';
-            ROIName8='California';
-            ROIName9='Texas';
-            ROIName10='Peru';
+%% Set Up the masks that are needed
+            SetUpDataset3RegionalMasks()
+            bypass=1;
+            if(bypass==1)
             eval(['cd ' maskpath(1:length(maskpath)-1)]);
 % Load the Mask for ROIName1-Gemany
             maskVar1='Merra2GermanyMask';
@@ -1362,7 +1382,9 @@ end
             load('PeruMask.mat',maskVar10);
             Merra2WorkingMask10=eval(maskVar10);
             Merra2WorkingMask10size=sum(sum(Merra2WorkingMask10));
+            end
             ab=1;
+% Npw start looping thru the selected files
             for nn=1:numSelectedFiles
                 nowFile=Merra2FileNames{nn,1}; 
                 framecounter=framecounter+1;
@@ -1372,18 +1394,21 @@ end
                 disp(dispstr)
             end
         end
-        iSelect=1;
         if(iPostProcessDataset3==1)
-            eval(['cd ' tablepath(1:length(tablepath)-1)])  
-            [TableFile,nowpath] = uigetfile('*.mat','Select One File', ...
-            'MultiSelect', 'off');
+            eval(['cd ' tablepath(1:length(tablepath)-1)]) 
+            if(iSelectSet3==1)
+               [TableFile,nowpath] = uigetfile('*CombinedTSSTables.mat','Select One File', ...
+                'MultiSelect', 'off');
+            elseif(iSelectSet3==2)
+               [TableFile,nowpath] = uigetfile('*CombinedQVSTables.mat','Select One File', ...
+                'MultiSelect', 'off');
+            end
             load(TableFile);
-            if(iSelect==1)
+            if(iSelectSet3==1)
                 PerformAirTemperatureCurvefits()
             else
                 PerformSpecificHumidityCurvefits()
             end
-            ab=1;
         end
         igo=0;
     elseif(indx==4)% M2T1NXOCN

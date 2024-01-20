@@ -9,6 +9,7 @@ function PerformAirTemperatureCurvefits()
 % PlotRegionalTempFit.m function
 % Classification: Unclassified/Public Domain
 global TimeFrac startYearstr endYearstr;
+global iSelectSet3;
 global YearMonthStr YearStr MonthStr framecounter numSelectedFiles;
 global TSTable TSTT HSTable HSTT O3STable O3STT SLPSTable SLPSTT;
 global QVSTable QVSTT PSSTable PSSTT USTable USTT VSTable VSTT;
@@ -16,7 +17,7 @@ global ROIArea ROIPts ROIFracPts numgridpts Merra2WorkingMask;
 global TSStats TSStatsTable TSSTT TSStats2Table TSS2TT;
 global QVStats QVStatsTable QVStatTT QVStats2Table QVStat2TT;
 global O3Stats O3StatsTable O3StatTT O3Stats2Table O3Stat2TT;
-global TempStatsFileName1 TempStatsFileName2;
+global TempStatsFileName1 TempStatsFileName2 TableFile;
 global QVSStatsFileName1;
 global JanTemps FebTemps MarTemps AprTemps MayTemps JunTemps;
 global JulTemps AugTemps SepTemps OctTemps NovTemps DecTemps;
@@ -75,7 +76,6 @@ govjpegpath='K:\Merra-2\gov_jpeg\';
 % Get the Median Atmospheric Temperature data stored as TimeTables
 %TempStatsFileName1='TSStatsTable199912-12-Hrs-GMT-PrsLvl-10.mat';
 %TempStatsFileName2='TSStats2Table199912-12-Hrs-GMT-PrsLvl-10.mat';
-TempStatsFileName1='FinalCombinedTSSTables.mat';
 %% Call some routines that will create nice plot window sizes and locations
 % Establish selected run parameters
 imachine=2;
@@ -135,8 +135,7 @@ RegionLabels{7,1}='Australia';
 RegionLabels{8,1}='California';
 RegionLabels{9,1}='Texas';
 RegionLabels{10,1}='Peru';
-iSelect=1;  
-if(iSelect==1)
+if(iSelectSet3==1)
     TempStatsFileName1='FinalCombinedTSSTables.mat';
     MatFileName='AirTemperatureChanges.mat';
 % Load the Temp Stats Timetables 1 and 2
@@ -210,7 +209,6 @@ if(iSelect==1)
         ie=is+2;
         rowMonthstr=rowstr(is:ie);
         [monthnum] = ConvertMonthStrToNumber(rowMonthstr);
-        ab=2;
         if(monthnum==1)
             rowtime=TSSTT.Time(i);
             rowstr=char(string(rowtime));
@@ -460,9 +458,7 @@ if(iSelect==1)
             rowYearstr=rowstr(is:ie);
             rowYear=str2double(rowYearstr);
             ik9=ik9+1;
-            if(ik9>40)
-                ab=1;
-            end
+
             TimeFrac(ik9,monthnum)=rowYear+(monthnum-1)/12;
             nowVal1=TSSTT.Germany(i);
             SepTemps(ik9,1)=nowVal1;
@@ -578,12 +574,10 @@ if(iSelect==1)
     end
 %% Establish if the Curve Fit toolbox is present
 [CurveFitTooolBoxPresent] = ToolboxChecker('Curve Fitting Toolbox');
-ab=1;
 %% Now Fit the monthly data Region by Region and Month By Month
     fo=fitoptions('poly2');
     fo.Normalize='on';
     fitconf=0.75;
-%    fo.Exclude=2001:2023;
 %% Start with January-Region 1
     MeasTimes=TimeFrac(:,1);
     MeasTemps=JanTemps(:,1);
@@ -5405,7 +5399,9 @@ else
 %     disp(dispstr);
 end
 %% Plot the Avergage Temperature Changes
-if(iSelect==1)
+
+
+if(iSelectSet3==1)
     titlestr='AvgAirTempChanges-1980-2020';
     iAddToReport=1;
     iNewChapter=1;

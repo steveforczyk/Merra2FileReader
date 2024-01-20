@@ -4,12 +4,14 @@ function DisplayMonthlyAvgTemps(titlestr,ifittype,iAddToReport,iNewChapter,iClos
 %
 % Written By: Stephen Forczyk
 % Created: Jan 3,2024
-% Revised: -----
+% Revised: Jan 20,2024 added logiv to calculate the regions with the
+% largest and smallest warming values
 % Classification: Public Domain/Unclassified
 
 global PredTempStart PredTempEnd PredTempChng;
 global MonthLabels RegionLabels;
 global pslice heightkm DataCollectionTime;
+global Dataset3TempChanges Dataset3Masks;
 
 global fid;
 global widd2 lend2;
@@ -69,7 +71,53 @@ movie_figure1=figure('position',[hor1 vert1 widd lend]);
 set(gcf,'MenuBar','none');
 set(gca,'Position',[.16 .18  .70 .70]);
 imagesc(PredTempChng);
-
+chnglimithigh=1;
+chnglimitlow=-.25;
+% Find how many of the Temperature changes were greater / less a set limit
+[nnrows,nncols]=size(PredTempChng);
+PredTempHigh=zeros(nnrows,nncols);
+PredTempLow=zeros(nnrows,nncols);
+ihigh=0;
+ilow=0;
+for i=1:nnrows
+    for j=1:nncols
+        nowVal=PredTempChng(i,j);
+        if(nowVal>chnglimithigh)
+            ihigh=ihigh+1;
+            PredTempHigh(i,j)=1;
+        elseif(nowVal<chnglimitlow)
+            ilow=ilow+1;
+            PredTempLow(i,j)=1;
+        end
+    end
+end
+sumhigh=sum(sum(PredTempHigh));
+sumlow=sum(sum(PredTempLow));
+% Sum up the changes by region to show which region had the most warming
+SumByRegion=zeros(10,1);
+for j=1:nncols
+    sumcol=0;
+    for i=1:nnrows
+        sumcol=sumcol+PredTempChng(i,j);
+    end
+    SumByRegion(j,1)=sumcol;
+end
+[SortArray,index]=sort(SumByRegion,'descend');
+ix=index(1);
+LargestWarmingROI=char(Dataset3Masks{ix,1});
+LargestWarmingValue=SumByRegion(ix,1)/12;
+ix2=index(10);
+SmallestWarmingROI=char(Dataset3Masks{ix2,1});
+SmallestWarmingValue=SumByRegion(ix2,1)/12;
+fprintf(fid,'\n');
+fprintf(fid,'%s\n','***** Data On Avg Warming Data *****');
+parastr7=strcat(' The region with the largest avg monthly warming was found to be-',LargestWarmingROI,...
+    '-with a avg value of-',num2str(LargestWarmingValue),'-Deg C');
+parastr8=strcat(' The region with the smallest avg monthly warming was found to be-',SmallestWarmingROI,...
+    '-with a avg value of--- ',num2str(SmallestWarmingValue),'-Deg C');
+fprintf(fid,'%s\n',parastr7);
+fprintf(fid,'%s\n',parastr8);
+fprintf(fid,'\n');
 % Determine string for fit type
 if(ifittype==1)
     fitstr='Polyfit Order 1';
@@ -149,7 +197,11 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
     parastr4=strcat('Data displayed is for time-',DataCollectionTime);
     parastr5=strcat('The selected pressure level was-',num2str(heightkm,2),'-in km.');
     parastr6='Typically a low altitude was used but in mountainous regions many NaN values can be returned.';
-    parastr9=strcat(parastr1,parastr2,parastr3,parastr4,parastr5,parastr6);
+    parastr7=strcat(' The region with the largest avg monthly warming was found to be-',LargestWarmingROI,...
+        '-with a avg value of-',num2str(LargestWarmingValue),'-Deg C');
+    parastr8=strcat(' The region with the smallest avg monthly warming was found to be-',SmallestWarmingROI,...
+        '-with a avg value of--- ',num2str(SmallestWarmingValue),'-Deg C');
+    parastr9=strcat(parastr1,parastr2,parastr3,parastr4,parastr5,parastr6,parastr7,parastr8);
     p1 = Paragraph(parastr9);
     p1.Style = {OuterMargin("0pt", "0pt","10pt","10pt")};
     add(chapter,p1);

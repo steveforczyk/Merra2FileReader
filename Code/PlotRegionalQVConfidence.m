@@ -4,13 +4,13 @@ function PlotRegionalQVConfidence(FitQV,MeasTimes,MeasQV,ifittype,gof,fitconf,ti
 % 
 % Written By: Stephen Forczyk
 % Created: Jan 8,2024,2023
-% Revised: -----
+% Revised: Jan 18,2024 added charts to PDF for one selected month
 % Classification: Public Domain/Unclassified
 
 global TimeFrac startYearstr endYearstr;
 global GofStats3 GofStats4;
 global PredQVStart PredQVEnd PredQVChng;
-global fitmonth fitregion;
+global fitmonth fitregion iMonthForPDF;
 global pslice heightkm DataCollectionTime;
 
 global fid;
@@ -40,6 +40,11 @@ global shapefilepath Countryshapepath figpath pressurepath averaged1Daypath;
 global mappath gridpath countyshapepath nationalshapepath summarypath;
 global DayMonthNonLeapYear DayMonthLeapYear CalendarFileName;
 
+if((iCreatePDFReport==1) && (RptGenPresent==1))
+    import mlreportgen.dom.*;
+    import mlreportgen.report.*;
+end
+
 % Determine string for fit type
 if(ifittype==1)
     fitstr='Polyfit Order 1';
@@ -68,7 +73,7 @@ QVLimits=FitQV(FutureDates);
 PredQVStart(fitmonth,fitregion)=QVLimits(1,1);
 PredQVEnd(fitmonth,fitregion)=QVLimits(2,1);
 PredQVChng(fitmonth,fitregion)=QVLimits(2,1)-QVLimits(1,1);
-
+currentChange=QVLimits(2,1)-QVLimits(1,1);
 %% Add a logo
 if(iLogo==1)
     eval(['cd ' govjpegpath(1:length(govjpegpath)-1)]);
@@ -108,4 +113,67 @@ typestr='-djpeg';
 [cmdString]=MyStrcat2(actionstr,typestr,figstr);
 eval(cmdString);
 close('all');
+%% Add data to PDF Report
+iNewChapter=0;
+iAddToReport=0;
+iCloseChapter=0;
+if((fitmonth==iMonthForPDF) && (fitregion<10))
+    iAddToReport=1;
+    iCloseChapter=0;
+elseif((fitregion==10) && (fitmonth==iMonthForPDF))
+    iAddToReport=1;
+    iCloseChapter=1;
+end
+if((fitmonth==iMonthForPDF) && (fitregion==1))
+    iNewChapter=1;
+end
+if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1) && (fitmonth==iMonthForPDF))
+    if(iNewChapter)
+        headingstr1='Average Specific Humidity Changes For One Month By Region';
+        chapter = Chapter("Title",headingstr1);
+    end
+    sectionstr=strcat('Specific Humidity Changes From 1980-2023','for region-',num2str(fitregion));
+    add(chapter,Section(sectionstr));
+    eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
+    imdata = imread(figstr);
+    [nhigh,nwid,~]=size(imdata);
+    image = mlreportgen.report.FormalImage();
+    image.Image = which(figstr);
+    pdftxtstr='Dateset03-Avg Specific Humidy Changes For Selected Month and Region';
+    pdftext = Text(pdftxtstr);
+    pdftext.Color = 'red';
+    image.Caption = pdftext;
+    nhighs=floor(nhigh/2.5);
+    nwids=floor(nwid/2.5);
+    heightstr=strcat(num2str(nhighs),'px');
+    widthstr=strcat(num2str(nwids),'px');
+    image.Height = heightstr;
+    image.Width = widthstr;
+    image.ScaleToFit=0;
+    add(chapter,image);
+% Now add some text -start by decribing the with a basic description of the
+% variable being plotted
+    parastr1=strcat('This chart shows the change in  Specific Humidity (QV) For Month-',num2str(fitmonth),'-and region-',num2str(fitregion),'.');
+    parastr2='Basically the curve fit data is used to generate a smooth estimate of the 50 percentile QV values in thr selected time period.';
+    parastr3=' A difference in the estimate for 2020 and 1980 is called the QV change.';
+    parastr4=strcat('Data displayed is for time-',DataCollectionTime);
+    parastr5=strcat('The selected pressure level was-',num2str(heightkm,2),'-in km.');
+    parastr6='Typically a low altitude was used but in mountainous regions many NaN values can be returned.';
+    parastr7=strcat(' For the month and region shown above the estimated QV change is-',num2str(currentChange),'-kg/kg.');
+    parastr9=strcat(parastr1,parastr2,parastr3,parastr4,parastr5,parastr6,parastr7);
+    p1 = Paragraph(parastr9);
+    p1.Style = {OuterMargin("0pt", "0pt","10pt","10pt")};
+    add(chapter,p1);
+%   fprintf(fid,'\n');
+%   flagstr=strcat('fitmonth-',num2str(fitmonth),'-fitregion-',num2str(fitregion));
+%   fprintf(fid,'%s\n',flagstr);
+%   flagstr2=strcat('iNewChapter-',num2str(iNewChapter),'iAddToReport-',num2str(iAddToReport),...
+%          '-iCloseChapter-',num2str(iCloseChapter));
+%   fprintf(fid,'%s\n',flagstr2);
+%              fprintf(fid,'\n');
+    if(iCloseChapter==1)
+        add(rpt,chapter);
+    end
+    close('all')
+end
 end
