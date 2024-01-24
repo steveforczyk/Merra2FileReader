@@ -12,6 +12,7 @@ global PredTempStart PredTempEnd PredTempChng;
 global MonthLabels RegionLabels;
 global pslice heightkm DataCollectionTime;
 global Dataset3TempChanges Dataset3Masks;
+global Merra2AvgTempChngTable Merra2AvgTempChngHdrs;
 
 global fid;
 global widd2 lend2;
@@ -25,39 +26,20 @@ global jpegpath govjpegpath;
 global iLogo LogoFileName1 LogoFileName2;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
 global iLogo LogoFileName1 LogoFileName2;
-global iLogo LogoFileName1 LogoFileName2;
+
 if((iCreatePDFReport==1) && (RptGenPresent==1))
     import mlreportgen.dom.*;
     import mlreportgen.report.*;
 end
 
 jpegpath='K:\Merra-2\netCDF\Dataset03\Jpeg_Test\';
-% Establish selected run parameters
-imachine=2;
-if(imachine==1)
-    widd=720;
-    lend=580;
-    widd2=1000;
-    lend2=700;
-elseif(imachine==2)
-    widd=1080;
-    lend=812;
-    widd2=1000;
-    lend2=700;
-elseif(imachine==3)
-    widd=1296;
-    lend=974;
-    widd2=1200;
-    lend2=840;
-end
-% Set a specific color order
-set(0,'DefaultAxesColorOrder',[1 0 0;
-    1 1 0;0 1 0;0 0 1;0.75 0.50 0.25;
-    0.5 0.75 0.25; 0.25 1 0.25;0 .50 .75]);
-% Set up some defaults for a PowerPoint presentationwhos
-scaling='true';
-stretching='false';
-padding=[75 75 75 75];
+
+% Set up the Table to hold the Avg Temp Change Data
+Merra2AvgTempChngHdrs=cell(1,3);
+Merra2AvgTempChngHdrs{1,1}='ROI Number';
+Merra2AvgTempChngHdrs{1,2}='ROI Avg Monthly Change';
+Merra2AvgTempChngHdrs{1,3}='ROI Sorted Rank';
+Merra2AvgTempChngTable=cell(10,3);
 igrid=1;
 iLogo=1;
 LogoFileName1='Merra2-LogoB.jpg';
@@ -102,13 +84,44 @@ for j=1:nncols
     end
     SumByRegion(j,1)=sumcol;
 end
-[SortArray,index]=sort(SumByRegion,'descend');
+[SortedSumArray,index]=sort(SumByRegion,'descend');
 ix=index(1);
 LargestWarmingROI=char(Dataset3Masks{ix,1});
 LargestWarmingValue=SumByRegion(ix,1)/12;
 ix2=index(10);
 SmallestWarmingROI=char(Dataset3Masks{ix2,1});
 SmallestWarmingValue=SumByRegion(ix2,1)/12;
+% Add in the Data to the Table
+Merra2AvgTempChngTable{1,1}='Germany';
+Merra2AvgTempChngTable{1,2}=num2str(SumByRegion(1,1));
+Merra2AvgTempChngTable{1,3}=num2str(index(1));
+Merra2AvgTempChngTable{2,1}='Finland';
+Merra2AvgTempChngTable{2,2}=num2str(SumByRegion(2,1));
+Merra2AvgTempChngTable{2,3}=num2str(index(2));
+Merra2AvgTempChngTable{3,1}='UK';
+Merra2AvgTempChngTable{3,2}=num2str(SumByRegion(3,1));
+Merra2AvgTempChngTable{3,3}=num2str(index(3));
+Merra2AvgTempChngTable{4,1}='Sudan';
+Merra2AvgTempChngTable{4,2}=num2str(SumByRegion(4,1));
+Merra2AvgTempChngTable{4,3}=num2str(index(4));
+Merra2AvgTempChngTable{5,1}='SouthAfica';
+Merra2AvgTempChngTable{5,2}=num2str(SumByRegion(5,1));
+Merra2AvgTempChngTable{5,3}=num2str(index(5));
+Merra2AvgTempChngTable{6,1}='India';
+Merra2AvgTempChngTable{6,2}=num2str(SumByRegion(6,1));
+Merra2AvgTempChngTable{6,3}=num2str(index(6));
+Merra2AvgTempChngTable{7,1}='Australia';
+Merra2AvgTempChngTable{7,2}=num2str(SumByRegion(7,1));
+Merra2AvgTempChngTable{7,3}=num2str(index(7));
+Merra2AvgTempChngTable{8,1}='California';
+Merra2AvgTempChngTable{8,2}=num2str(SumByRegion(8,1));
+Merra2AvgTempChngTable{8,3}=num2str(index(8));
+Merra2AvgTempChngTable{9,1}='Texas';
+Merra2AvgTempChngTable{9,2}=num2str(SumByRegion(9,1));
+Merra2AvgTempChngTable{9,3}=num2str(index(9));
+Merra2AvgTempChngTable{10,1}='Peru';
+Merra2AvgTempChngTable{10,2}=num2str(SumByRegion(10,1));
+Merra2AvgTempChngTable{10,3}=num2str(index(10));
 fprintf(fid,'\n');
 fprintf(fid,'%s\n','***** Data On Avg Warming Data *****');
 parastr7=strcat(' The region with the largest avg monthly warming was found to be-',LargestWarmingROI,...
@@ -205,6 +218,32 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
     p1 = Paragraph(parastr9);
     p1.Style = {OuterMargin("0pt", "0pt","10pt","10pt")};
     add(chapter,p1);
+%% Add Table Ranking of Avg Temp changes
+    br = PageBreak();
+    add(chapter,br);
+    T2=[Merra2AvgTempChngHdrs;Merra2AvgTempChngTable];
+    tbl2=Table(T2);
+    tbl2.Style = [tbl2.Style {Border('solid','black','3px')}];
+    tbl2.TableEntriesHAlign = 'center';
+    tbl2.HAlign='center';
+    tbl2.ColSep = 'single';
+    tbl2.RowSep = 'single';
+    r = row(tbl2,1);
+    r.Style = [r.Style {Color('red'),Bold(true)}];
+    bt2 = BaseTable(tbl2);
+    tabletitle = Text('Temp Change Values By Region');
+    tabletitle.Bold = false;
+    bt2.Title = tabletitle;
+    bt2.TableWidth="7in";
+    add(chapter,bt2);
+    parastr201='The table above shows the change in the 50 % Air Temperature of the 1980 - 2023 period divided by 12.';
+    parastr202=' This final division is to account for the summing of the monthly values into a single composite number.';
+    parastr203=' For purposes of this analysis a value of 1 Deg in average schange is consider significant for positive values.';
+    parastr204=' Negative changes,or cooling are treated as meaningful for changes of -.25 deg C or more.';
+    parastr209=strcat(parastr201,parastr202,parastr203,parastr204);
+    p21= Paragraph(parastr209);
+    p21.Style = {OuterMargin("0pt", "0pt","20pt","10pt")};
+    add(chapter,p21);
     if(iCloseChapter==1)
         add(rpt,chapter);
     end

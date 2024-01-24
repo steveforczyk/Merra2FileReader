@@ -4,13 +4,16 @@ function DisplayMonthlyAvgQV(titlestr,ifittype,iAddToReport,iNewChapter,iCloseCh
 %
 % Written By: Stephen Forczyk
 % Created: Jan 11,2024
-% Revised: -----
+% Revised: Jan 22,2024 add logic to calculate changes in the QV in the same
+% way this was done for the Average Temperature
 % Classification: Public Domain/Unclassified
 
 global GofStats3 GofStats4;
 global PredQVStart PredQVEnd PredQVChng;
 global MonthLabels RegionLabels;
 global pslice heightkm DataCollectionTime;
+global Dataset3TempChanges Dataset3QVChanges Dataset3Masks;
+global Merra2AvgQVChngTable Merra2AvgQVTempChngHdrs;
 
 global fid;
 global widd2 lend2;
@@ -24,38 +27,19 @@ global jpegpath govjpegpath;
 global iLogo LogoFileName1 LogoFileName2;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
 global iLogo LogoFileName1 LogoFileName2;
+
 if((iCreatePDFReport==1) && (RptGenPresent==1))
     import mlreportgen.dom.*;
     import mlreportgen.report.*;
 end
 
 jpegpath='K:\Merra-2\netCDF\Dataset03\Jpeg_Test2\';
-% Establish selected run parameters
-imachine=2;
-if(imachine==1)
-    widd=720;
-    lend=580;
-    widd2=1000;
-    lend2=700;
-elseif(imachine==2)
-    widd=1080;
-    lend=812;
-    widd2=1000;
-    lend2=700;
-elseif(imachine==3)
-    widd=1296;
-    lend=974;
-    widd2=1200;
-    lend2=840;
-end
-% Set a specific color order
-set(0,'DefaultAxesColorOrder',[1 0 0;
-    1 1 0;0 1 0;0 0 1;0.75 0.50 0.25;
-    0.5 0.75 0.25; 0.25 1 0.25;0 .50 .75]);
-% Set up some defaults for a PowerPoint presentationwhos
-scaling='true';
-stretching='false';
-padding=[75 75 75 75];
+% Set up the Table to hold the Avg QV Change Data
+Merra2AvgQVTempChngHdrs=cell(1,3);
+Merra2AvgQVTempChngHdrs{1,1}='ROI Number';
+Merra2AvgQVTempChngHdrs{1,2}='ROI Avg Monthly Change';
+Merra2AvgQVTempChngHdrs{1,3}='ROI Sorted Rank';
+Merra2AvgQVChngTable=cell(10,3);
 igrid=1;
 iLogo=1;
 LogoFileName1='Merra2-LogoB.jpg';
@@ -69,6 +53,88 @@ movie_figure1=figure('position',[hor1 vert1 widd lend]);
 set(gcf,'MenuBar','none');
 set(gca,'Position',[.16 .18  .70 .70]);
 imagesc(1000*PredQVChng);
+chnglimithigh=1E-5;
+chnglimitlow=-1E-5;
+% Find how many of the QV changes were greater / less a set limit
+[nnrows,nncols]=size(PredQVChng);
+PredQVHigh=zeros(nnrows,nncols);
+PredQVLow=zeros(nnrows,nncols);
+ihigh=0;
+ilow=0;
+for i=1:nnrows
+    for j=1:nncols
+        nowVal=PredQVChng(i,j);
+        if(nowVal>chnglimithigh)
+            ihigh=ihigh+1;
+            PredQVHigh(i,j)=1;
+        elseif(nowVal<chnglimitlow)
+            ilow=ilow+1;
+            PredQVLow(i,j)=1;
+        end
+    end
+end
+sumhigh=sum(sum(PredQVHigh));
+sumlow=sum(sum(PredQVLow));
+% Sum up the changes by region to show which region had the most chnage in
+% QV
+SumByRegion=zeros(10,1);
+for j=1:nncols
+    sumcol=0;
+    for i=1:nnrows
+        sumcol=sumcol+PredQVChng(i,j);
+    end
+    SumByRegion(j,1)=sumcol;
+end
+[SortedSumArray,index]=sort(SumByRegion,'descend');
+ix=index(1);
+LargestQVROI=char(Dataset3Masks{ix,1});
+LargestQVValue=SumByRegion(ix,1)/12;
+ix2=index(10);
+SmallestQVROI=char(Dataset3Masks{ix2,1});
+SmallestQVValue=SumByRegion(ix2,1)/12;
+fprintf(fid,'\n');
+fprintf(fid,'%s\n','***** Data On Avg QV Change Data *****');
+parastr7=strcat(' The region with the largest avg monthly QV increase was found to be-',LargestQVROI,...
+    '-with a avg value of-',num2str(LargestQVValue),'-Deg C');
+parastr8=strcat(' The region with the smallest avg monthly QV decrease was found to be-',SmallestQVROI,...
+    '-with a avg value of--- ',num2str(SmallestQVValue),'-Deg C');
+fprintf(fid,'%s\n',parastr7);
+fprintf(fid,'%s\n',parastr8);
+fprintf(fid,'\n');
+fprintf(fid,'%s\n','Finish Processing Specific Humidty Curvefits');
+fprintf(fid,'\n');
+% Add in the Data to the Table Results dont agree betwen diagram and
+% table-fix this
+Merra2AvgQVChngTable{1,1}='Germany';
+Merra2AvgQVChngTable{1,2}=num2str(SumByRegion(1,1));
+Merra2AvgQVChngTable{1,3}=num2str(index(1));
+Merra2AvgQVChngTable{2,1}='Finland';
+Merra2AvgQVChngTable{2,2}=num2str(SumByRegion(2,1));
+Merra2AvgQVChngTable{2,3}=num2str(index(2));
+Merra2AvgQVChngTable{3,1}='UK';
+Merra2AvgQVChngTable{3,2}=num2str(SumByRegion(3,1));
+Merra2AvgQVChngTable{3,3}=num2str(index(3));
+Merra2AvgQVChngTable{4,1}='Sudan';
+Merra2AvgQVChngTable{4,2}=num2str(SumByRegion(4,1));
+Merra2AvgQVChngTable{4,3}=num2str(index(4));
+Merra2AvgQVChngTable{5,1}='SouthAfica';
+Merra2AvgQVChngTable{5,2}=num2str(SumByRegion(5,1));
+Merra2AvgQVChngTable{5,3}=num2str(index(5));
+Merra2AvgQVChngTable{6,1}='India';
+Merra2AvgQVChngTable{6,2}=num2str(SumByRegion(6,1));
+Merra2AvgQVChngTable{6,3}=num2str(index(6));
+Merra2AvgQVChngTable{7,1}='Australia';
+Merra2AvgQVChngTable{7,2}=num2str(SumByRegion(7,1));
+Merra2AvgQVChngTable{7,3}=num2str(index(7));
+Merra2AvgQVChngTable{8,1}='California';
+Merra2AvgQVChngTable{8,2}=num2str(SumByRegion(8,1));
+Merra2AvgQVChngTable{8,3}=num2str(index(8));
+Merra2AvgQVChngTable{9,1}='Texas';
+Merra2AvgQVChngTable{9,2}=num2str(SumByRegion(9,1));
+Merra2AvgQVChngTable{9,3}=num2str(index(9));
+Merra2AvgQVChngTable{10,1}='Peru';
+Merra2AvgQVChngTable{10,2}=num2str(SumByRegion(10,1));
+Merra2AvgQVChngTable{10,3}=num2str(index(10));
 
 % Determine string for fit type
 if(ifittype==1)
@@ -129,7 +195,7 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
     [nhigh,nwid,~]=size(imdata);
     image = mlreportgen.report.FormalImage();
     image.Image = which(figstr);
-    pdftxtstr='Dateset03-QV Changes By Month and Regio';
+    pdftxtstr='Dateset03-QV Changes By Month and Region';
     pdftext = Text(pdftxtstr);
     pdftext.Color = 'red';
     image.Caption = pdftext;
@@ -149,10 +215,39 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
     parastr4=strcat('Data displayed is for time-',DataCollectionTime);
     parastr5=strcat('The selected pressure level was-',num2str(heightkm,2),'-in km.');
     parastr6='Typically a low altitude was used but in mountainous regions many NaN values can be returned.';
-    parastr9=strcat(parastr1,parastr2,parastr3,parastr4,parastr5,parastr6);
+    parastr7=strcat(' The region with the largest avg monthly QV change was found to be-',LargestQVROI,...
+        '-with a avg value of-',num2str(LargestQVValue),'-kg/kg');
+    parastr8=strcat(' The region with the smallest avg monthly QV change was found to be-',SmallestQVROI,...
+        '-with a avg value of--- ',num2str(SmallestQVValue),'-kg/kg');
+    parastr9=strcat(parastr1,parastr2,parastr3,parastr4,parastr5,parastr6,parastr7,parastr8);
     p1 = Paragraph(parastr9);
     p1.Style = {OuterMargin("0pt", "0pt","10pt","10pt")};
     add(chapter,p1);
+  %% Add Table Ranking of Avg QV changes
+    br = PageBreak();
+    add(chapter,br);
+    T2=[Merra2AvgQVTempChngHdrs;Merra2AvgQVChngTable];
+    tbl2=Table(T2);
+    tbl2.Style = [tbl2.Style {Border('solid','black','3px')}];
+    tbl2.TableEntriesHAlign = 'center';
+    tbl2.HAlign='center';
+    tbl2.ColSep = 'single';
+    tbl2.RowSep = 'single';
+    r = row(tbl2,1);
+    r.Style = [r.Style {Color('red'),Bold(true)}];
+    bt2 = BaseTable(tbl2);
+    tabletitle = Text('QV Change Values By Region');
+    tabletitle.Bold = false;
+    bt2.Title = tabletitle;
+    bt2.TableWidth="7in";
+    add(chapter,bt2);
+    parastr201='The table above shows the change in the 50 % Specific Humidity of the 1980 - 2023 period divided by 12.';
+    parastr202=' This final division is to account for the summing of the monthly values into a single composite number.';
+    parastr203=' For purposes of this analysis a value of +/- 1E-5 kg/kg is consider significant change.';
+    parastr209=strcat(parastr201,parastr202,parastr203);
+    p21= Paragraph(parastr209);
+    p21.Style = {OuterMargin("0pt", "0pt","20pt","10pt")};
+    add(chapter,p21);
     if(iCloseChapter==1)
         add(rpt,chapter);
     end

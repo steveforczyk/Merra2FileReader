@@ -17,7 +17,7 @@ global TSStats TSStatsTable TSSTT TSStats2Table TSS2TT;
 global QVStats QVStatsTable QVStatTT QVStats2Table QVStat2TT;
 global O3Stats O3StatsTable O3StatTT O3Stats2Table O3Stat2TT;
 global TempStatsFileName1 TempStatsFileName2;
-global QVSStatsFileName1;
+global QVSStatsFileName1 ;
 global iSelectSet3;
 global JanTemps FebTemps MarTemps AprTemps MayTemps JunTemps;
 global JulTemps AugTemps SepTemps OctTemps NovTemps DecTemps;
@@ -29,6 +29,7 @@ global fitmonth fitregion;
 global isavefiles MatFileName;
 global MonthLabels RegionLabels;
 global pslice heightkm DataCollectionTime;
+global TableFile TableFile2;
 
 
 global Merra2ShortFileName;
@@ -138,10 +139,13 @@ RegionLabels{10,1}='Peru';
 
 QVSStatsFileName1='FinalCombinedQVSTables.mat';
 jpegpath='K:\Merra-2\netCDF\Dataset03\Jpeg_Test2\';
+fprintf(fid,'\n');
+fprintf(fid,'%s\n','Start Processing Specific Humidty Curvefits');
+if((iSelectSet3==1) || (iSelectSet3==3))
 %% Work on the Specific Humidity Table
 % Load the QVS Stats Timetable
     eval(['cd ' tablepath(1:length(tablepath)-1)]);
-    load(QVSStatsFileName1);
+    load(TableFile2);
     MatFileName='SpecificHumidityChanges.mat';
 % Get the Height of the dataset pressure level
     iPress42=PresLvl;
@@ -3101,10 +3105,10 @@ jpegpath='K:\Merra-2\netCDF\Dataset03\Jpeg_Test2\';
         fitmonth=12;
         fitregion=10;
         PlotRegionalQVConfidence(FitDecQVRegion10,MeasTimes,MeasQV,ifittype,gofDecRegion10,fitconf,titlestr)
-    end 
+    end
+end
+
 % Save run data
-
-
 isavefiles=1;
 if(isavefiles==1)
     eval(['cd ' savepath(1:length(savepath)-1)]);
@@ -3127,5 +3131,4 @@ iAddToReport=1;
 iNewChapter=1;
 iCloseChapter=1;
 DisplayMonthlyAvgQV(titlestr,ifittype,iAddToReport,iNewChapter,iCloseChapter)
-disp('Run Complete');
 end

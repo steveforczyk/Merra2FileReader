@@ -9,7 +9,7 @@ function PerformAirTemperatureCurvefits()
 % PlotRegionalTempFit.m function
 % Classification: Unclassified/Public Domain
 global TimeFrac startYearstr endYearstr;
-global iSelectSet3;
+global iSelectSet3 TableFile TableFile2;
 global YearMonthStr YearStr MonthStr framecounter numSelectedFiles;
 global TSTable TSTT HSTable HSTT O3STable O3STT SLPSTable SLPSTT;
 global QVSTable QVSTT PSSTable PSSTT USTable USTT VSTable VSTT;
@@ -135,12 +135,14 @@ RegionLabels{7,1}='Australia';
 RegionLabels{8,1}='California';
 RegionLabels{9,1}='Texas';
 RegionLabels{10,1}='Peru';
-if(iSelectSet3==1)
+fprintf(fid,'\n');
+fprintf(fid,'%s\n','Start Processing Air Temp Curvefits');
+if((iSelectSet3==1) || (iSelectSet3==3))
     TempStatsFileName1='FinalCombinedTSSTables.mat';
     MatFileName='AirTemperatureChanges.mat';
-% Load the Temp Stats Timetables 1 and 2
+% Load the Temp Stats From Timetables stored in TableFile
     eval(['cd ' tablepath(1:length(tablepath)-1)]);
-    load(TempStatsFileName1);
+    load(TableFile);
 % Get the Height of the dataset pressure level
     iPress42=PresLvl;
     pslice=iPress42;
@@ -5399,18 +5401,14 @@ else
 %     disp(dispstr);
 end
 %% Plot the Avergage Temperature Changes
-
-
-if(iSelectSet3==1)
+if((iSelectSet3==1) || (iSelectSet3==3))
     titlestr='AvgAirTempChanges-1980-2020';
     iAddToReport=1;
     iNewChapter=1;
     iCloseChapter=1;
     DisplayMonthlyAvgTemps(titlestr,ifittype,iAddToReport,iNewChapter,iCloseChapter)
 end
-disp('Run Complete');
 
+fprintf(fid,'%s\n','Finished Processing Air Temp Curvefits');
+fprintf(fid,'\n');
 
-
-
-ab=1;

@@ -38,7 +38,7 @@ global Merra2WorkingMask1 Merra2WorkingMask2 Merra2WorkingMask3;
 global Merra2WorkingMask4 Merra2WorkingMask5;
 global Merra2WorkingMask6 Merra2WorkingMask7;
 global Merra2WorkingMask8 Merra2WorkingMask9 Merra2WorkingMask10;
-global TSStats iMonthForPDF TableFile;
+global TSStats iMonthForPDF TableFile TableFile2;
 global Merra2WorkingSeaMask1 Merra2WorkingSeaMask2 Merra2WorkingSeaMask3;
 global Merra2WorkingSeaMask4 Merra2WorkingSeaMask5;
 global ROIName1 ROIName2 ROIName3 ROIName4 ROIName5;
@@ -194,7 +194,7 @@ iLandOnly=1;
 iPostProcessDataset3=1;
 PascalsToMilliBars=1/1000;
 PascalsToPsi=14.696/101325;
-iSelectSet3=1;
+iSelectSet3=3;
 % Select a Time Slice
 iTimeSlice=2;
 LogoFileName1='Merra2-LogoB.jpg';
@@ -453,8 +453,8 @@ for n=1:numcolon
 end
 datetimestr=logfilename;
 
-eval(['cd ' logpath(1:length(logpath)-1)]);
-logfilename=strcat(logfilename,'.txt');
+% eval(['cd ' logpath(1:length(logpath)-1)]);
+% logfilename=strcat(logfilename,'.txt');
 pdffilename=strcat('Merra2-',datetimestr);
 % fid=fopen(logfilename,'w');
 % dispstr=strcat('Opened Log file-',logfilename,'-for writing');
@@ -1330,60 +1330,6 @@ end
 %% Set Up the masks that are needed
             SetUpDataset3RegionalMasks()
             bypass=1;
-            if(bypass==1)
-            eval(['cd ' maskpath(1:length(maskpath)-1)]);
-% Load the Mask for ROIName1-Gemany
-            maskVar1='Merra2GermanyMask';
-            load('GermanyMask.mat',maskVar1);
-            Merra2WorkingMask1=eval(maskVar1);
-            Merra2WorkingMask1size=sum(sum(Merra2WorkingMask1));
-% Load the Mask for ROIName2-Finland
-            maskVar2='Merra2FinlandMask';
-            load('FinlandMask.mat',maskVar2);
-            Merra2WorkingMask2=eval(maskVar2);
-            Merra2WorkingMask2size=sum(sum(Merra2WorkingMask2));
-% Load the Mask for ROIName3-UK
-            maskVar3='Merra2UKMask';
-            load('UKMask.mat',maskVar3);
-            Merra2WorkingMask3=eval(maskVar3);
-            Merra2WorkingMask3size=sum(sum(Merra2WorkingMask3));
-% Load the Mask for ROIName4-Sudan
-            maskVar4='Merra2SudanMask';
-            load('SudanMask.mat',maskVar4);
-            Merra2WorkingMask4=eval(maskVar4);
-            Merra2WorkingMask4size=sum(sum(Merra2WorkingMask4));
-% Load the Mask for ROIName5-SouthAfrica
-            maskVar5='Merra2SouthAfricaMask';
-            load('SouthAfricaMask.mat',maskVar5);
-            Merra2WorkingMask5=eval(maskVar5);
-            Merra2WorkingMask5size=sum(sum(Merra2WorkingMask5));
-% Load the Mask for ROIName6-India
-            maskVar6='Merra2IndiaMask';
-            load('IndiaMask.mat',maskVar6);
-            Merra2WorkingMask6=eval(maskVar6);
-            Merra2WorkingMask6size=sum(sum(Merra2WorkingMask6));
-% Load the Mask for ROIName7-Australia
-            maskVar7='Merra2AustraliaMask';
-            load('AustraliaMask.mat',maskVar7);
-            Merra2WorkingMask7=eval(maskVar7);
-            Merra2WorkingMask7size=sum(sum(Merra2WorkingMask7));
-% Load the Mask for ROIName8-California
-            maskVar8='Merra2CaliforniaMask';
-            load('CaliforniaMask.mat',maskVar8);
-            Merra2WorkingMask8=eval(maskVar8);
-            Merra2WorkingMask8size=sum(sum(Merra2WorkingMask8));
-% Load the Mask for ROIName9-Texas
-            maskVar9='Merra2TexasMask';
-            load('TexasMask.mat',maskVar9);
-            Merra2WorkingMask9=eval(maskVar9);
-            Merra2WorkingMask9size=sum(sum(Merra2WorkingMask9));
-% Load the Mask for ROIName10-Peru
-            maskVar10='Merra2PeruMask';
-            load('PeruMask.mat',maskVar10);
-            Merra2WorkingMask10=eval(maskVar10);
-            Merra2WorkingMask10size=sum(sum(Merra2WorkingMask10));
-            end
-            ab=1;
 % Npw start looping thru the selected files
             for nn=1:numSelectedFiles
                 nowFile=Merra2FileNames{nn,1}; 
@@ -1397,17 +1343,24 @@ end
         if(iPostProcessDataset3==1)
             eval(['cd ' tablepath(1:length(tablepath)-1)]) 
             if(iSelectSet3==1)
-               [TableFile,nowpath] = uigetfile('*CombinedTSSTables.mat','Select One File', ...
+               [TableFile,nowpath] = uigetfile('*CombinedTSSTables.mat','Select One Avg Temp File', ...
                 'MultiSelect', 'off');
             elseif(iSelectSet3==2)
-               [TableFile,nowpath] = uigetfile('*CombinedQVSTables.mat','Select One File', ...
+               [TableFile2,nowpath] = uigetfile('*CombinedQVSTables.mat','Select One Avg Specific Humidity File', ...
                 'MultiSelect', 'off');
             end
-            load(TableFile);
             if(iSelectSet3==1)
                 PerformAirTemperatureCurvefits()
-            else
+            elseif(iSelectSet3==2)
                 PerformSpecificHumidityCurvefits()
+            elseif(iSelectSet3==3)
+                 [TableFile,nowpath] = uigetfile('*CombinedTSSTables.mat','Select One Avg Temp File', ...
+                'MultiSelect', 'off');
+                [TableFile2,nowpath] = uigetfile('*CombinedQVSTables.mat','Select One Avg Specific Humidity File', ...
+                'MultiSelect', 'off');
+                PerformAirTemperatureCurvefits()
+                PerformSpecificHumidityCurvefits()
+
             end
         end
         igo=0;
