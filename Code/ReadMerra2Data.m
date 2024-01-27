@@ -163,7 +163,7 @@ gridpath='D:\Goes16\Grids\';
 oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
 %% Set Flags and default values
 % Set some flags to control program execution
-iCreatePDFReport=1;
+iCreatePDFReport=0;
 iSkipReportFrames=2;
 JpegCounter=0;
 isavefiles=0;
@@ -235,10 +235,11 @@ DataSetLinks{3,2}='';
 DataSetLinks{3,3}='2';
 DataSetLinks{3,4}='Hourly,Time-averaged';
 DataSetLinks{3,5}='10.5067/HM00OHQBHKTP';
-DataSetLinks{4,1}=' ';
+DataSetLinks{4,1}='M2T1NXOCN_5.12.4 ';
 DataSetLinks{4,2}='';
-DataSetLinks{4,3}='3';
-DataSetLinks{4,4}='';
+DataSetLinks{4,3}='4';
+DataSetLinks{4,4}='Hourly-Time Averaged';
+DatasetLinks{4,5}='10.5067/Y67YQ1L3ZZ4R';
 DataSetLinks{5,1}=' ';
 DataSetLinks{5,2}='';
 DataSetLinks{5,3}='4';
@@ -455,7 +456,7 @@ datetimestr=logfilename;
 
 % eval(['cd ' logpath(1:length(logpath)-1)]);
 % logfilename=strcat(logfilename,'.txt');
-pdffilename=strcat('Merra2-',datetimestr);
+%pdffilename=strcat('Merra2-',datetimestr);
 % fid=fopen(logfilename,'w');
 % dispstr=strcat('Opened Log file-',logfilename,'-for writing');
 % disp(dispstr);
@@ -494,7 +495,7 @@ Datasets=cell(1,1);
 Datasets{1,1}='Dataset01-Monthly Diurnal M2IUNXASM';
 Datasets{2,1}='Dataset02-Hourly Time Averaged M2T1NXADG';
 Datasets{3,1}='Dataset03-Instantaneous M2IUNPANA';
-Datasets{4,1}='Dataset04';
+Datasets{4,1}='Dataset04-Hourly Time Averaged M2T1NXOCN';
 Datasets{5,1}='Dataset05';
 Datasets{6,1}='Dataset06';
 Datasets{7,1}='Dataset07';
@@ -622,6 +623,9 @@ while igo>0 % This setup up a loop to processing various file until user decides
     elseif(indx==3)
         logfilename=strcat('Merra2LogFileIndx3-',logfilename,'.txt');
         pdfpath='K:\Merra-2\netCDF\Dataset03\PDF_Files\';
+    elseif(indx==4)
+        logfilename=strcat('Merra2LogFileIndx4-',logfilename,'.txt');
+        pdfpath='K:\Merra-2\netCDF\Dataset04\PDF_Files\';
     end
     eval(['cd ' logpath(1:length(logpath)-1)]);
     fid=fopen(logfilename,'w');
@@ -1330,7 +1334,7 @@ end
 %% Set Up the masks that are needed
             SetUpDataset3RegionalMasks()
             bypass=1;
-% Npw start looping thru the selected files
+% Now start looping thru the selected files
             for nn=1:numSelectedFiles
                 nowFile=Merra2FileNames{nn,1}; 
                 framecounter=framecounter+1;
@@ -1365,7 +1369,32 @@ end
         end
         igo=0;
     elseif(indx==4)% M2T1NXOCN
-        ReadDataset04()  
+        jpegpath='K:\Merra-2\netCDF\Dataset04\Jpeg_Files\';
+        pdfpath='K:\Merra-2\netCDF\Dataset04\PDF_Files\';
+        logpath='K:\Merra-2\netCDF\Dataset04\Log_Files\';
+        moviepath='K:\Merra-2\netCDF\Dataset04\Movies\';
+        savepath='K:\Merra-2\netCDF\Dataset04\Matlab_Files\';
+        tablepath='K:\Merra-2\netCDF\Dataset04\Tables\';
+        logfilename=strcat('Merra2LogFileIndx1-',logfilename,'.txt');
+        isavefiles=0;
+        [Merra2FileNames,nowpath] = uigetfile('*.nc4','Select Multiple Files', ...
+        'MultiSelect', 'on');
+        a1=isempty(Merra2FileNames);
+        if(a1==0)
+        Merra2FileNames=Merra2FileNames';
+        numSelectedFiles=length(Merra2FileNames);
+        [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
+        end
+        Merra2FileNames=NewFileList;
+ % Now start looping thru the selected files
+        for nn=1:numSelectedFiles
+            nowFile=Merra2FileNames{nn,1}; 
+            framecounter=framecounter+1;
+            ReadDataset04(nowFile,nowpath)
+            dispstr=strcat('Finished Processing File-',nowFile,'-which is file-',num2str(nn),...
+                '-of-',num2str(numSelectedFiles),'-Files');
+            disp(dispstr)
+        end
     elseif(indx==7)
         ReadDataset07() 
     elseif(indx==8)% M2TMNXRAD_5.12.4
