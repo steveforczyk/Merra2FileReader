@@ -15,6 +15,7 @@
 % Revised: Jan 2024 added routine to compute avergage changes in Air Temp
 % and specific humidity across the 1980 thru 2023 period
 % Revised: Jan 17,2024 made a few revisions to run code on new PC
+% Revised: Jan 24,2024 started adding code to process Dataset04
 % Classification: Unclassified/Public Domain
 %% Set Up Globals
 global Datasets;
@@ -74,9 +75,9 @@ global iCityPlot maxCities;
 global PressureFileName ;
 global SelectedFiles numSelectedFiles path1;
 global iLogo LogoFileName1 LogoFileName2;
-global iSeaOnly iLandOnly;
+global iSeaOnly iLandOnly integrateRate;
 global iPostProcessDataset3;
-global numtimeslice;
+global numtimeslice iScale;
 
 global fid;
 global widd2 lend2;
@@ -420,6 +421,9 @@ iSeaSaltCalc=1;%Calculate Sea Salt totals
 DustROICountry='Sudan';
 %% Control Flags Dataset 03
 iMonthForPDF=1;
+%% Control Flags Dataset04
+integrateRate=0;
+iScale=1;
 %% Set up some initial data
 NumProcFiles=0;
 ProcFileList=cell(1,4);
@@ -1386,6 +1390,40 @@ end
         [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
         end
         Merra2FileNames=NewFileList;
+ % Select A Time slice for extra analysis and most plots
+        TimeSlices=cell(24,1);
+        TimeSlices{1,1}='0 HRS GMT';
+        TimeSlices{2,1}='1 HRS GMT';
+        TimeSlices{3,1}='2 HRS GMT';
+        TimeSlices{4,1}='3 HRS GMT';
+        TimeSlices{5,1}='4 HRS GMT';
+        TimeSlices{6,1}='5 HRS GMT';
+        TimeSlices{7,1}='6 HRS GMT';
+        TimeSlices{8,1}='7 HRS GMT';
+        TimeSlices{9,1}='8 HRS GMT';
+        TimeSlices{10,1}='9 HRS GMT';
+        TimeSlices{11,1}='10 HRS GMT';
+        TimeSlices{12,1}='11 HRS GMT';
+        TimeSlices{13,1}='12 HRS GMT';
+        TimeSlices{14,1}='13 HRS GMT';
+        TimeSlices{15,1}='14 HRS GMT';
+        TimeSlices{16,1}='15 HRS GMT';
+        TimeSlices{17,1}='16 HRS GMT';
+        TimeSlices{18,1}='17 HRS GMT';
+        TimeSlices{19,1}='18 HRS GMT';
+        TimeSlices{20,1}='19 HRS GMT';
+        TimeSlices{21,1}='20 HRS GMT';
+        TimeSlices{22,1}='21 HRS GMT';
+        TimeSlices{23,1}='22 HRS GMT';
+        TimeSlices{24,1}='23 HRS GMT';
+        [iTimeS,~] = listdlg('PromptString',{'Select a Time Slice For Most Studies'},...
+        'SelectionMode','single','ListString',TimeSlices,'ListSize',[360,300]);
+        a1=isempty(iTimeS);
+         if(a1==1)
+            iTimeSlice=2;
+         else
+            iTimeSlice=iTimeS;
+         end
  % Now start looping thru the selected files
         for nn=1:numSelectedFiles
             nowFile=Merra2FileNames{nn,1}; 
@@ -1395,6 +1433,7 @@ end
                 '-of-',num2str(numSelectedFiles),'-Files');
             disp(dispstr)
         end
+    igo=0;
     elseif(indx==7)
         ReadDataset07() 
     elseif(indx==8)% M2TMNXRAD_5.12.4

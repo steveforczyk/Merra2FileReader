@@ -10,14 +10,17 @@ function ReadDataset04(nowFile,nowpath)
 
 global BandDataS MetaDataS;
 global Merra2FileName Merra2ShortFileName Merra2Dat;
+global YearMonthDayStr1;
 
-global idebug;
+global idebug iScale;
 global LonS LatS TimeS ;
 global EFLUXICES EFLUXWTRS FRSEAICES HFLUXICES HFLUXWTRS;
 global LWGNTICES LWGNTWTRS;
-global PRECSNOOCNS QV10MS RAINOCNS SWGNTICES;
+global PRECSNOOCNS QV10MS RAINOCNS SWGNTICES integrateRate;
 global T10MS TAUXICES TAUXWTRS TAUYICES TAUYWTRS;
 global TSKINICES TSKINWTRS U10MS V10MS;
+global RasterLats RasterLons Rpix;
+global westEdge eastEdge northEdge southEdge;
 
 % additional paths needed for mapping
 global matpath1 mappath GOES16path;
@@ -1529,7 +1532,6 @@ for i = 0:numvars-1
         end
         if(a230==1)
             V10MS.values=V10M;
-            ab=1
         end
 
     end
@@ -1574,9 +1576,39 @@ else
     disp(dispstr);
     fprintf(fid,'%s\n',dispstr);
 end
-% Make a variable selection from the list
-[indx2,~] = listdlg('PromptString',{'Select type of data to plot'},...
-'SelectionMode','single','ListString',ChoiceList,'ListSize',[480,700]);
+%% Make the Raster Grid that will be used for Geo2D plots
+% Create A Raster of Plot Points
+LatVals=(LatS.values);
+LonVals=LonS.values;
+numlats=length(LatVals);
+numlons=length(LonVals);
+RasterLats=zeros(numlons,numlats);
+RasterLons=zeros(numlons,numlats);
+minLat=min(LatVals);
+maxLat=max(LatVals);
+minLon=min(LonVals);
+maxLon=max(LonVals);
+westEdge=min(LonVals);
+eastEdge=max(LonVals);
+southEdge=min(LatVals);
+northEdge=max(LatVals);
+%% Create Georeference object Rpix
+latlim=[-90 90];
+lonlim=[-180 180];
+rasterSize=[numlats numlons];
+Rpix = georefcells(latlim,lonlim,rasterSize,'ColumnsStartFrom','south');
+for i=1:numlons
+    for j=1:numlats
+        RasterLons(i,j)=LonVals(j,1);
+    end
+end
+for i=1:numlons
+    for j=1:numlats
+        RasterLats(i,j)=LatVals(j,1);
+    end
+end
+%% Make Plots of the Geo2D variables that were decoded
+
 [iper]=strfind(Merra2FileName,'.');
 numper=length(iper);
 is=iper(2)+1;
@@ -1588,229 +1620,118 @@ is=1;
 iper=iper';
 ie=iper(numper,1)-1;
 Merra2ShortFileName=Merra2FileName(is:ie);
-% Display the selected variable on the correct plot
-if(indx2==1) %Ok
-    titlestr=strcat('SurfaceAlbedo-',Merra2ShortFileName);
-    ikind=1;
-    DisplayMerra2Albedo(ikind,titlestr)   
+iScale=1; % This sets a scale factor which should in most cases be 1
+% Display the Sea Ice Latent Energy Flux
+lowcutoff=-200;
+highcutoff=200;
+ikind=1;
+titlestr=strcat('SeaIce-LatentEnergyFlux-',Merra2ShortFileName);
+[Stats,EFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(EFLUXICES,lowcutoff,highcutoff);
+DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+% Display the Open Water Latent Energy Flux
+lowcutoff=-100;
+highcutoff=800;
+ikind=2;
+titlestr=strcat('OpenWater-LatentEnergyFlux-',Merra2ShortFileName);
+[Stats,EFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(EFLUXWTRS,lowcutoff,highcutoff);
+DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+% Display The Sea Ice Fraction
+titlestr=strcat('SeaIce-Fraction-',Merra2ShortFileName);
+ikind=3;
+lowcutoff=0.00;
+highcutoff=1.2;
+[Stats,SeaIceAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(FRSEAICES,lowcutoff,highcutoff);
+DisplayMerra2SeaIceFractionRev1(Stats,SeaIceAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+% Display Upward Heat Flux
+titlestr=strcat('SeaIce-UpwardHeatFlux-',Merra2ShortFileName);
+ikind=5;
+lowcutoff=-500;
+highcutoff=500;
+[Stats,HFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(HFLUXICES,lowcutoff,highcutoff);
+DisplayMerra2UpwardHeatFluxRev1(Stats,HFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+% Display Open Water Upward Heat Flux
+ikind=6;
+titlestr=strcat('OpenWater-UpwardHeatFlux-',Merra2ShortFileName);
+lowcutoff=-500;
+highcutoff=1000;
+[Stats,HFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(HFLUXWTRS,lowcutoff,highcutoff);
+DisplayMerra2UpwardHeatFluxRev1(Stats,HFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+% Display the Net Downward Long Wave Flux
+titlestr=strcat('SeaIce-NetDownLW-Flux-',Merra2ShortFileName);
+lowcutoff=-500;
+highcutoff=500;
+ikind=7;
+[Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(HFLUXWTRS,lowcutoff,highcutoff);
+DisplayMerra2NetDownLWFluxRev1(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+titlestr=strcat('OpenWater-NetDownLW-Flux-',Merra2ShortFileName);
+ikind=8;
+lowcutoff=-500;
+highcutoff=500;
+[Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(HFLUXWTRS,lowcutoff,highcutoff);
+DisplayMerra2NetDownLWFluxRev1(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+ab=2;
+%% Display Ocean Precip Data
+% Note that this can be displayed as rate or as an integrated value ov a 24
+% hour period
+iScale=3600;
+if(integrateRate==0)
+    titlestr=strcat('OceanRainFallRate-',Merra2ShortFileName);
+    lowcutoff=-.1;
+    highcutoff=20;
+elseif(integrateRate==1)
+    titlestr=strcat('OceanRainFallTotal-',Merra2ShortFileName);
+    lowcutoff=-.1;
+    highcutoff=20;
 end
-if(indx2==2) %Ok
-    titlestr=strcat('SurfaceAlbedo-Diffuse-NIR-',Merra2ShortFileName);
-    ikind=2;
-    DisplayMerra2Albedo(ikind,titlestr)      
-end
-if(indx2==3)%Ok
-    titlestr=strcat('SurfaceAlbedo-Beam-NIR-',Merra2ShortFileName);
-    ikind=3;
-    DisplayMerra2Albedo(ikind,titlestr)      
-end
-if(indx2==4)%Ok
-    titlestr=strcat('SurfaceAlbedo-Diffuse-VIS-',Merra2ShortFileName);
-    ikind=4;
-    DisplayMerra2Albedo(ikind,titlestr)      
-end
-if(indx2==5)%Ok
-    titlestr=strcat('SurfaceAlbedo-Beam-VIS-',Merra2ShortFileName);
-    ikind=5;
-    DisplayMerra2Albedo(ikind,titlestr)      
-end
-if(indx2==6)%Ok
-    titlestr=strcat('CloudAreaFrac-HighClouds-',Merra2ShortFileName);
-    ikind=1;
-    DisplayMerra2CLDHGHS(ikind,titlestr)
-end
-if(indx2==7)%Ok
-    titlestr=strcat('CloudAreaFrac-LowClouds-',Merra2ShortFileName);
-    ikind=2;
-    DisplayMerra2CLDHGHS(ikind,titlestr)
-end
-if(indx2==8)%Ok
-    titlestr=strcat('CloudAreaFrac-MidClouds-',Merra2ShortFileName);
-    ikind=3;
-    DisplayMerra2CLDHGHS(ikind,titlestr)
-end
-if(indx2==9)%Ok
-    titlestr=strcat('CloudAreaFrac-TotClouds-',Merra2ShortFileName);
-    ikind=4;
-    DisplayMerra2CLDHGHS(ikind,titlestr)
-end
-if(indx2==10)%Ok
-    titlestr=strcat('SurfaceEmissivity-',Merra2ShortFileName);
-    DisplayMerra2EMISS(titlestr)
-end
-if(indx2==11)%Ok
-    titlestr=strcat('SurfaceAbsorbedLWIRRad-',Merra2ShortFileName);
-    ikind=1;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==12)%Ok
-    titlestr=strcat('SurfaceAbsorbedLWIRRadClearSky-',Merra2ShortFileName);
-    ikind=2;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==13)%Ok
-    titlestr=strcat('SurfaceAbsorbedLWIRRadClearSkyNoAero-',Merra2ShortFileName);
-    ikind=3;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==14)%Ok
-    titlestr=strcat('LWIR-Flux-From-Surface-',Merra2ShortFileName);
-    ikind=4;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==15)%Ok
-    titlestr=strcat('LWIR-Surface-Net-Downflux-',Merra2ShortFileName);
-    ikind=5;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==16)% Ok
-    titlestr=strcat('LWIR-Surface-Net-Downflux-Clear',Merra2ShortFileName);
-    ikind=6;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==17)% Ok
-    titlestr=strcat('LWIR-Surface-Net-Downflux-Clear-NoAero',Merra2ShortFileName);
-    ikind=7;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==18)% Ok
-    titlestr=strcat('LWIR-Flux-At-TOA',Merra2ShortFileName);
-    ikind=8;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==19)%Ok
-    titlestr=strcat('LWIR-Flux-At-TOA-ClearSky',Merra2ShortFileName);
-    ikind=9;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==20)%Ok
-    titlestr=strcat('LWIR-Flux-At-TOA-ClearSky-NoAero',Merra2ShortFileName);
-    ikind=10;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==21)%Ok
-    titlestr=strcat('Surface-Shortwave-IncomingFlux',Merra2ShortFileName);
-    ikind=11;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==22)%Ok
-    titlestr=strcat('Surface-Shortwave-IncomingFlux-ClearSky',Merra2ShortFileName);
-    ikind=12;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==23)%Ok
-    titlestr=strcat('Surface-DownwardShortwave-Flux',Merra2ShortFileName);
-    ikind=13;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==24)%Ok
-    titlestr=strcat('Surface-DownwardShortwave-Flux-NoAero',Merra2ShortFileName);
-    ikind=14;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==25)%Ok
-    titlestr=strcat('Surface-DownwardShortwave-Flux-NoAeroClearSky',Merra2ShortFileName);
-    ikind=15;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==26)%Ok
-    titlestr=strcat('SWIR-Flux-TOA',Merra2ShortFileName);
-    ikind=16;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==27)%Ok
-    titlestr=strcat('SWIR-NetDownwards-Flux-TOA',Merra2ShortFileName);
-    ikind=17;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==28)%Ok
-    titlestr=strcat('SWIR-NetDownNoAero-Flux-TOA',Merra2ShortFileName);
-    ikind=18;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==29)%Ok
-    titlestr=strcat('SWIR-NetDownClearSky-Flux-TOA',Merra2ShortFileName);
-    ikind=19;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==30)%Ok
-    titlestr=strcat('SWIR-NetDownClearSkyNoAero-Flux-TOA',Merra2ShortFileName);
-    ikind=20;
-    DisplayMerra2LWFlux(ikind,titlestr)
-end
-if(indx2==31)%Ok
-    ikind=1;
-    titlestr=strcat('CloudOpticalThickness-HighClouds-',Merra2ShortFileName);
-    DisplayMerra2TAUHGH(ikind,titlestr)
-end
-if(indx2==32)%Ok
-    ikind=2;
-    titlestr=strcat('CloudOpticalThickness-LowClouds-',Merra2FileName);
-    DisplayMerra2TAUHGH(ikind,titlestr)
-end
-if(indx2==33)%Ok
-    ikind=3;
-    titlestr=strcat('CloudOpticalThickness-MidClouds-',Merra2FileName);
-    DisplayMerra2TAUHGH(ikind,titlestr)
-end
-if(indx2==34)%Ok
-    ikind=4;
-    titlestr=strcat('CloudOpticalThickness-TotClouds-',Merra2FileName);
-    DisplayMerra2TAUHGH(ikind,titlestr)
-end
-if(indx2==35)%Ok
-    titlestr=strcat('Surface-Skin-Temp-',Merra2FileName);
-    DisplayMerra2TSS(titlestr)
-end
-if(indx2==36)
-    ikind=1;
-    titlestr=strcat('VarAlbedo-',Merra2FileName);
-    DisplayMerra2Var_ALBEDO(ikind,titlestr)
-end
-if(indx2==37)
-    ikind=2;
-    titlestr=strcat('VarALBNIRDF-',Merra2FileName);
-    DisplayMerra2Var_ALBEDO(ikind,titlestr)
-end
-if(indx2==38)
-    ikind=3;
-    titlestr=strcat('VarALBNIRDR-',Merra2FileName);
-    DisplayMerra2Var_ALBEDO(ikind,titlestr)
-end
-if(indx2==39)
-    ikind=4;
-    titlestr=strcat('VarALBVISDF-',Merra2FileName);
-    DisplayMerra2Var_ALBEDO(ikind,titlestr)
-end
-if(indx2==40)
-    ikind=5;
-    titlestr=strcat('VarALBVISDR-',Merra2FileName);
-    DisplayMerra2Var_ALBEDO(ikind,titlestr)
-end
-if(indx2==41)
-    ikind=1;
-    titlestr=strcat('VarCLDHGH-',Merra2FileName);
-    DisplayMerra2Var_CLDHGH(ikind,titlestr)
-end
-if(indx2==42)
-    ikind=2;
-    titlestr=strcat('VarCLDLOW-',Merra2FileName);
-    DisplayMerra2Var_CLDHGH(ikind,titlestr)
-end
-if(indx2==43)
-    ikind=3;
-    titlestr=strcat('VarCLDMID-',Merra2FileName);
-    DisplayMerra2Var_CLDHGH(ikind,titlestr)
-end
-if(indx2==44)
-    ikind=4;
-    titlestr=strcat('VarCLDTOT-',Merra2FileName);
-    DisplayMerra2Var_CLDHGH(ikind,titlestr)
-end
-if(indx2==45)
-    titlestr=strcat('VarEMIS-',Merra2FileName);
-    DisplayMerra2EMISS_Var(titlestr)
-end
+% Display the Rain Fall Rate
+ikind=7;
+iScale=3600;
+titlestr=strcat('Ocean-RainFallRate-',Merra2ShortFileName);
+[Stats,PrecipAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(RAINOCNS,lowcutoff,highcutoff);
+DisplayMerra2OceanPrecip(Stats,PrecipAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+ab=1;
+% Display the Snow Fall Rate
+ikind=8;
+iScale=3600;
+titlestr=strcat('Ocean-SnowFallRate-',Merra2ShortFileName);
+[Stats,PrecipAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(PRECSNOOCNS,lowcutoff,highcutoff);
+DisplayMerra2OceanPrecip(Stats,PrecipAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+ab=2;
+% Display The Rain Fall Total
+ikind=9;
+iScale=3600;
+titlestr=strcat('Ocean-RainFallTotal-',Merra2ShortFileName);
+[Stats,PrecipSumAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev6(RAINOCNS,lowcutoff,highcutoff);
+DisplayMerra2OceanPrecip(Stats,PrecipSumAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+ab=2;
+% Display The Snow Fall Total
+ikind=10;
+iScale=3600;
+titlestr=strcat('Ocean-SnowFallTotal-',Merra2ShortFileName);
+lowcutoff=-.1;
+highcutoff=20;
+[Stats,PrecipSumAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev6(PRECSNOOCNS,lowcutoff,highcutoff);
+DisplayMerra2OceanPrecip(Stats,PrecipSumAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+ab=2;
+% Display the Sea Ice Skin Temperature
+titlestr=strcat('SeaIce-Skin-Temp-',Merra2ShortFileName);
+lowcutoff=150;
+highcutoff=320;
+ikind=11;
+iScale=1;
+[Stats,TSKINICEAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TSKINICES,lowcutoff,highcutoff);
+DisplayMerra2SeaIceSkinTempRev1(Stats,TSKINICEAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+titlestr=strcat('SeaIce-SkinTemp-',Merra2ShortFileName);
+ab=3;
+% Display the Open Water Skin Temperature
+titlestr=strcat('Open-Water-Skin-Temp-',Merra2ShortFileName);
+lowcutoff=150;
+highcutoff=320;
+ikind=12;
+iScale=1;
+[Stats,TSKINWTRAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TSKINWTRS,lowcutoff,highcutoff);
+DisplayMerra2SeaIceSkinTempRev1(Stats,TSKINWTRAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+ab=3;
 
 end
 
