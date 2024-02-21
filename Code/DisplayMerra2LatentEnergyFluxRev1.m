@@ -8,12 +8,13 @@ function  DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,frac
 % desired
 % Written By: Stephen Forczyk
 % Created: Jan 29,2024
-% Revised: -----
+% Revised: Feb 8,2024 modified code to only print stats on first frame
 % Classification: Unclassified
 
 global LonS LatS TimeS iTimeSlice TimeSlices;
 global YearMonthDayStr1 YearMonthDayStr2;
 global EFLUXICES EFLUXWTRS FRSEAICES HFLUXICES HFLUXWTRS;
+global SubSolarLat SubSolarLon;
 global WorldCityFileName World200TopCities;
 global iCityPlot maxCities;
 global iLogo LogoFileName1 LogoFileName2;
@@ -21,7 +22,8 @@ global iLogo LogoFileName1 LogoFileName2;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter;
 global JpegCounter JpegFileList;
 global RasterLats RasterLons Rpix;
-global Merra2FileName Merra2ShortFileName;
+global Merra2FileName Merra2ShortFileName framecounter;
+
 
 global widd2 lend2;
 global initialtimestr igrid ijpeg ilog imovie;
@@ -53,15 +55,14 @@ Yearstr=YearMonthDayStr1(1:4);
 Monthstr=YearMonthDayStr1(5:6);
 Daystr=YearMonthDayStr1(7:8);
 Hourstr=char(TimeSlices{iTimeSlice,1});
-
-if(ikind==1)
-    fprintf(fid,'%s\n','------- Start Plotting Sea Ice Latent Energy Flux  ------');
-else
-    fprintf(fid,'%s\n','------- Start Plotting Open Water Latent Energy Flux  ------');
+if(framecounter==1)
+    if(ikind==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea Ice Latent Energy Flux  ------');
+    else
+        fprintf(fid,'%s\n','------- Start Plotting Open Water Latent Energy Flux  ------');
+    end
 end
 if(ikind==1)
-%     EFluxT=EFLUXICES.values;
-%     EFlux=EFluxT(:,:,iTimeSlice);
     vmax=EFLUXICES.vmax;
     vmin=EFLUXICES.vmin;
     minval=-50;
@@ -70,8 +71,6 @@ if(ikind==1)
     desc='Sea Ice Latent Energy Flux';
     unitstr='W/m2';
 elseif(ikind==2)
-%     EFluxT=EFLUXWTRS.values;
-%     EFlux=EFluxT(:,:,iTimeSlice);
     vmax=EFLUXWTRS.vmax;
     vmin=EFLUXWTRS.vmin;
     minval=-50;
@@ -83,32 +82,33 @@ end
 
 
 headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data','-ikind-',num2str(ikind));
-fprintf(fid,'%s\n',headerstr);
 ptc1str=strcat('01 % EFlux Value=',num2str(Stats(1,3),6));
-fprintf(fid,'%s\n',ptc1str);
 ptc25str=strcat('25 % EFlux Value=',num2str(Stats(6,3),6));
-fprintf(fid,'%s\n',ptc25str);
 ptc50str=strcat('50 % EFlux Value=',num2str(Stats(9,3),6));
-fprintf(fid,'%s\n',ptc50str);
 ptc75str=strcat('75 % EFlux Value=',num2str(Stats(12,3),6));
-fprintf(fid,'%s\n',ptc75str);
 ptc99str=strcat('99 % EFlux Vallue=',num2str(Stats(17,3),6));
-fprintf(fid,'%s\n',ptc99str);
 numfracstr=strcat('fracNaN=',num2str(fracNaN,6));
-fprintf(fid,'%s\n',numfracstr);
-fprintf(fid,'%s\n',' End Stats for EFlux Data');
-
+if(framecounter==1)
+    fprintf(fid,'%s\n',headerstr);
+    fprintf(fid,'%s\n',ptc1str);
+    fprintf(fid,'%s\n',ptc25str);
+    fprintf(fid,'%s\n',ptc50str);
+    fprintf(fid,'%s\n',ptc75str);
+    fprintf(fid,'%s\n',ptc99str);
+    fprintf(fid,'%s\n',numfracstr);
+    fprintf(fid,'%s\n',' End Stats for EFlux Data');
+end
 zlimits=[minval maxval];
 incsize=(maxval-minval)/128;
 %% Fetch the map limits
 
 maplimitstr1='****Map Limits Follow*****';
-%fprintf(fid,'%s\n',maplimitstr1);
 maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
-%fprintf(fid,'%s\n',maplimitstr2);
 maplimitstr3=strcat('SouthEdge=',num2str(southEdge,7),'-NorthEdge=',num2str(northEdge));
-%fprintf(fid,'%s\n',maplimitstr3);
 maplimitstr4='****Map Limits End*****';
+%fprintf(fid,'%s\n',maplimitstr1);
+%fprintf(fid,'%s\n',maplimitstr2);
+%fprintf(fid,'%s\n',maplimitstr3);
 %fprintf(fid,'%s\n',maplimitstr4);
 %% Set up the map axis
 itype=2;
@@ -128,8 +128,6 @@ set(gcf,'MenuBar','none');
 set(gcf,'Position',[hor1 vert1 widd lend])
 %% Plot the surface EFlux on the map
 geoshow(EFluxAdj',Rpix,'DisplayType','surface');
-%zlimits=[minval maxval];
-%demcmap(zlimits);
 demcmap('inc',[maxval minval],incsize);
 hc=colorbar;
 ylabel(hc,unitstr,'FontWeight','bold');
@@ -262,6 +260,8 @@ txtstr2=strcat('1 ptile =',num2str(Stats(1,3),6),'//-50 ptile =',num2str(Stats(9
 txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12);
 tx3=.10;
 ty3=.10;
+txtstr3=strcat('SubSolarLat=',num2str(SubSolarLat,4),'-SubSolarLon=',num2str(SubSolarLon,4));
+txt3=text(tx3,ty3,txtstr3,'FontWeight','bold','FontSize',12);
 set(newaxesh,'Visible','Off');
 % Save this chart
 figstr=strcat(titlestr,'.jpg');
@@ -411,7 +411,9 @@ if((iCreatePDFReport==1) && (RptGenPresent==1))
         add(chapter,p2);   
 end
 pause(chart_time);
-fprintf(fid,'%s\n','------- Finished Plotting Latent Energy Flux------');
+if(framecounter==1)
+    fprintf(fid,'%s\n','------- Finished Plotting Latent Energy Flux------');
+end
 close('all');
 end
 

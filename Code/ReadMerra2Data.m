@@ -62,7 +62,7 @@ global UrbanAreasShapeFile NorthAmericaLakes ;
 global idebug isavefiles icurvefit;
 global iPrimeRoads iCountyRoads iCommonRoads iStateRecRoads iUSRoads iStateRoads;
 global iLakes;
-global NumProcFiles ProcFileList iPrintTimingInfo iSkipReportFrames;
+global NumProcFiles ProcFileList iPrintTimingInfo iSkipReportFrames iSkipDisplayFrames;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
 global JpegCounter JpegFileList;
 global ImageProcessPresent ;
@@ -77,7 +77,7 @@ global SelectedFiles numSelectedFiles path1;
 global iLogo LogoFileName1 LogoFileName2;
 global iSeaOnly iLandOnly integrateRate;
 global iPostProcessDataset3;
-global numtimeslice iScale;
+global numtimeslice iScale datestubstr;
 
 global fid;
 global widd2 lend2;
@@ -88,6 +88,8 @@ global chart_time;
 global Fz1 Fz2;
 global idirector mov izoom iwindow;
 global vTemp TempMovieName iMovie;
+global vTemp4A vTemp4B TempMovieName4A TempMovieName4B;
+global vTemp30 TempMovieName30;
 global vTemp17 TempMovieName17;
 global vTemp34 TempMovieName34;
 global vTemp4 TempMovieName4;
@@ -97,12 +99,14 @@ global vTemp7 TempMovieName7;
 global RCOEFF RCOEFFHist RCOEFFLabels;
 
 global matpath datapath maskpath watermaskpath oceanmappath;
+global antarcticpath antarcticshapefile;
 global jpegpath tiffpath moviepath savepath;
 global excelpath ascpath citypath tablepath;
 global ipowerpoint PowerPointFile scaling stretching padding;
 global ichartnum;
 global ColorList RGBVals ColorList2 xkcdVals LandColors;
 global orange bubblegum brown brightblue;
+global viewAZ viewEL viewAZInc;
 % additional paths needed for mapping
 global matpath1 mappath matlabpath USshapefilepath;
 global northamericalakespath logpath pdfpath govjpegpath;
@@ -111,9 +115,11 @@ global shapefilepath Countryshapepath figpath pressurepath averaged1Daypath;
 global mappath gridpath countyshapepath nationalshapepath codepath;
 global DayMonthNonLeapYear DayMonthLeapYear CalendarFileName;
 global yd md dd;
+global YearValue MonthValue DayValue HourValue MinValue SecValue frameDate;
 global pwd;
 global HS10 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
 global O3S10 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
+global brightblue;
 %% Control Flags DataSet 2
 global iBlackCarbon iDust iOrganicCarbon iSeaSalt iSulfate iAllAerosols;
 global iSeaSaltCalc iDustCalc;
@@ -162,10 +168,13 @@ tiffpath='D:\Forczyk\Map_Data\InterstateSigns\';
 Countryshapepath='D:\Forczyk\Map_Data\CountryShapefiles\';
 gridpath='D:\Goes16\Grids\';
 oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
+antarcticpath='K:\NSDIC\Map_Data\Antarctica\';
+antarcticshapefile='yk702xd7587.shp';
 %% Set Flags and default values
 % Set some flags to control program execution
 iCreatePDFReport=0;
 iSkipReportFrames=2;
+iSkipDisplayFrames=2;
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
@@ -199,6 +208,7 @@ iSelectSet3=3;
 % Select a Time Slice
 iTimeSlice=2;
 LogoFileName1='Merra2-LogoB.jpg';
+LogoFileName2='CDT_Logo4.jpg';
 PressureLevelUsed=cell(5,4);
 PressureLevelUsed{1,1}='Index';
 PressureLevelUsed{1,2}='Model Pressure-hPa';
@@ -424,6 +434,9 @@ iMonthForPDF=1;
 %% Control Flags Dataset04
 integrateRate=0;
 iScale=1;
+viewAZ=-80;
+viewEL=30;
+viewAZInc=2;
 %% Set up some initial data
 NumProcFiles=0;
 ProcFileList=cell(1,4);
@@ -543,7 +556,7 @@ SetUpExtraColors()
 % Load in the List of World Cities
 eval(['cd ' citypath(1:length(citypath)-1)]);
 load(WorldCityFileName);
-
+brightblue=[.0039 .3961 .9882];
 ab=1;
 %% Call some routines that will create nice plot window sizes and locations
 % Establish selected run parameters
@@ -576,7 +589,7 @@ igrid=1;
 % Set up parameters for graphs that will center them on the screen
 [hor1,vert1,Fz1,Fz2,machine]=SetScreenCoordinates(widd,lend);
 [hor2,vert2,Fz1,Fz2,machine]=SetScreenCoordinates(widd2,lend2);
-chart_time=5;
+chart_time=3;
 idirector=1;
 initialtimestr=datestr(now);
 igo=1;
@@ -795,7 +808,8 @@ while igo>0 % This setup up a loop to processing various file until user decides
         pdfpath='K:\Merra-2\netCDF\Dataset04\PDF_Files\';
         logpath='K:\Merra-2\netCDF\Dataset04\Log_Files\';
         moviepath='K:\Merra-2\netCDF\Dataset04\Movies\';
-        savepath='K:\Merra-2\netCDF\Dataset04\Matlab_Files\'; 
+        savepath='K:\Merra-2\netCDF\Dataset04\Matlab_Files\';
+        tablepath='K:\Merra-2\netCDF\Dataset04\Tables\';
         logfilename=strcat('Merra2LogFileIndx4-',logfilename,'.txt');
      elseif(indx==5)
         jpegpath='K:\Merra-2\netCDF\Dataset04\Jpeg_Files\';
@@ -1228,6 +1242,7 @@ if(numUserSelectedSeaMasks>=4)
     Merra2WorkingSeaBoundary4Area=seaArea;
 else
    eval(['cd ' watermaskpath(1:length(watermaskpath)-1)]) 
+
    maskFile='NorthAtlanticOceanMask.mat';
    maskVar=['Merra2NorthAtlanticOcean' ...
        'Mask'];
@@ -1380,16 +1395,33 @@ end
         savepath='K:\Merra-2\netCDF\Dataset04\Matlab_Files\';
         tablepath='K:\Merra-2\netCDF\Dataset04\Tables\';
         logfilename=strcat('Merra2LogFileIndx1-',logfilename,'.txt');
-        isavefiles=0;
+        isavefiles=2;% Set to this value to save some partial run data
+                     % for quiver function test !
         [Merra2FileNames,nowpath] = uigetfile('*.nc4','Select Multiple Files', ...
         'MultiSelect', 'on');
         a1=isempty(Merra2FileNames);
         if(a1==0)
-        Merra2FileNames=Merra2FileNames';
-        numSelectedFiles=length(Merra2FileNames);
-        [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
+            Merra2FileNames=Merra2FileNames';
+            numSelectedFiles=length(Merra2FileNames);
+            fprintf(fid,'\n');
+            fprintf(fid,'%s\n','----- List of Files to Be processed-----');
+            for nn=1:numSelectedFiles
+                nowFile=Merra2FileNames{nn,1};
+                filestr='File Num';
+                fprintf(fid,'%s\n',nowFile);
+            end
+            fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
+            
+            [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
         end
         Merra2FileNames=NewFileList;
+        Merra2FileName=char(Merra2FileNames{1,1});
+        prefixString='NPIceFraction';
+        [TempMovieName4A] = CreateMovieFileName(prefixString,Merra2FileName);
+        prefixString='SPIceFraction';
+        [TempMovieName4B] = CreateMovieFileName(prefixString,Merra2FileName);
+        prefixString='WindVector';
+        [TempMovieName30] = CreateMovieFileName(prefixString,Merra2FileName);
  % Select A Time slice for extra analysis and most plots
         TimeSlices=cell(24,1);
         TimeSlices{1,1}='0 HRS GMT';
@@ -1424,7 +1456,25 @@ end
          else
             iTimeSlice=iTimeS;
          end
+         HourValue=iTimeSlice-1;
+         MinValue=0;
+         SecValue=0;
  % Now start looping thru the selected files
+       eval(['cd ' moviepath(1:length(moviepath)-1)]);
+%       TempMovieName='ArcticIce';
+       vTemp4A = VideoWriter(TempMovieName4A,'MPEG-4');
+       vTemp4A.Quality=100;
+       vTemp4A.FrameRate=3;
+       open(vTemp4A);
+       vTemp4B = VideoWriter(TempMovieName4B,'MPEG-4');
+       vTemp4B.Quality=100;
+       vTemp4B.FrameRate=3;
+       open(vTemp4B);
+       vTemp30 = VideoWriter(TempMovieName30,'MPEG-4');
+       vTemp30.Quality=100;
+       vTemp30.FrameRate=3;
+       open(vTemp30);
+       framecounter=0;
         for nn=1:numSelectedFiles
             nowFile=Merra2FileNames{nn,1}; 
             framecounter=framecounter+1;
@@ -1433,6 +1483,9 @@ end
                 '-of-',num2str(numSelectedFiles),'-Files');
             disp(dispstr)
         end
+         close(vTemp4A);
+         close(vTemp4B);
+         close(vTemp30);
     igo=0;
     elseif(indx==7)
         ReadDataset07() 

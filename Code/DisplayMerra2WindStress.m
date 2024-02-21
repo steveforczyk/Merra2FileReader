@@ -1,15 +1,14 @@
-function  DisplayMerra2SeaIceFractionRev1(Stats,SeaIceAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
-% Display the fraction of the sea that is covered by sea ice for dataset 04
-% The Rev 1 version is based on using the stats generate from the
-% GetDistributedStatsRev5 function
+function  DisplayMerra2WindStress(Stats,WindStressAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+% Display the windstress over water or ice in the North or East direction for dataset 04
+% 
 % Written By: Stephen Forczyk
-% Created: Jan 29,2024
-% Revised: -----
+% Created: Feb 05,2024
+% Revised:  -----
 % Classification: Unclassified
 
-global LonS LatS TimeS iTimeSlice TimeSlices;
+global LonS LatS TimeS iTimeSlice TimeSlices framecounter;
 global YearMonthDayStr1 YearMonthDayStr2;
-global EFUXICES EFLUXWTRS FRSEAICES HFLUXICES HFLUXWTRS;
+global T10MS TAUXICES TAUXWTRS TAUYICES TAUYWTRS;
 global WorldCityFileName World200TopCities;
 global iCityPlot maxCities;
 global iLogo LogoFileName1 LogoFileName2;
@@ -17,7 +16,7 @@ global iLogo LogoFileName1 LogoFileName2;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter;
 global JpegCounter JpegFileList;
 global RasterLats RasterLons Rpix;
-global Merra2FileName Merra2ShortFileName framecounter;
+global Merra2FileName Merra2ShortFileName;
 
 global widd2 lend2;
 global initialtimestr igrid ijpeg ilog imovie;
@@ -49,59 +48,94 @@ Yearstr=YearMonthDayStr1(1:4);
 Monthstr=YearMonthDayStr1(5:6);
 Daystr=YearMonthDayStr1(7:8);
 Hourstr=char(TimeSlices{iTimeSlice,1});
-if(framecounter==1)
-    fprintf(fid,'%s\n','------- Start Plotting Sea Ice Coverage Fraction  ------');
-end
-if(ikind==3)
-    vmax=FRSEAICES.vmax;
-    vmin=FRSEAICES.vmin;
-    minval=-0.2;
-    maxval=1.2;
-    FillVal=FRSEAICES.FillValue;
-    desc='Sea Ice Fraction';
-    unitstr='unitless';
+
+
+if(ikind==15)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea Ice East Windstress  ------');
+    end
+    vmax=TAUXICES.vmax;
+    vmin=TAUXICES.vmin;
+    minval=-5;
+    maxval=5;
+    FillVal=TAUXICES.FillValue;
+    desc='Sea Ice East Windstress';
+    unitstr='N/m2';
+elseif(ikind==16)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Open Water East Windstress  ------');
+    end
+    vmax=TAUXWTRS.vmax;
+    vmin=TAUXWTRS.vmin;
+    minval=-5;
+    maxval=5;
+    FillVal=TAUXWTRS.FillValue;
+    desc='Open Water East Windstress';
+    unitstr='N/m2';
+elseif(ikind==17)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea Ice North Windstress  ------');
+    end
+    vmax=TAUYICES.vmax;
+    vmin=TAUYICES.vmin;
+    minval=-5;
+    maxval=5;
+    FillVal=TAUYICES.FillValue;
+    desc='Sea Ice North Windstress';
+    unitstr='N/m2';
+elseif(ikind==18)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Open Water Net SW Down Flux  ------');
+    end
+    vmax=TAUYWTRS.vmax;
+    vmin=TAUYWTRS.vmin;
+    minval=-5;
+    maxval=5;
+    FillVal=TAUYWTRS.FillValue;
+    desc='Open Water North Windstress';
+    unitstr='W/m2';
 end
 
-headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data','-ikind-',num2str(ikind));
-ptc1str=strcat('01 % Sea Ice Frac Value=',num2str(Stats(1,3),6));
-ptc25str=strcat('25 % Sea Ice Value=',num2str(Stats(6,3),6));
-ptc50str=strcat('50 % Sea Ice Value=',num2str(Stats(9,3),6));
-ptc75str=strcat('75 % Sea Ice Value=',num2str(Stats(12,3),6));
-ptc99str=strcat('99 % Sea Ice Vallue=',num2str(Stats(17,3),6));
+headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data-ikind-',num2str(ikind));
 numfracstr=strcat('fracNaN=',num2str(fracNaN,6));
+if(ikind==15)
+    ptc1str=strcat('01 % TAUXICES Value=',num2str(Stats(1,3),6));
+    ptc25str=strcat('25 % TAUXICES Value=',num2str(Stats(6,3),6));
+    ptc50str=strcat('50 % TAUXICES Value=',num2str(Stats(9,3),6));
+    ptc75str=strcat('75 % TAUXICES Value=',num2str(Stats(12,3),6));
+    ptc99str=strcat('99 % TAUXICES Vallue=',num2str(Stats(17,3),6));
+elseif(ikind==16)
+    ptc1str=strcat('01 % TAUXWTRS Value=',num2str(Stats(1,3),6));
+    ptc25str=strcat('25 % TAUXWTRS Value=',num2str(Stats(6,3),6));
+    ptc50str=strcat('50 % TAUXWTRS Value=',num2str(Stats(9,3),6));
+    ptc75str=strcat('75 % TAUXWTRS Value=',num2str(Stats(12,3),6));
+    ptc99str=strcat('99 % TAUXWTRS Vallue=',num2str(Stats(17,3),6));
+elseif(ikind==17)
+    ptc1str=strcat('01 % TAUYICES Value=',num2str(Stats(1,3),6));
+    ptc25str=strcat('25 % TAUYICES Value=',num2str(Stats(6,3),6));
+    ptc50str=strcat('50 % TAUYICES Value=',num2str(Stats(9,3),6));
+    ptc75str=strcat('75 % TAUYICES Value=',num2str(Stats(12,3),6));
+    ptc99str=strcat('99 % TAUYICES Vallue=',num2str(Stats(17,3),6));
+elseif(ikind==18)
+    ptc1str=strcat('01 % TAUYWTRS Value=',num2str(Stats(1,3),6));
+    ptc25str=strcat('25 % TAUYWTRS Value=',num2str(Stats(6,3),6));
+    ptc50str=strcat('50 % TAUYWTRS Value=',num2str(Stats(9,3),6));
+    ptc75str=strcat('75 % TAUYWTRS Value=',num2str(Stats(12,3),6));
+    ptc99str=strcat('99 % TAUYWTRS Vallue=',num2str(Stats(17,3),6));
+end
 if(framecounter==1)
     fprintf(fid,'%s\n',headerstr);
+    fprintf(fid,'%s\n',numfracstr);
     fprintf(fid,'%s\n',ptc1str);
     fprintf(fid,'%s\n',ptc25str);
     fprintf(fid,'%s\n',ptc50str);
     fprintf(fid,'%s\n',ptc75str);
     fprintf(fid,'%s\n',ptc99str);
-    fprintf(fid,'%s\n',numfracstr);
-    fprintf(fid,'%s\n',' End Stats for Sea Ice Data');
+    fprintf(fid,'%s\n',' End Stats for Windstress Data');
 end
+
 zlimits=[minval maxval];
-incsize=(maxval-minval)/64;
-%% Now that the status have been calculated-go back and make any of the adjusted values less than 1E-5 equal to
-% a NaN value for plot purposes
-SeaIceAdj2=SeaIceAdj;
-[irows,jcols]=size(SeaIceAdj);
-iaddNaN=0;
-ntot2=irows*jcols;
-for ii=1:irows
-    for jj=1:jcols
-        nowVal=SeaIceAdj(ii,jj);
-        a1=isnan(nowVal);
-        if(a1~=1)
-            a2=abs(nowVal);
-            if(a2<1E-5)
-                SeaIceAdj2(ii,jj)=NaN;
-                iaddNaN=iaddNaN+1;
-            end
-        end
-    end
-end
-naddFrac=iaddNaN/ntot2;
-ab=2;
+incsize=(maxval-minval)/128;
 %% Fetch the map limits
 maplimitstr1='****Map Limits Follow*****';
 maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
@@ -127,16 +161,14 @@ elseif(itype==3)
 end
 set(gcf,'MenuBar','none');
 set(gcf,'Position',[hor1 vert1 widd lend])
-%% Plot the surface SeaIce on the map
-geoshow(SeaIceAdj2',Rpix,'DisplayType','surface');
-%zlimits=[minval maxval];
-%demcmap(zlimits);
+%% Plot the surface HFlux on the map
+geoshow(WindStressAdj',Rpix,'DisplayType','surface');
 demcmap('inc',[maxval minval],incsize);
 hc=colorbar;
 ylabel(hc,unitstr,'FontWeight','bold');
 tightmap
 hold on
-maxval2=maxval+1;
+maxval2=maxval+5;
 % load the country borders and plot them
 eval(['cd ' mappath(1:length(mappath)-1)]);
 load('USAHiResBoundaries.mat','USALat','USALon');
@@ -263,9 +295,6 @@ txtstr2=strcat('1 ptile =',num2str(Stats(1,3),6),'//-50 ptile =',num2str(Stats(9
 txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12);
 tx3=.10;
 ty3=.10;
-txtstr3=strcat('Note that for plot purposes values less than-',num2str(1E-5),'-were set to NaN values',...
-    '-this happened for-',num2str(naddFrac),'-frac of all points');
-txt3=text(tx3,ty3,txtstr3,'FontWeight','bold','FontSize',12);
 set(newaxesh,'Visible','Off');
 % Save this chart
 figstr=strcat(titlestr,'.jpg');
@@ -415,8 +444,16 @@ if((iCreatePDFReport==1) && (RptGenPresent==1))
         add(chapter,p2);   
 end
 pause(chart_time);
-if(framecounter==1)
-    fprintf(fid,'%s\n','------- Finished Plotting Latent Energy Flux------');
+if(framecounter==0)
+    if(ikind==15)
+        fprintf(fid,'%s\n','------- End Plotting Sea Ice East Windstress------');
+    elseif(ikind==16)
+        fprintf(fid,'%s\n','------- End Plotting Open Water East Windstress------');
+    elseif(ikind==17)
+        fprintf(fid,'%s\n','------- End Plotting Sea Ice North Windstress------');
+    elseif(ikind==18)
+        fprintf(fid,'%s\n','------- End Plotting Open Water North Windstress------');
+    end
 end
 close('all');
 end

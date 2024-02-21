@@ -6,14 +6,14 @@ function  DisplayMerra2OceanPrecip(Stats,PrecipAdj,fraclow,frachigh,fracNaN,ikin
 % 
 % Written By: Stephen Forczyk
 % Created: Jan 29,2024
-% Revised: -----
+% Revised: Feb 10,2024 limit printing stats to logfile to the first frame
 % Classification: Unclassified
 
 global LonS LatS TimeS iTimeSlice TimeSlices;
 global YearMonthDayStr1 YearMonthDayStr2;
 global PRECSNOOCNS QV10MS RAINOCNS SWGNTICES integrateRate;
 global WorldCityFileName World200TopCities;
-global iCityPlot maxCities iScale;
+global iCityPlot maxCities iScale framecounter;
 global iLogo LogoFileName1 LogoFileName2;
 
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter;
@@ -53,8 +53,10 @@ Daystr=YearMonthDayStr1(7:8);
 Hourstr=char(TimeSlices{iTimeSlice,1});
 
 
-if(ikind==7)
-    fprintf(fid,'%s\n','------- Start Plotting Sea RainFall Rate  ------');
+if(ikind==20)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea RainFall Rate  ------');
+    end
     vmax=RAINOCNS.vmax;
     vmin=RAINOCNS.vmin;
     minval=-0.2;
@@ -62,8 +64,10 @@ if(ikind==7)
     FillVal=RAINOCNS.FillValue;
     desc='Ocean RainFall Rate ';
     unitstr='kg/m^2/hr';
-elseif(ikind==8)
-    fprintf(fid,'%s\n','------- Start Plotting Sea SnowFall Rate  ------');
+elseif(ikind==21)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea SnowFall Rate  ------');
+    end
     vmax=PRECSNOOCNS.vmax;
     vmin=PRECSNOOCNS.vmin;
     minval=-1;
@@ -71,8 +75,10 @@ elseif(ikind==8)
     FillVal=PRECSNOOCNS.FillValue;
     desc='Open SnowFall Rate';
     unitstr='kg/m^2/shr';
-elseif(ikind==9)
-    fprintf(fid,'%s\n','------- Start Plotting Sea RainFall Total  ------');
+elseif(ikind==22)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea RainFall Total  ------');
+    end
     vmax=RAINOCNS.vmax;
     vmin=RAINOCNS.vmin;
     minval=-0.2;
@@ -80,8 +86,10 @@ elseif(ikind==9)
     FillVal=RAINOCNS.FillValue;
     desc='Ocean RainFall Total ';
     unitstr='kg/m^2/day';
-elseif(ikind==10)
-    fprintf(fid,'%s\n','------- Start Plotting Sea SnowFall Total  ------');
+elseif(ikind==23)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea SnowFall Total  ------');
+    end
     vmax=PRECSNOOCNS.vmax;
     vmin=PRECSNOOCNS.vmin;
     minval=-1;
@@ -111,31 +119,32 @@ for ii=1:nrows
 end
 
 headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data-ikind-',num2str(ikind));
-fprintf(fid,'%s\n',headerstr);
-fprintf(fid,'%s\n',headerstr);
 ptc1str=strcat('01 % Precip Rate Value=',num2str(Stats(1,3),6));
-fprintf(fid,'%s\n',ptc1str);
 ptc25str=strcat('25 % Precip Rate Value=',num2str(Stats(6,3),6));
-fprintf(fid,'%s\n',ptc25str);
 ptc50str=strcat('50 % Precip Rate Value=',num2str(Stats(9,3),6));
-fprintf(fid,'%s\n',ptc50str);
 ptc75str=strcat('75 % Precip Rate Value=',num2str(Stats(12,3),6));
-fprintf(fid,'%s\n',ptc75str);
 ptc99str=strcat('99 % Precip Rate Vallue=',num2str(Stats(17,3),6));
-fprintf(fid,'%s\n',ptc99str);
 numfracstr=strcat('fracNaN=',num2str(fracNaN,6));
-fprintf(fid,'%s\n',numfracstr);
-fprintf(fid,'%s\n',' End Stats for Precip Rate Data');
+if(framecounter==1)
+    fprintf(fid,'%s\n',headerstr);
+    fprintf(fid,'%s\n',ptc1str);
+    fprintf(fid,'%s\n',ptc25str);
+    fprintf(fid,'%s\n',ptc50str);
+    fprintf(fid,'%s\n',ptc75str);
+    fprintf(fid,'%s\n',ptc99str);
+    fprintf(fid,'%s\n',numfracstr);
+    fprintf(fid,'%s\n',' End Stats for Precip Rate Data');
+end
 zlimits=[minval maxval];
 incsize=(maxval-minval)/64;
 %% Fetch the map limits
 maplimitstr1='****Map Limits Follow*****';
-%fprintf(fid,'%s\n',maplimitstr1);
 maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
-%fprintf(fid,'%s\n',maplimitstr2);
 maplimitstr3=strcat('SouthEdge=',num2str(southEdge,7),'-NorthEdge=',num2str(northEdge));
-%fprintf(fid,'%s\n',maplimitstr3);
 maplimitstr4='****Map Limits End*****';
+%fprintf(fid,'%s\n',maplimitstr1);
+%fprintf(fid,'%s\n',maplimitstr2);
+%fprintf(fid,'%s\n',maplimitstr3);
 %fprintf(fid,'%s\n',maplimitstr4);
 %% Set up the map axis
 itype=2;
@@ -436,7 +445,9 @@ if((iCreatePDFReport==1) && (RptGenPresent==1))
         add(chapter,p2);   
 end
 pause(chart_time);
-fprintf(fid,'%s\n','------- Finished Plotting Precip Rate------');
+if(framecounter==1)
+    fprintf(fid,'%s\n','------- Finished Plotting Precip Rate------');
+end
 close('all');
 end
 

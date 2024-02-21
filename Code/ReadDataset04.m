@@ -1,36 +1,76 @@
 function ReadDataset04(nowFile,nowpath)
 % Modified: This function will read in the the Merra-2 data set called 04
-% which is cloud opacity
+% which is hourly avergae data
 % Written By: Stephen Forczyk
 % Created: Aug 4,2022
 % Revised: Jan 24-27,2024 started recoding this routine
+% Revised: Feb 5,2024 added SWGNTWTRS to decode list-previously omitted
+% Revised: Feb 6,2024 started adding data table for whole world
+% Revised: Feb 7,2024 added Tables for ikind 2 and 3 data an routine called
+% PlotDataset04Table.m to plot the results
+% Revised: Feb 8,2024 added additions tables for ikind 5 and 6
 % to handle dataset M2T1NXOCN which was different than initially planned
-
+% Revised: Feb 9-10,2024 added more table for ikind 7,11 and 12
+% Revised: Feb 11,2024 added calculation of ratster areas to routine
+% Revised: Feb 12-13,2014 added tables for ikind 19-23
+% and Tables for ikind 13 thru 18
 % Classification: Unclassified
 
 global BandDataS MetaDataS;
 global Merra2FileName Merra2ShortFileName Merra2Dat;
-global YearMonthDayStr1;
+global YearMonthDayStr1 YearMonthStr datestubstr;
 
-global idebug iScale;
-global LonS LatS TimeS ;
+global idebug iScale iReset;
+global LonS LatS TimeS iTimeSlice framecounter;
 global EFLUXICES EFLUXWTRS FRSEAICES HFLUXICES HFLUXWTRS;
-global LWGNTICES LWGNTWTRS;
-global PRECSNOOCNS QV10MS RAINOCNS SWGNTICES integrateRate;
+global LWGNTICES LWGNTWTRS SWGNTICES SWGNTWTRS;
+global PRECSNOOCNS QV10MS RAINOCNS  integrateRate;
 global T10MS TAUXICES TAUXWTRS TAUYICES TAUYWTRS;
 global TSKINICES TSKINWTRS U10MS V10MS;
-global RasterLats RasterLons Rpix;
+global EFLUXICETable EFLUXICETT SILF01 SILF25 SILF50 SILF75 SILF90 SILF100 SILFNaN;
+global EFLUXWTRTable EFLUXWTRTT OWLF01 OWLF25 OWLF50 OWLF75 OWLF90 OWLF100 OWLFNaN;
+global SEAICETable SEAICETT SEAF01 SEAF25 SEAF50 SEAF75 SEAF90  SEAF100 SEAFNaN;
+global HFLUXICETable HFLUXICETT HFICEF01 HFICEF25 HFICEF50 HFICEF75 HFICEF90 HFICEF100 HFICEFNaN;
+global HFLUXWTRTable HFLUXWTRTT HFWTRF01 HFWTRF25 HFWTRF50 HFWTRF75 HFWTRF90 HFWTRF100 HFWTRFNaN;
+global LWGNICESTable LWGNICESTT LWGNICE01 LWGNICE25 LWGNICE50 LWGNICE75 LWGNICE90 LWGNICE100 LWGNICENaN;
+global LWGNWTRSTable LWGNWTRSTT LWGNWTR01 LWGNWTR25 LWGNWTR50 LWGNWTR75 LWGNWTR90 LWGNWTR100 LWGNWTRNaN;
+global TSKINICETable TSKINICETT TSKINICE01 TSKINICE25 TSKINICE50 TSKINICE75 TSKINICE90 TSKINICE100 TSKINICENaN;
+global TSKINWTRTable TSKINWTRTT TSKINWTR01 TSKINWTR25 TSKINWTR50 TSKINWTR75 TSKINWTR90 TSKINWTR100 TSKINWTRNaN;
+global SWGNTICETable SWGNTICETT SWGNTICE01 SWGNTICE25 SWGNTICE50 SWGNTICE75 SWGNTICE90 SWGNTICE100 SWGNTICENaN;
+global SWGNTWTRTable SWGNTWTRTT SWGNTWTR01 SWGNTWTR25 SWGNTWTR50 SWGNTWTR75 SWGNTWTR90 SWGNTWTR100 SWGNTWTRNaN;
+global T10MTable T10MTT T10M01 T10M25 T10M50 T10M75 T10M90 T10M100 T10MNaN;
+global TAUXICETable TAUXICETT TAUXICE01 TAUXICE25 TAUXICE50 TAUXICE75 TAUXICE90 TAUXICE100 TAUXICENaN;
+global TAUXWTRTable TAUXWTRTT TAUXWTR01 TAUXWTR25 TAUXWTR50 TAUXWTR75 TAUXWTR90 TAUXWTR100 TAUXWTRNaN;
+global TAUYICETable TAUYICETT TAUYICE01 TAUYICE25 TAUYICE50 TAUYICE75 TAUYICE90 TAUYICE100 TAUYICENaN;
+global TAUYWTRTable TAUYWTRTT TAUYWTR01 TAUYWTR25 TAUYWTR50 TAUYWTR75 TAUYWTR90 TAUYWTR100 TAUYWTRNaN;
+global RFRateTable RFRateTT RFRate01 RFRate25 RFRate50 RFRate75 RFRate90 RFRate100 RFRateNaN;
+global SFRateTable SFRateTT SFRate01 SFRate25 SFRate50 SFRate75 SFRate90 SFRate100 SFRateNaN;
+global RasterLats RasterLons Rpix RasterAreas RadiusCalc RasterPtLats RasterLatAreas;
+global RFTotalTable RFTotalTT RFTot01 RFTot25 RFTot50 RFTot75 RFTot90 RFTot100 RFTotNaN;
+global SFTotalTable SFTotalTT SFTot01 SFTot25 SFTot50 SFTot75 SFTot90 SFTot100 SFTotNaN;
+global U10MTable U10MTT U10M01 U10M25 U10M50 U10M75 U10M90 U10M100 U10MNaN;
+global V10MTable V10MTT V10M01 V10M25 V10M50 V10M75 V10M90 V10M100 V10MNaN;
+global QV10MTable QV10MTT QV10M01 QV10M25 QV10M50 QV10M75 QV10M90 QV10M100 QV10MNaN;
+global SeaIceAreaTable SeaIceAreaTT SeaIceAreaKmWorld SeaIceAreaKmNP SeaIceAreaKmSP;
+global SeaIceConc TAirTempC Tau U10 V10 ;
+global framecounter numSelectedFiles;
 global westEdge eastEdge northEdge southEdge;
+global yd md dd;
+global YearValue MonthValue DayValue HourValue MinValue SecValue frameDate;
+global SubSolarLat SubSolarLon;
+global iSkipDisplayFrames;
 
 % additional paths needed for mapping
 global matpath1 mappath GOES16path;
-global jpegpath savepath;
+global jpegpath savepath tablepath;
 
 global fid isavefiles;
-
-
+global vert1 hor1 widd lend;
+global vert2 hor2 machine;
+global brightblue;
+brightblue=[.0039 .3961 .9882];
 fprintf(fid,'\n');
-fprintf(fid,'%s\n','**************Start reading dataset 04 data***************');
+fprintf(fid,'%s\n','******************Start reading dataset 04 data*******************');
 nc_filenamesuf=nowFile;
 Merra2FileName=RemoveUnderScores(nowFile);
 nc_filename=strcat(nowpath,nc_filenamesuf);
@@ -42,8 +82,31 @@ numper=length(iper);
 is=1;
 ie=iper(numper)-1;
 Merra2ShortFileName=Merra2FileName(is:ie);
-
-
+[iper]=strfind(Merra2FileName,'.');
+numper=length(iper);
+is=1;
+ie=iper(numper)-1;
+Merra2ShortFileName=Merra2FileName(is:ie);
+[iper]=strfind(Merra2ShortFileName,'.');
+numper=length(iper);
+strlen=length(Merra2ShortFileName);
+is=iper(2)+1;
+ie=strlen;
+currYearMonth=Merra2ShortFileName(is:ie);
+YearMonthStr=currYearMonth;
+YearStr=YearMonthStr(1:4);
+YearValue=str2num(YearStr);
+MonthStr1=YearMonthStr(5:6);
+MonthValue=str2num(MonthStr1);
+monthnum=str2double(MonthStr1);
+[MonthName] = ConvertMonthNumToStr(monthnum);
+MonthStr=MonthName;
+MonthYearStr=strcat(MonthStr,'-',YearStr);
+Daystr=YearMonthStr(7:8);
+DayValue=str2num(Daystr);
+datestubstr=YearMonthStr(1:8);
+frameDate=datetime(YearValue,MonthValue,DayValue,HourValue,MinValue,SecValue);
+ab=1;
 LonS=struct('values',[],'long_name',[],'units',[],'vmax',[],'vmin',[],'valid_range',[]);
 LatS=LonS;
 TimeS=struct('values',[],'long_name',[],'units',[],'time_increment',[],...
@@ -75,8 +138,10 @@ V10MS=EFLUXICES;
 
 % Get information about the contents of the file.
 [numdims, numvars, numglobalatts, unlimdimID] = netcdf.inq(ncid);
-numvarstr=strcat('The number of variables read from the Cloud Top Data file=',num2str(numvars));
-fprintf(fid,'%s\n',numvarstr);
+if(framecounter==1)
+    numvarstr=strcat('The number of variables read from the Cloud Top Data file=',num2str(numvars));
+    fprintf(fid,'%s\n',numvarstr);
+end
     
 if(idebug==1)
     disp(' '),disp(' '),disp(' ')
@@ -140,6 +205,7 @@ for i = 0:numvars-1
        a210=strcmp(varname,'TSKINWTR');
        a220=strcmp(varname,'U10M');
        a230=strcmp(varname,'V10M');
+       a240=strcmp(varname,'SWGNTWTR');
        if (a10==1)
             attname1 = netcdf.inqAttName(ncid,i,j);
             attname2 = netcdf.getAtt(ncid,i,attname1);
@@ -1436,6 +1502,65 @@ for i = 0:numvars-1
                 V10MS.fmissing_value=attname2;
             end
 
+         elseif (a240==1)
+            attname1 = netcdf.inqAttName(ncid,i,j);
+            attname2 = netcdf.getAtt(ncid,i,attname1);
+            if(idebug==1)
+                disp([attname1 ':  ' num2str(attname2)])
+                dispstr=strcat(attname1,': ',num2str(attname2));
+                fprintf(fid,'%s\n',dispstr);
+            end
+            if strmatch('add_offset',attname1)
+                offset = attname2;
+                SWGNTWTRS.add_offset=attname2;
+            end
+            if strmatch('scale_factor',attname1)
+                scale = attname2;
+                SWGNTWTRS.scale_factor=attname2;
+                flag = 0;
+            end 
+            
+            a1=strcmp(attname1,'long_name');
+            if(a1==1)
+                SWGNTWTRS.long_name=attname2;
+            end
+
+            a1=strcmp(attname1,'standard_name');
+            if(a1==1)
+                SWGNTWTRS.standard_name=attname2;
+            end
+
+            a1=strcmp(attname1,'units');
+            if(a1==1)
+                SWGNTWTRS.units=attname2;
+            end
+            a1=strcmp(attname1,'vmax');
+            if(a1==1)
+                SWGNTWTRS.vmax=attname2;
+            end
+            a1=strcmp(attname1,'vmin');
+            if(a1==1)
+                SWGNTWTRS.vmin=attname2;
+            end
+            a1=strcmp(attname1,'valid_range');
+            if(a1==1)
+                SWGNTWTRS.valid_range=attname2;
+            end
+            a1=strcmp(attname1,'_FillValue');
+            if(a1==1)
+                SWGNTWTRS.FillValue=attname2;
+            end
+
+            a1=strcmp(attname1,'missing_value');
+            if(a1==1)
+                SWGNTWTRS.missing_value=attname2;
+            end
+
+            a1=strcmp(attname1,'fmissing_value');
+            if(a1==1)
+                SWGNTWTRS.fmissing_value=attname2;
+            end
+
 
        end % End of loop over variables
     end
@@ -1533,6 +1658,9 @@ for i = 0:numvars-1
         if(a230==1)
             V10MS.values=V10M;
         end
+        if(a240==1)
+            SWGNTWTRS.values=SWGNTWTR;
+        end
 
     end
 end
@@ -1568,11 +1696,11 @@ if(isavefiles==1)
     eval(cmdString)
     dispstr=strcat('Wrote Matlab File-',MatFileName);
     disp(dispstr);
-    savestr=strcat('Saved Decode Data to File=',MatFileName);
+    savestr=strcat('Saved Decoded Data to File=',MatFileName);
     fprintf(fid,'%s\n',savestr);
     disp(savestr)
-else
-    dispstr=strcat('Did Not save Decided Data to File-',MatFileName);
+elseif((isavefiles~=1) && (framecounter<2))
+    dispstr=strcat('Did Not save Decoded Data to File-',MatFileName);
     disp(dispstr);
     fprintf(fid,'%s\n',dispstr);
 end
@@ -1592,6 +1720,7 @@ westEdge=min(LonVals);
 eastEdge=max(LonVals);
 southEdge=min(LatVals);
 northEdge=max(LatVals);
+
 %% Create Georeference object Rpix
 latlim=[-90 90];
 lonlim=[-180 180];
@@ -1607,8 +1736,256 @@ for i=1:numlons
         RasterLats(i,j)=LatVals(j,1);
     end
 end
-%% Make Plots of the Geo2D variables that were decoded
+%% Now calculate the subsolar point
+maxSolarElv=-180;
+maxi=1;
+maxj=1;
+GLats=-25:.5:25;
+GLats=GLats';
+GLons=-180:.625:179.4;
+GLons=GLons';
+numlatsex=length(GLats);
+for i=1:numlatsex
+    for j=1:576
+        nowLat=GLats(i,1);
+        nowLon=GLons(j,1);
+        [~,solarEl] = sun_angle(frameDate,nowLat,nowLon,0);
+        if(solarEl>maxSolarElv)
+            maxi=i;
+            maxj=j;
+            SubSolarLat=nowLat;
+            SubSolarLon=nowLon;
+            maxSolarElv=solarEl;
+            ab=1;
+        end
+    end
+end
+fprintf(fid,'\n');
+fprintf(fid,'%s\n','------- Sub Solar Point------');
+subsolarstr=strcat('SubSolarLat-',num2str(SubSolarLat,4),'-SubSolarLon-',num2str(SubSolarLon,4));
+fprintf(fid,'%s\n',subsolarstr);
+fprintf(fid,'%s\n','------- End Sub Solar Point Calculation------');
+fprintf(fid,'\n');
+%% Now calculate the area of each Raster point. This on varies by latitude
+% Get the area of each cell based on the latitude-this is hardwired for the
+% Merra 2 grid which is 576 x 361 (nlons,nlats)
+nlats=361;
+nlons=576;
+RadiusCalc=zeros(nlats,1);
+LatSpacing=0.5;
+LonSpacing=0.625;
+RasterPtLats=-90:LatSpacing:90;
+RasterPtLats=RasterPtLats';
+lon1=10;
+lon2=lon1+LonSpacing;
+deg2rad=pi/180;
+areakmlast=0;
+RasterLatAreas=16*ones(nlats,1);
+for k=1:nlats-1
+    lat1=RasterPtLats(k,1);
+    lat2=RasterPtLats(k,1)+LatSpacing;
+    [arclen1,~]=distance(lat1,lon1,lat2,lon1);
+    radius = geocradius(lat1);
+    distlat=radius*arclen1*deg2rad;
+    [arclen2,~]=distance(lat1,lon1,lat1,lon2);
+    distlon=radius*arclen2*deg2rad;
+    areakm=distlat*distlon/1E6;
+    if(areakm<1)
+        areaused=16;
+    else
+        areaused=areakm;
+    end
+    RasterAreas(k,1)=areaused;
+    RasterLatAreas(k,1)=areaused;
+    RadiusCalc(k,1)=radius;
+end
 
+
+if(framecounter==1)
+    yd=str2double(YearMonthStr(1:4));
+    md=str2double(YearMonthStr(5:6));
+    dd=str2double(YearMonthStr(7:8));
+end
+% Calculate th subsolar point
+% YearStr=YearMonthStr(1:4);
+% YrVal=str2num(YearStr);
+% MonthStr1=YearMonthStr(5:6);
+% MonthVal=str2num(MonthStr1);
+% DayVal=strnum(daystr);
+%% Initialize statistics holding arrays
+if(framecounter==1)
+% Initialize Statistic Hold Arrays for HS the geopotential height
+    SILF01=zeros(numSelectedFiles,1);
+    SILF25=zeros(numSelectedFiles,1);
+    SILF50=zeros(numSelectedFiles,1);
+    SILF75=zeros(numSelectedFiles,1);
+    SILF90=zeros(numSelectedFiles,1);
+    SILF100=zeros(numSelectedFiles,1);
+    SILFNaN=zeros(numSelectedFiles,1);
+    OWLF01=zeros(numSelectedFiles,1);
+    OWLF25=zeros(numSelectedFiles,1);
+    OWLF50=zeros(numSelectedFiles,1);
+    OWLF75=zeros(numSelectedFiles,1);
+    OWLF90=zeros(numSelectedFiles,1);
+    OWLF100=zeros(numSelectedFiles,1);
+    OWLFNaN=zeros(numSelectedFiles,1);
+    SEAF01=zeros(numSelectedFiles,1);
+    SEAF25=zeros(numSelectedFiles,1);
+    SEAF50=zeros(numSelectedFiles,1);
+    SEAF75=zeros(numSelectedFiles,1);
+    SEAF90=zeros(numSelectedFiles,1);
+    SEAF50=zeros(numSelectedFiles,1);
+    SEAF100=zeros(numSelectedFiles,1);
+    SEAFNaN=zeros(numSelectedFiles,1);
+    HFICEF01=zeros(numSelectedFiles,1);
+    HFICEF25=zeros(numSelectedFiles,1);
+    HFICEF50=zeros(numSelectedFiles,1);
+    HFICEF75=zeros(numSelectedFiles,1);
+    HFICEF90=zeros(numSelectedFiles,1);
+    HFICEF100=zeros(numSelectedFiles,1);
+    HFICEFNaN=zeros(numSelectedFiles,1);
+    HFWTRF01=zeros(numSelectedFiles,1);
+    HFWTRF25=zeros(numSelectedFiles,1);
+    HFWTRF50=zeros(numSelectedFiles,1);
+    HFWTRF75=zeros(numSelectedFiles,1);
+    HFWTRF90=zeros(numSelectedFiles,1);
+    HFWTRF100=zeros(numSelectedFiles,1);
+    LWGNICE01=zeros(numSelectedFiles,1);
+    LWGNICE25=zeros(numSelectedFiles,1);
+    LWGNICE50=zeros(numSelectedFiles,1);
+    LWGNICE75=zeros(numSelectedFiles,1);
+    LWGNICE90=zeros(numSelectedFiles,1);
+    LWGNICE100=zeros(numSelectedFiles,1);
+    LWGNICENaN=zeros(numSelectedFiles,1);
+    LWGNWTR01=zeros(numSelectedFiles,1);
+    LWGNWTR25=zeros(numSelectedFiles,1);
+    LWGNWTR50=zeros(numSelectedFiles,1);
+    LWGNWTR75=zeros(numSelectedFiles,1);
+    LWGNWTR90=zeros(numSelectedFiles,1);
+    LWGNWTR100=zeros(numSelectedFiles,1);
+    LWGNWTRNaN=zeros(numSelectedFiles,1);
+    TSKINICE01=zeros(numSelectedFiles,1);
+    TSKINICE25=zeros(numSelectedFiles,1);
+    TSKINICE50=zeros(numSelectedFiles,1);
+    TSKINICE75=zeros(numSelectedFiles,1);
+    TSKINICE90=zeros(numSelectedFiles,1);
+    TSKINICE100=zeros(numSelectedFiles,1);
+    TSKINICENaN=zeros(numSelectedFiles,1);
+    TSKINWTR01=zeros(numSelectedFiles,1);
+    TSKINWTR25=zeros(numSelectedFiles,1);
+    TSKINWTR50=zeros(numSelectedFiles,1);
+    TSKINWTR75=zeros(numSelectedFiles,1);
+    TSKINWTR90=zeros(numSelectedFiles,1);
+    TSKINWTR100=zeros(numSelectedFiles,1);
+    TSKINWTRNaN=zeros(numSelectedFiles,1);
+    SWGNTICE01=zeros(numSelectedFiles,1);
+    SWGNTICE25=zeros(numSelectedFiles,1);
+    SWGNTICE50=zeros(numSelectedFiles,1);
+    SWGNTICE75=zeros(numSelectedFiles,1);
+    SWGNTICE90=zeros(numSelectedFiles,1);
+    SWGNTICE100=zeros(numSelectedFiles,1);
+    SWGNTICENaN=zeros(numSelectedFiles,1);
+    SWGNTWTR01=zeros(numSelectedFiles,1);
+    SWGNTWTR25=zeros(numSelectedFiles,1);
+    SWGNTWTR50=zeros(numSelectedFiles,1);
+    SWGNTWTR75=zeros(numSelectedFiles,1);
+    SWGNTWTR90=zeros(numSelectedFiles,1);
+    SWGNTWTR100=zeros(numSelectedFiles,1);
+    SWGNTWTRNaN=zeros(numSelectedFiles,1);
+    TAUXICE01=zeros(numSelectedFiles,1);
+    TAUXICE25=zeros(numSelectedFiles,1);
+    TAUXICE50=zeros(numSelectedFiles,1);
+    TAUXICE75=zeros(numSelectedFiles,1);
+    TAUXICE90=zeros(numSelectedFiles,1);
+    TAUXICE100=zeros(numSelectedFiles,1);
+    TAUXICENaN=zeros(numSelectedFiles,1);
+    TAUXWTR01=zeros(numSelectedFiles,1);
+    TAUXWTR25=zeros(numSelectedFiles,1);
+    TAUXWTR50=zeros(numSelectedFiles,1);
+    TAUXWTR75=zeros(numSelectedFiles,1);
+    TAUXWTR90=zeros(numSelectedFiles,1);
+    TAUXWTR100=zeros(numSelectedFiles,1);
+    TAUXWTRNaN=zeros(numSelectedFiles,1);
+    TAUYICE01=zeros(numSelectedFiles,1);
+    TAUYICE25=zeros(numSelectedFiles,1);
+    TAUYICE50=zeros(numSelectedFiles,1);
+    TAUYICE75=zeros(numSelectedFiles,1);
+    TAUYICE90=zeros(numSelectedFiles,1);
+    TAUYICE100=zeros(numSelectedFiles,1);
+    TAUYICENaN=zeros(numSelectedFiles,1);
+    TAUYWTR01=zeros(numSelectedFiles,1);
+    TAUYWTR25=zeros(numSelectedFiles,1);
+    TAUYWTR50=zeros(numSelectedFiles,1);
+    TAUYWTR75=zeros(numSelectedFiles,1);
+    TAUYWTR90=zeros(numSelectedFiles,1);
+    TAUYWTR100=zeros(numSelectedFiles,1);
+    TAUYWTRNaN=zeros(numSelectedFiles,1);
+    T10M01=zeros(numSelectedFiles,1);
+    T10M25=zeros(numSelectedFiles,1);
+    T10M50=zeros(numSelectedFiles,1);
+    T10M75=zeros(numSelectedFiles,1);
+    T10M90=zeros(numSelectedFiles,1);
+    T10M100=zeros(numSelectedFiles,1);
+    T10MNaN=zeros(numSelectedFiles,1);
+    QV10M01=zeros(numSelectedFiles,1);
+    QV10M25=zeros(numSelectedFiles,1);
+    QV10M50=zeros(numSelectedFiles,1);
+    QV10M75=zeros(numSelectedFiles,1);
+    QV10M90=zeros(numSelectedFiles,1);
+    QV10M100=zeros(numSelectedFiles,1);
+    QV10MNaN=zeros(numSelectedFiles,1);
+    U10M01=zeros(numSelectedFiles,1);
+    U10M25=zeros(numSelectedFiles,1);
+    U10M50=zeros(numSelectedFiles,1);
+    U10M75=zeros(numSelectedFiles,1);
+    U10M90=zeros(numSelectedFiles,1);
+    U10M100=zeros(numSelectedFiles,1);
+    U10MNaN=zeros(numSelectedFiles,1);
+    V10M01=zeros(numSelectedFiles,1);
+    V10M25=zeros(numSelectedFiles,1);
+    V10M50=zeros(numSelectedFiles,1);
+    V10M75=zeros(numSelectedFiles,1);
+    V10M90=zeros(numSelectedFiles,1);
+    V10M100=zeros(numSelectedFiles,1);
+    V10MNaN=zeros(numSelectedFiles,1);
+    TAUYWTR75=zeros(numSelectedFiles,1);
+    TAUYWTR90=zeros(numSelectedFiles,1);
+    TAUYWTR100=zeros(numSelectedFiles,1);
+    TAUYWTRNaN=zeros(numSelectedFiles,1);
+    SeaIceAreaKmWorld=zeros(numSelectedFiles,1);
+    SeaIceAreaKmNP=zeros(numSelectedFiles,1);
+    SeaIceAreaKmSP=zeros(numSelectedFiles,1);
+    RFRate01=zeros(numSelectedFiles,1);
+    RFRate25=zeros(numSelectedFiles,1);
+    RFRate50=zeros(numSelectedFiles,1);
+    RFRate75=zeros(numSelectedFiles,1);
+    RFRate90=zeros(numSelectedFiles,1);
+    RFRate100=zeros(numSelectedFiles,1);
+    RFRateNaN=zeros(numSelectedFiles,1);
+    SFRate01=zeros(numSelectedFiles,1);
+    SFRate25=zeros(numSelectedFiles,1);
+    SFRate50=zeros(numSelectedFiles,1);
+    SFRate75=zeros(numSelectedFiles,1);
+    SFRate90=zeros(numSelectedFiles,1);
+    SFRate100=zeros(numSelectedFiles,1);
+    SFRateNaN=zeros(numSelectedFiles,1);
+    RFTot01=zeros(numSelectedFiles,1);
+    RFTot25=zeros(numSelectedFiles,1);
+    RFTot50=zeros(numSelectedFiles,1);
+    RFTot75=zeros(numSelectedFiles,1);
+    RFTot90=zeros(numSelectedFiles,1);
+    RFTot100=zeros(numSelectedFiles,1);
+    RFTotNaN=zeros(numSelectedFiles,1);
+    SFTot01=zeros(numSelectedFiles,1);
+    SFTot25=zeros(numSelectedFiles,1);
+    SFTot50=zeros(numSelectedFiles,1);
+    SFTot75=zeros(numSelectedFiles,1);
+    SFTot90=zeros(numSelectedFiles,1);
+    SFTot100=zeros(numSelectedFiles,1);
+    SFTotNaN=zeros(numSelectedFiles,1);
+    iReset=0;
+end
+%% Make Plots of the Geo2D variables that were decoded
 [iper]=strfind(Merra2FileName,'.');
 numper=length(iper);
 is=iper(2)+1;
@@ -1625,113 +2002,1002 @@ iScale=1; % This sets a scale factor which should in most cases be 1
 lowcutoff=-200;
 highcutoff=200;
 ikind=1;
-titlestr=strcat('SeaIce-LatentEnergyFlux-',Merra2ShortFileName);
+titlestr=strcat('SeaIce-LatentEnergyFlux-',datestubstr);
 [Stats,EFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(EFLUXICES,lowcutoff,highcutoff);
 DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+SILF01(framecounter,1)=Stats(1,3);
+SILF25(framecounter,1)=Stats(6,3);
+SILF50(framecounter,1)=Stats(9,3);
+SILF75(framecounter,1)=Stats(12,3);
+SILF90(framecounter,1)=Stats(14,3);
+SILF100(framecounter,1)=Stats(18,3);
+SILFNaN(framecounter,1)=fracNaN;
+ab=1;
 % Display the Open Water Latent Energy Flux
 lowcutoff=-100;
 highcutoff=800;
 ikind=2;
-titlestr=strcat('OpenWater-LatentEnergyFlux-',Merra2ShortFileName);
+titlestr=strcat('OpenWater-LatentEnergyFlux-',datestubstr);
 [Stats,EFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(EFLUXWTRS,lowcutoff,highcutoff);
 DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+OWLF01(framecounter,1)=Stats(1,3);
+OWLF25(framecounter,1)=Stats(6,3);
+OWLF50(framecounter,1)=Stats(9,3);
+OWLF75(framecounter,1)=Stats(12,3);
+OWLF90(framecounter,1)=Stats(14,3);
+OWLF100(framecounter,1)=Stats(18,3);
+OWLFNaN(framecounter,1)=fracNaN;
 % Display The Sea Ice Fraction
-titlestr=strcat('SeaIce-Fraction-',Merra2ShortFileName);
+titlestr=strcat('SeaIce-Fraction-',datestubstr);
 ikind=3;
 lowcutoff=0.00;
 highcutoff=1.2;
 [Stats,SeaIceAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(FRSEAICES,lowcutoff,highcutoff);
 DisplayMerra2SeaIceFractionRev1(Stats,SeaIceAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+SEAF01(framecounter,1)=Stats(1,3);
+SEAF25(framecounter,1)=Stats(6,3);
+SEAF50(framecounter,1)=Stats(9,3);
+SEAF75(framecounter,1)=Stats(12,3);
+SEAF90(framecounter,1)=Stats(14,3);
+SEAF100(framecounter,1)=Stats(18,3);
+SEAFNaN(framecounter,1)=fracNaN;
+
+% Calculate Sea Ice area this will be ikind=4
+SeaIce=SeaIceAdj;
+[IceAreaWorld,IceAreaNP,IceAreaSP] = CalculateIceCoverKm(SeaIce);
+SeaIceAreaKmWorld(framecounter,1)=IceAreaWorld;
+SeaIceAreaKmNP(framecounter,1)= IceAreaNP;
+SeaIceAreaKmSP(framecounter,1)=IceAreaSP;
+% create a polar plot-for the North Pole
+titlestr=strcat('SeaIceNP-Fraction-',datestubstr);
+SeaIceConc=SeaIceAdj;
+iProj=7;
+DisplayMerra2SeaIceFractionPolarRev1(iProj,IceAreaWorld,IceAreaNP,IceAreaSP,titlestr)
+% create a polar plot-for the South Pole
+titlestr=strcat('SeaIceSP-Fraction-',datestubstr);
+SeaIceConc=SeaIceAdj;
+iProj=8;
+DisplayMerra2SeaIceFractionPolarRev1(iProj,IceAreaWorld,IceAreaNP,IceAreaSP,titlestr)
 % Display Upward Heat Flux
-titlestr=strcat('SeaIce-UpwardHeatFlux-',Merra2ShortFileName);
+titlestr=strcat('SeaIce-UpwardHeatFlux-',datestubstr);
 ikind=5;
 lowcutoff=-500;
 highcutoff=500;
 [Stats,HFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(HFLUXICES,lowcutoff,highcutoff);
 DisplayMerra2UpwardHeatFluxRev1(Stats,HFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+HFICEF01(framecounter,1)=Stats(1,3);
+HFICEF25(framecounter,1)=Stats(6,3);
+HFICEF50(framecounter,1)=Stats(9,3);
+HFICEF75(framecounter,1)=Stats(12,3);
+HFICEF90(framecounter,1)=Stats(14,3);
+HFICEF100(framecounter,1)=Stats(18,3);
+HFICEFNaN(framecounter,1)=fracNaN;
 % Display Open Water Upward Heat Flux
 ikind=6;
-titlestr=strcat('OpenWater-UpwardHeatFlux-',Merra2ShortFileName);
+titlestr=strcat('OpenWater-UpwardHeatFlux-',datestubstr);
 lowcutoff=-500;
 highcutoff=1000;
 [Stats,HFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(HFLUXWTRS,lowcutoff,highcutoff);
 DisplayMerra2UpwardHeatFluxRev1(Stats,HFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
-% Display the Net Downward Long Wave Flux
-titlestr=strcat('SeaIce-NetDownLW-Flux-',Merra2ShortFileName);
+HFWTRF01(framecounter,1)=Stats(1,3);
+HFWTRF25(framecounter,1)=Stats(6,3);
+HFWTRF50(framecounter,1)=Stats(9,3);
+HFWTRF75(framecounter,1)=Stats(12,3);
+HFWTRF90(framecounter,1)=Stats(14,3);
+HFWTRF100(framecounter,1)=Stats(18,3);
+HFWTRFNaN(framecounter,1)=fracNaN;
+% Display the Sea Ice Net Downward Long Wave Flux
+titlestr=strcat('SeaIce-NetDownLW-Flux-',datestubstr);
 lowcutoff=-500;
 highcutoff=500;
 ikind=7;
-[Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(HFLUXWTRS,lowcutoff,highcutoff);
+[Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(LWGNTICES,lowcutoff,highcutoff);
 DisplayMerra2NetDownLWFluxRev1(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
-titlestr=strcat('OpenWater-NetDownLW-Flux-',Merra2ShortFileName);
+LWGNICE01(framecounter,1)=Stats(1,3);
+LWGNICE25(framecounter,1)=Stats(6,3);
+LWGNICE50(framecounter,1)=Stats(9,3);
+LWGNICE75(framecounter,1)=Stats(12,3);
+LWGNICE90(framecounter,1)=Stats(14,3);
+LWGNICE100(framecounter,1)=Stats(18,3);
+LWGNICENaN(framecounter,1)=fracNaN;
+% Display The Open Water Net Downward Flux
+titlestr=strcat('OpenWater-NetDownLW-Flux-',datestubstr);
 ikind=8;
 lowcutoff=-500;
 highcutoff=500;
-[Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(HFLUXWTRS,lowcutoff,highcutoff);
+[Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(LWGNTWTRS,lowcutoff,highcutoff);
 DisplayMerra2NetDownLWFluxRev1(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+LWGNWTR01(framecounter,1)=Stats(1,3);
+LWGNWTR25(framecounter,1)=Stats(6,3);
+LWGNWTR50(framecounter,1)=Stats(9,3);
+LWGNWTR75(framecounter,1)=Stats(12,3);
+LWGNWTR90(framecounter,1)=Stats(14,3);
+LWGNWTR100(framecounter,1)=Stats(18,3);
+LWGNWTRNaN(framecounter,1)=fracNaN;
+
+
+% Display The 10 Meter Air Temp
+titlestr=strcat('AirTemp-10m-',datestubstr);
+ikind=9;
+lowcutoff=200;
+highcutoff=400;
+[Stats,AirTempAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(T10MS,lowcutoff,highcutoff);
+DisplayMerra2AirTemp(Stats,AirTempAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+T10M01(framecounter,1)=Stats(1,3)-273.15;% Change the final stats into Deg C
+T10M25(framecounter,1)=Stats(6,3)-273.15;
+T10M50(framecounter,1)=Stats(9,3)-273.15;
+T10M75(framecounter,1)=Stats(12,3)-273.15;
+T10M90(framecounter,1)=Stats(14,3)-273.15;
+T10M100(framecounter,1)=Stats(18,3)-273.15;
+T10MNaN(framecounter,1)=fracNaN;
+TAirTempC=AirTempAdj-273.15;
 ab=2;
+
 %% Display Ocean Precip Data
 % Note that this can be displayed as rate or as an integrated value ov a 24
 % hour period
 iScale=3600;
 if(integrateRate==0)
-    titlestr=strcat('OceanRainFallRate-',Merra2ShortFileName);
+    titlestr=strcat('OceanRainFallRate-',datestubstr);
     lowcutoff=-.1;
     highcutoff=20;
 elseif(integrateRate==1)
-    titlestr=strcat('OceanRainFallTotal-',Merra2ShortFileName);
+    titlestr=strcat('OceanRainFallTotal-',datestubstr);
     lowcutoff=-.1;
     highcutoff=20;
 end
 % Display the Rain Fall Rate
-ikind=7;
+ikind=20;
 iScale=3600;
-titlestr=strcat('Ocean-RainFallRate-',Merra2ShortFileName);
+titlestr=strcat('Ocean-RainFallRate-',datestubstr);
 [Stats,PrecipAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(RAINOCNS,lowcutoff,highcutoff);
-DisplayMerra2OceanPrecip(Stats,PrecipAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
-ab=1;
+DisplayMerra2OceanPrecip(Stats,PrecipAdj,fraclow,frachigh,fracNaN,ikind,titlestr);
+RFRate01(framecounter,1)=Stats(1,3);
+RFRate25(framecounter,1)=Stats(6,3);
+RFRate50(framecounter,1)=Stats(9,3);
+RFRate75(framecounter,1)=Stats(12,3);
+RFRate90(framecounter,1)=Stats(14,3);
+RFRate100(framecounter,1)=Stats(18,3);
+RFRateNaN(framecounter,1)=fracNaN;
 % Display the Snow Fall Rate
-ikind=8;
+ikind=21;
 iScale=3600;
-titlestr=strcat('Ocean-SnowFallRate-',Merra2ShortFileName);
+titlestr=strcat('Ocean-SnowFallRate-',datestubstr);
 [Stats,PrecipAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(PRECSNOOCNS,lowcutoff,highcutoff);
 DisplayMerra2OceanPrecip(Stats,PrecipAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+SFRate01(framecounter,1)=Stats(1,3);
+SFRate25(framecounter,1)=Stats(6,3);
+SFRate50(framecounter,1)=Stats(9,3);
+SFRate75(framecounter,1)=Stats(12,3);
+SFRate90(framecounter,1)=Stats(14,3);
+SFRate100(framecounter,1)=Stats(18,3);
+SFRateNaN(framecounter,1)=fracNaN;
 ab=2;
 % Display The Rain Fall Total
-ikind=9;
+ikind=22;
 iScale=3600;
-titlestr=strcat('Ocean-RainFallTotal-',Merra2ShortFileName);
+titlestr=strcat('Ocean-RainFallTotal-',datestubstr);
 [Stats,PrecipSumAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev6(RAINOCNS,lowcutoff,highcutoff);
 DisplayMerra2OceanPrecip(Stats,PrecipSumAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+RFTot01(framecounter,1)=Stats(1,3);
+RFTot25(framecounter,1)=Stats(6,3);
+RFTot50(framecounter,1)=Stats(9,3);
+RFTot75(framecounter,1)=Stats(12,3);
+RFTot90(framecounter,1)=Stats(14,3);
+RFTot100(framecounter,1)=Stats(18,3);
+RFTotNaN(framecounter,1)=fracNaN;
 ab=2;
 % Display The Snow Fall Total
-ikind=10;
+ikind=23;
 iScale=3600;
-titlestr=strcat('Ocean-SnowFallTotal-',Merra2ShortFileName);
+titlestr=strcat('Ocean-SnowFallTotal-',datestubstr);
 lowcutoff=-.1;
 highcutoff=20;
 [Stats,PrecipSumAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev6(PRECSNOOCNS,lowcutoff,highcutoff);
 DisplayMerra2OceanPrecip(Stats,PrecipSumAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+SFTot01(framecounter,1)=Stats(1,3);
+SFTot25(framecounter,1)=Stats(6,3);
+SFTot50(framecounter,1)=Stats(9,3);
+SFTot75(framecounter,1)=Stats(12,3);
+SFTot90(framecounter,1)=Stats(14,3);
+SFTot100(framecounter,1)=Stats(18,3);
+SFTotNaN(framecounter,1)=fracNaN;
 ab=2;
 % Display the Sea Ice Skin Temperature
-titlestr=strcat('SeaIce-Skin-Temp-',Merra2ShortFileName);
+titlestr=strcat('SeaIce-Skin-Temp-',datestubstr);
 lowcutoff=150;
 highcutoff=320;
 ikind=11;
 iScale=1;
 [Stats,TSKINICEAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TSKINICES,lowcutoff,highcutoff);
+% Reset the stats temps from Deg K to Deg C
+for nk=1:18
+    Stats(nk,3)=Stats(nk,3)-273.15;
+end
 DisplayMerra2SeaIceSkinTempRev1(Stats,TSKINICEAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
-titlestr=strcat('SeaIce-SkinTemp-',Merra2ShortFileName);
+TSKINICE01(framecounter,1)=Stats(1,3);
+TSKINICE25(framecounter,1)=Stats(6,3);
+TSKINICE50(framecounter,1)=Stats(9,3);
+TSKINICE75(framecounter,1)=Stats(12,3);
+TSKINICE90(framecounter,1)=Stats(14,3);
+TSKINICE100(framecounter,1)=Stats(18,3);
+TSKINICENaN(framecounter,1)=fracNaN;
+titlestr=strcat('SeaIce-SkinTemp-',datestubstr);
 ab=3;
 % Display the Open Water Skin Temperature
-titlestr=strcat('Open-Water-Skin-Temp-',Merra2ShortFileName);
+titlestr=strcat('Open-Water-Skin-Temp-',datestubstr);
 lowcutoff=150;
 highcutoff=320;
 ikind=12;
 iScale=1;
 [Stats,TSKINWTRAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TSKINWTRS,lowcutoff,highcutoff);
+% Reset the stats temps from Deg K to Deg C
+for nk=1:18
+    Stats(nk,3)=Stats(nk,3)-273.15;
+end
 DisplayMerra2SeaIceSkinTempRev1(Stats,TSKINWTRAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+TSKINWTR01(framecounter,1)=Stats(1,3);
+TSKINWTR25(framecounter,1)=Stats(6,3);
+TSKINWTR50(framecounter,1)=Stats(9,3);
+TSKINWTR75(framecounter,1)=Stats(12,3);
+TSKINWTR90(framecounter,1)=Stats(14,3);
+TSKINWTR100(framecounter,1)=Stats(18,3);
+TSKINWTRNaN(framecounter,1)=fracNaN;
+titlestr=strcat('SeaIce-SkinTemp-',datestubstr);
 ab=3;
+% Display the Sea Ice Net Downward Short Wave Flux
+titlestr=strcat('SeaIce-NetDownSW-Flux-',datestubstr);
+lowcutoff=-500;
+highcutoff=700;
+ikind=13;
+[Stats,SWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(SWGNTICES,lowcutoff,highcutoff);
+DisplayMerra2NetDownLWFluxRev2(Stats,SWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr);
+SWGNTICE01(framecounter,1)=Stats(1,3);
+SWGNTICE25(framecounter,1)=Stats(6,3);
+SWGNTICE50(framecounter,1)=Stats(9,3);
+SWGNTICE75(framecounter,1)=Stats(12,3);
+SWGNTICE90(framecounter,1)=Stats(14,3);
+SWGNTICE100(framecounter,1)=Stats(18,3);
+SWGNTICENaN(framecounter,1)=fracNaN;
+ab=1;
+% Display the Open Water Net Downward Short Wave Flux
+titlestr=strcat('SeaIce-NetDownSW-Flux-',datestubstr);
+lowcutoff=-500;
+highcutoff=700;
+ikind=14;
+[Stats,SWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(SWGNTWTRS,lowcutoff,highcutoff);
+DisplayMerra2NetDownLWFluxRev2(Stats,SWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+SWGNTWTR01(framecounter,1)=Stats(1,3);
+SWGNTWTR25(framecounter,1)=Stats(6,3);
+SWGNTWTR50(framecounter,1)=Stats(9,3);
+SWGNTWTR75(framecounter,1)=Stats(12,3);
+SWGNTWTR90(framecounter,1)=Stats(14,3);
+SWGNTWTR100(framecounter,1)=Stats(18,3);
+SWGNTWTRNaN(framecounter,1)=fracNaN;
+ab=1;
+% Display the Eastward Windstress over ice
+titlestr=strcat('SeaIce-East-Windstress',datestubstr);
+lowcutoff=-10;
+highcutoff=10;
+ikind=15;
+[Stats,TauAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TAUXICES,lowcutoff,highcutoff);
+DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+TAUXICE01(framecounter,1)=Stats(1,3);
+TAUXICE25(framecounter,1)=Stats(6,3);
+TAUXICE50(framecounter,1)=Stats(9,3);
+TAUXICE75(framecounter,1)=Stats(12,3);
+TAUXICE90(framecounter,1)=Stats(14,3);
+TAUXICE100(framecounter,1)=Stats(18,3);
+TAUXICENaN(framecounter,1)=fracNaN;
+% Display the Eastward Windstress over Open Water
+titlestr=strcat('OpenWater-East-Windstress',datestubstr);
+lowcutoff=-10;
+highcutoff=10;
+ikind=16;
+[Stats,TauAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TAUXWTRS,lowcutoff,highcutoff);
+DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+TAUXWTR01(framecounter,1)=Stats(1,3);
+TAUXWTR25(framecounter,1)=Stats(6,3);
+TAUXWTR50(framecounter,1)=Stats(9,3);
+TAUXWTR75(framecounter,1)=Stats(12,3);
+TAUXWTR90(framecounter,1)=Stats(14,3);
+TAUXWTR100(framecounter,1)=Stats(18,3);
+TAUXWTRNaN(framecounter,1)=fracNaN;
+% Display the North Windstress over Sea Ice
+titlestr=strcat('SeaIce-North-Windstress',datestubstr);
+lowcutoff=-10;
+highcutoff=10;
+ikind=17;
+[Stats,TauAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TAUYICES,lowcutoff,highcutoff);
+DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+TAUYICE01(framecounter,1)=Stats(1,3);
+TAUYICE25(framecounter,1)=Stats(6,3);
+TAUYICE50(framecounter,1)=Stats(9,3);
+TAUYICE75(framecounter,1)=Stats(12,3);
+TAUYICE90(framecounter,1)=Stats(14,3);
+TAUYICE100(framecounter,1)=Stats(18,3);
+TAUYICENaN(framecounter,1)=fracNaN;
+ab=5;
+% Display the North Windstress over Open Water
+titlestr=strcat('OpenWater-North-Windstress',datestubstr);
+lowcutoff=-10;
+highcutoff=10;
+ikind=18;
+[Stats,TauAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TAUYWTRS,lowcutoff,highcutoff);
+DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+TAUYWTR01(framecounter,1)=Stats(1,3);
+TAUYWTR25(framecounter,1)=Stats(6,3);
+TAUYWTR50(framecounter,1)=Stats(9,3);
+TAUYWTR75(framecounter,1)=Stats(12,3);
+TAUYWTR90(framecounter,1)=Stats(14,3);
+TAUYWTR100(framecounter,1)=Stats(18,3);
+TAUYWTRNaN(framecounter,1)=fracNaN;
+% Display The 10 Meter Eastward Wind
+titlestr=strcat('EastWind-10m-',datestubstr);
+ikind=25;
+lowcutoff=-100;
+highcutoff=100;
+[Stats,WindAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(U10MS,lowcutoff,highcutoff);
+if(mod(framecounter,iSkipDisplayFrames)==0)
+    DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
+U10M01(framecounter,1)=Stats(1,3);
+U10M25(framecounter,1)=Stats(6,3);
+U10M50(framecounter,1)=Stats(9,3);
+U10M75(framecounter,1)=Stats(12,3);
+U10M90(framecounter,1)=Stats(14,3);
+U10M100(framecounter,1)=Stats(18,3);
+U10MNaN(framecounter,1)=fracNaN;
+U10=WindAdj;
+% Display The 10 Meter Northward Wind
+titlestr=strcat('NorthWind-10m-',datestubstr);
+ikind=26;
+lowcutoff=-100;
+highcutoff=100;
+[Stats,WindAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(V10MS,lowcutoff,highcutoff);
+if(mod(framecounter,iSkipDisplayFrames)==0)
+    DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
+V10M01(framecounter,1)=Stats(1,3);
+V10M25(framecounter,1)=Stats(6,3);
+V10M50(framecounter,1)=Stats(9,3);
+V10M75(framecounter,1)=Stats(12,3);
+V10M90(framecounter,1)=Stats(14,3);
+V10M100(framecounter,1)=Stats(18,3);
+V10MNaN(framecounter,1)=fracNaN;
+V10=WindAdj;
+% Plot the wind components at 10 m along with the air temp
+Tau = windstress(hypot(U10,V10));
+ikind=30;
+titlestr=strcat('WindComponentsQuiver-',datestubstr);
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotWindQuiver(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+
+% Display The 10 Meter Specific Humidity
+titlestr=strcat('SpecificHumidity-10m-',datestubstr);
+ikind=27;
+lowcutoff=-100;
+highcutoff=100;
+[Stats,QVAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(QV10MS,lowcutoff,highcutoff);
+if(mod(framecounter,iSkipDisplayFrames)==0)
+    DisplayMerra2WindComponents(Stats,QVAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
+QV10M01(framecounter,1)=Stats(1,3);
+QV10M25(framecounter,1)=Stats(6,3);
+QV10M50(framecounter,1)=Stats(9,3);
+QV10M75(framecounter,1)=Stats(12,3);
+QV10M90(framecounter,1)=Stats(14,3);
+QV10M100(framecounter,1)=Stats(18,3);
+QV10MNaN(framecounter,1)=fracNaN;
+% save some partial run data
+MatFileName=strcat('PartialFile-',datestubstr);
+if(isavefiles==3)
+    eval(['cd ' savepath(1:length(savepath)-1)]);
+    actionstr='save';
+    varstr1='Lons Lats TimeS Merra2FileName Merra2ShortFileName';
+    varstr2=' RasterLats RasterLons Tau U10 V10 TAirTempC';
+    varstr=strcat(varstr1,varstr2);
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+    eval(cmdString)
+    dispstr=strcat('Wrote Partial Matlab File-',MatFileName);
+    disp(dispstr);
+%     fprintf(fid,'%s\n',savestr);
+%     disp(savestr)
+end
+
+%% Start compilation of data over all frames
+if(framecounter==numSelectedFiles)
+    if(iTimeSlice==1)
+        TimeStr='-00-Hrs-GMT';
+    elseif(iTimeSlice==2)
+        TimeStr='-01-Hrs-GMT';
+    elseif(iTimeSlice==3)
+        TimeStr='-02-Hrs-GMT';
+    elseif(iTimeSlice==4)
+        TimeStr='-03-Hrs-GMT';
+    elseif(iTimeSlice==5)
+        TimeStr='-04-Hrs-GMT';
+    elseif(iTimeSlice==6)
+        TimeStr='-05-Hrs-GMT';
+    elseif(iTimeSlice==7)
+        TimeStr='-06-Hrs-GMT';
+    elseif(iTimeSlice==8)
+        TimeStr='-07-Hrs-GMT';
+    elseif(iTimeSlice==9)
+        TimeStr='-08-Hrs-GMT';
+    elseif(iTimeSlice==10)
+        TimeStr='-09-Hrs-GMT';
+    elseif(iTimeSlice==11)
+        TimeStr='-10-Hrs-GMT';
+    elseif(iTimeSlice==12)
+        TimeStr='-11-Hrs-GMT';   
+    elseif(iTimeSlice==13)
+        TimeStr='-12-Hrs-GMT';
+    elseif(iTimeSlice==14)
+        TimeStr='-13-Hrs-GMT';
+    elseif(iTimeSlice==15)
+        TimeStr='-14-Hrs-GMT';
+    elseif(iTimeSlice==16)
+        TimeStr='-15-Hrs-GMT';
+    elseif(iTimeSlice==17)
+        TimeStr='-16-Hrs-GMT';
+    elseif(iTimeSlice==18)
+        TimeStr='-17-Hrs-GMT'; 
+    elseif(iTimeSlice==19)
+        TimeStr='-18-Hrs-GMT';
+    elseif(iTimeSlice==20)
+        TimeStr='-19-Hrs-GMT';
+    elseif(iTimeSlice==21)
+        TimeStr='-20-Hrs-GMT';
+    elseif(iTimeSlice==22)
+        TimeStr='-21-Hrs-GMT';
+    elseif(iTimeSlice==23)
+        TimeStr='-22-Hrs-GMT';
+    elseif(iTimeSlice==24)
+        TimeStr='-23-Hrs-GMT';      
+    end
+  stime=datetime(yd,md,dd);
+  timestep=days(1);
+end
+%% Build All Data Tables
+if(framecounter==numSelectedFiles)
+    fprintf(fid,'\n');
+    fprintf(fid,'%s\n','----------- Starting Detailing Table Creation-----------');
+%% Create the Sea Ice Latent Energy Flux ikind=1
+    EFLUXICETable=table(SILF01(:,1),SILF25(:,1),SILF50(:,1),SILF75(:,1),...
+        SILF90(:,1),SILF100(:,1),...
+        'VariableNames',{'SILF01','SILF25','SILF50',...
+         'SILF75','SILF90','SILF100'});
+    EFLUXICETT = table2timetable(EFLUXICETable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='EFLUXICETable EFLUXICETT';
+    MatFileName=strcat('EFLUXICETable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    silstr=strcat('Created EFLUXICETT-','Contains Sea Ice Latent Energy Flux Data-',num2str(1));
+    fprintf(fid,'%s\n',silstr);
+
+%% Create the Open Water Latent Energy Flux ikind=2
+    EFLUXWTRTable=table(OWLF01(:,1),OWLF25(:,1),OWLF50(:,1),OWLF75(:,1),...
+        OWLF90(:,1),OWLF100(:,1),...
+        'VariableNames',{'OWLF01','OWLF25','OWLF50',...
+         'OWLF75','OWLF90','OWLF100'});
+    EFLUXWTRTT = table2timetable(EFLUXWTRTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='EFLUXWTRTable EFLUXWTRTT';
+    MatFileName=strcat('EFLUXWTRTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    owlstr=strcat('Created EFLUXWTRTT-','Contains Open Water Latent Energy Flux Data-',num2str(2));
+    fprintf(fid,'%s\n',owlstr);
+%% Create a Table to Store The Sea Ice Fraction ikind=3
+    SEAICETable=table(SEAF01(:,1),SEAF25(:,1),SEAF50(:,1),SEAF75(:,1),...
+        SEAF90(:,1),SEAF100(:,1),...
+        'VariableNames',{'SEAF01','SEAF25','SEAF50',...
+         'SEAF75','SEAF90','SEAF100'});
+    SEAICETT = table2timetable(SEAICETable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='SEAICETable SEAICETT';
+    MatFileName=strcat('SEAICETable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    seastr=strcat('Created SEAICETT-','Contains Sea Ice Fraction-',num2str(3));
+    fprintf(fid,'%s\n',seastr);
+    ab=2;
+%% Create a Table Holding the Sea Ice Data ikind=4
+    SeaIceAreaTable=table(SeaIceAreaKmWorld(:,1),SeaIceAreaKmNP(:,1),SeaIceAreaKmSP(:,1),...
+       'VariableNames',{'SeaIceAreaKmWorld','SeaIceAreaKmNP','SeaIceAreaKmSP'});
+    SeaIceAreaTT = table2timetable(SeaIceAreaTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='SeaIceAreaTable SeaIceAreaTT';
+    MatFileName=strcat('SeaIceAreaTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    seaiceareastr=strcat('SeaIceAreaTT-','Contains Sea Ice Area in Sq KM-',num2str(25));
+    fprintf(fid,'%s\n',seaiceareastr);
+ %% Create a Table to Store The Sea Ice Upwards Flux ikind=5
+    HFLUXICETable=table(HFICEF01(:,1),HFICEF25(:,1),HFICEF50(:,1),HFICEF75(:,1),...
+        HFICEF90(:,1),HFICEF100(:,1),...
+        'VariableNames',{'HFICEF01','HFICEF25','HFICEF50',...
+         'HFICEF75','HFICEF90','HFICEF100'});
+    HFLUXICETT = table2timetable(HFLUXICETable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='HFLUXICETable HFLUXICETT';
+    MatFileName=strcat('HFLUXICETable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    seastr=strcat('Created HFLUXICETT-','Contains Sea Ice Upwards Heat Flux-',num2str(5));
+    fprintf(fid,'%s\n',seastr);
+ %% Create a Table to Store The Open Upwards Flux ikind=6
+    HFLUXWTRTable=table(HFWTRF01(:,1),HFWTRF25(:,1),HFWTRF50(:,1),HFWTRF75(:,1),...
+        HFWTRF90(:,1),HFWTRF100(:,1),...
+        'VariableNames',{'HFWTRF01','HFWTRF25','HFWTRF50',...
+         'HFWTRF75','HFWTRF90','HFWTRF100'});
+    HFLUXWTRTT = table2timetable(HFLUXWTRTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='HFLUXWTRTable HFLUXWTRTT';
+    MatFileName=strcat('HFLUXWTRTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    opwstr=strcat('Created HFLUXWTRTT-','Contains Open Water Upwards Heat Flux-',num2str(5));
+    fprintf(fid,'%s\n',opwstr);
+ %% Create a Table to Store The Sea Ice Downwards Flux ikind=7
+    LWGNICESTable=table(LWGNICE01(:,1),LWGNICE25(:,1),LWGNICE50(:,1),LWGNICE75(:,1),...
+        LWGNICE90(:,1),LWGNICE100(:,1),...
+        'VariableNames',{'LWGNICE01','LWGNICE25','LWGNICE50',...
+         'LWGNICE75','LWGNICE90','LWGNICE100'});
+    LWGNICESTT = table2timetable(LWGNICESTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='LWGNICESTable LWGNICESTT';
+    MatFileName=strcat('LWGNICESTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    licesstr=strcat('Created LWGNICESTableTT-','Contains Sea Ice Downward Flux-',num2str(7));
+    fprintf(fid,'%s\n',licesstr);
+ %% Create a Table to Store The Open Water Downwards Flux ikind=8
+    LWGNWTRSTable=table(LWGNWTR01(:,1),LWGNWTR25(:,1),LWGNWTR50(:,1),LWGNWTR75(:,1),...
+        LWGNWTR90(:,1),LWGNWTR100(:,1),...
+        'VariableNames',{'LWGNWTR01','LWGNWTR25','LWGNWTR50',...
+         'LWGNWTR75','LWGNWTR90','LWGNWTR100'});
+    LWGNWTRSTT = table2timetable(LWGNWTRSTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='LWGNWTRSTable LWGNWTRSTT';
+    MatFileName=strcat('LWGNWTRSTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    lwtrsstr=strcat('Created LWGNWTRSTT-','Contains Open Waters Downward Flux-',num2str(8));
+    fprintf(fid,'%s\n',lwtrsstr);
+ %% Create a Table to Store The 10 Meter Air Temp ikind=9
+    T10MTable=table(T10M01(:,1),T10M25(:,1),T10M50(:,1),T10M75(:,1),...
+        T10M90(:,1),T10M100(:,1),...
+        'VariableNames',{'T10M01','T10M25','T10M50',...
+         'T10M75','T10M90','T10M100'});
+    T10MTT = table2timetable(T10MTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='T10MTable T10MTT';
+    MatFileName=strcat('T10MTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    air10str=strcat('Created T10MTT-','Contains Air Temp At 10M-',num2str(9));
+    fprintf(fid,'%s\n',air10str);
+%% Create a Table to Store The Skin Temp Of Sea Ice  ikind 11
+    TSKINICETable=table(TSKINICE01(:,1),TSKINICE25(:,1),TSKINICE50(:,1),TSKINICE75(:,1),...
+        TSKINICE90(:,1),TSKINICE100(:,1),...
+        'VariableNames',{'TSKINICE01','TSKINICE25','TSKINICE50',...
+         'TSKINICE75','TSKINICE90','TSKINICE100'});
+    TSKINICETT = table2timetable(TSKINICETable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='TSKINICETable TSKINICETT';
+    MatFileName=strcat('TSKINICETable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    skin1str=strcat('Created TSKINICETT-','Contains Sea Ice Skin Temps-',num2str(11));
+    fprintf(fid,'%s\n',skin1str);
+ %% Create a Table to Store The Skin Temp Of Sea Ice  ikind 12
+    TSKINWTRTable=table(TSKINWTR01(:,1),TSKINWTR25(:,1),TSKINWTR50(:,1),TSKINWTR75(:,1),...
+        TSKINWTR90(:,1),TSKINWTR100(:,1),...
+        'VariableNames',{'TSKINWTR01','TSKINWTR25','TSKINWTR50',...
+         'TSKINWTR75','TSKINWTR90','TSKINWTR100'});
+    TSKINWTRTT = table2timetable(TSKINWTRTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='TSKINWTRTable TSKINWTRTT';
+    MatFileName=strcat('TSKINWTRTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    skin2str=strcat('Created TSKINWTRTT-','Contains Open Water Skin Temps-',num2str(12));
+    fprintf(fid,'%s\n',skin2str);
+ %% Create a Table to Store Sea Ice Net Downward SW Flux  ikind 13
+    SWGNTICETable=table(SWGNTICE01(:,1),SWGNTICE25(:,1),SWGNTICE50(:,1),SWGNTICE75(:,1),...
+        SWGNTICE90(:,1),SWGNTICE100(:,1),...
+        'VariableNames',{'SWGNTICE01','SWGNTICE25','SWGNTICE50',...
+         'SWGNTICE75','SWGNTICE90','SWGNTICE100'});
+    SWGNTICETT = table2timetable(SWGNTICETable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='SWGNTICETable SWGNTICETT';
+    MatFileName=strcat('SWGNTICETable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    dflux1str=strcat('SWGNTICETT-','Contains Sea Ice SW Downards Flux-',num2str(13));
+    fprintf(fid,'%s\n',dflux1str);
+ %% Create a Table to Store Open Water Net Downward SW Flux  ikind 14
+    SWGNTWTRTable=table(SWGNTWTR01(:,1),SWGNTWTR25(:,1),SWGNTWTR50(:,1),SWGNTWTR75(:,1),...
+        SWGNTWTR90(:,1),SWGNTWTR100(:,1),...
+        'VariableNames',{'SWGNTWTR01','SWGNTWTR25','SWGNTWTR50',...
+         'SWGNTWTR75','SWGNTWTR90','SWGNTWTR100'});
+    SWGNTWTRTT = table2timetable(SWGNTWTRTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='SWGNTWTRTable SWGNTWTRTT';
+    MatFileName=strcat('SWGNTWTRTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    dflux2str=strcat('SWGNTWTRTT-','Contains Open SW Downards Flux-',num2str(14));
+    fprintf(fid,'%s\n',dflux2str);
+ %% Create a Table to Store Sea Ice East Windstress  ikind 15
+    TAUXICETable=table(TAUXICE01(:,1),TAUXICE25(:,1),TAUXICE50(:,1),TAUXICE75(:,1),...
+        TAUXICE90(:,1),TAUXICE100(:,1),...
+        'VariableNames',{'TAUXICE01','TAUXICE25','TAUXICE50',...
+         'TAUXICE75','TAUXICE90','TAUXICE100'});
+    TAUXICETT = table2timetable(TAUXICETable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='TAUXICETable TAUXICETT';
+    MatFileName=strcat('TAUXICETable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    ewind1str=strcat('TAUXICETT-','Contains Sea Ice East Wind Stress-',num2str(15));
+    fprintf(fid,'%s\n',ewind1str);
+  %% Create a Table to Store Open Water East Windstress  ikind 16
+    TAUXWTRTable=table(TAUXWTR01(:,1),TAUXWTR25(:,1),TAUXWTR50(:,1),TAUXWTR75(:,1),...
+        TAUXWTR90(:,1),TAUXWTR100(:,1),...
+        'VariableNames',{'TAUXWTR01','TAUXWTR25','TAUXWTR50',...
+         'TAUXWTR75','TAUXWTR90','TAUXWTR100'});
+    TAUXWTRTT = table2timetable(TAUXWTRTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='TAUXWTRTable TAUXWTRTT';
+    MatFileName=strcat('TAUXWTRTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    ewind2str=strcat('TAUXWTRTT-','Contains Open Water East Wind Stress-',num2str(16));
+    fprintf(fid,'%s\n',ewind2str);
+  %% Create a Table to Store Sea Ice North Windstress  ikind 17
+    TAUYICETable=table(TAUYICE01(:,1),TAUYICE25(:,1),TAUYICE50(:,1),TAUYICE75(:,1),...
+        TAUYICE90(:,1),TAUYICE100(:,1),...
+        'VariableNames',{'TAUYICE01','TAUYICE25','TAUYICE50',...
+         'TAUYICE75','TAUYICE90','TAUYICE100'});
+    TAUYICETT = table2timetable(TAUYICETable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='TAUYICETable TAUYICETT';
+    MatFileName=strcat('TAUYICETable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    nwind1str=strcat('TAUYICETT-','Contains Sea Ice North Wind Stress-',num2str(17));
+    fprintf(fid,'%s\n',nwind1str);
+  %% Create a Table to Store Open Water North Windstress  ikind 18
+    TAUYWTRTable=table(TAUYWTR01(:,1),TAUYWTR25(:,1),TAUYWTR50(:,1),TAUYWTR75(:,1),...
+        TAUYWTR90(:,1),TAUYWTR100(:,1),...
+        'VariableNames',{'TAUYWTR01','TAUYWTR25','TAUYWTR50',...
+         'TAUYWTR75','TAUYWTR90','TAUYWTR100'});
+    TAUYWTRTT = table2timetable(TAUYWTRTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='TAUYWTRTable TAUYWTRTT';
+    MatFileName=strcat('TAUYWTRTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    nwind2str=strcat('TAUYWTRTT-','Contains Open Water North Wind Stress-',num2str(18));
+    fprintf(fid,'%s\n',nwind2str);
+ %% Create a Table to store the Ocean Rainfall Rate  ikind 20
+    RFRateTable=table(RFRate01(:,1),RFRate25(:,1),RFRate50(:,1),RFRate75(:,1),...
+        RFRate90(:,1),RFRate100(:,1),...
+        'VariableNames',{'RFRate01','RFRate25','RFRate50',...
+         'RFRate75','RFRate90','RFRate100'});
+    RFRateTT = table2timetable(RFRateTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='RFRateTable RFRateTT';
+    MatFileName=strcat('RFRateTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    rfrstr=strcat('RFRateTT-','Contains Ocean Rain Fall Rate-',num2str(20));
+    fprintf(fid,'%s\n',rfrstr);
+ %% Create a Table to store the Ocean Snowfall Rate  ikind 21
+    SFRateTable=table(SFRate01(:,1),SFRate25(:,1),SFRate50(:,1),SFRate75(:,1),...
+        SFRate90(:,1),SFRate100(:,1),...
+        'VariableNames',{'SFRate01','SFRate25','SFRate50',...
+         'SFRate75','SFRate90','SFRate100'});
+    SFRateTT = table2timetable(SFRateTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='SFRateTable SFRateTT';
+    MatFileName=strcat('SFRateTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    snfrstr=strcat('SFRateTT-','Contains Ocean Snow Fall Rate-',num2str(21));
+    fprintf(fid,'%s\n',snfrstr);
+ %% Create a Table to store the Ocean Rainfall Total  ikind 22
+    RFTotalTable=table(RFTot01(:,1),RFTot25(:,1),RFTot50(:,1),RFTot75(:,1),...
+        RFTot90(:,1),RFTot100(:,1),...
+        'VariableNames',{'RFTot01','RFTot25','RFTot50',...
+         'RFTot75','RFTot90','RFTot100'});
+    RFTotalTT = table2timetable(RFTotalTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='RFTotalTable RFTotalTT';
+    MatFileName=strcat('RFTotalTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    rftstr=strcat('RFTotalTT-','Contains Ocean Rain Fall Total-',num2str(22));
+    fprintf(fid,'%s\n',rftstr);
+ %% Create a Table to store the Ocean Snowfall Total  ikind 23
+    SFTotalTable=table(SFTot01(:,1),SFTot25(:,1),SFTot50(:,1),SFTot75(:,1),...
+        SFTot90(:,1),SFTot100(:,1),...
+        'VariableNames',{'SFTot01','SFTot25','SFTot50',...
+         'SFTot75','SFTot90','SFTot100'});
+    SFTotalTT = table2timetable(SFTotalTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='SFTotalTable SFTotalTT';
+    MatFileName=strcat('SFTotalTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    sftstr=strcat('SFTotalTT-','Contains Ocean Snow Fall Total-',num2str(23));
+    fprintf(fid,'%s\n',sftstr);
+ %% Create a Table to Store The 10 Meter East Wind Velocity ikind=25
+    U10MTable=table(U10M01(:,1),U10M25(:,1),U10M50(:,1),U10M75(:,1),...
+        U10M90(:,1),U10M100(:,1),...
+        'VariableNames',{'U10M01','U10M25','U10M50',...
+         'U10M75','U10M90','U10M100'});
+    U10MTT = table2timetable(U10MTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='U10MTable U10MTT';
+    MatFileName=strcat('U10MTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    winde10str=strcat('Created U10MTT-','Contains East Wind At 10M-',num2str(25));
+    fprintf(fid,'%s\n',winde10str);
+  %% Create a Table to Store The 10 Meter North Wind Velocity ikind=26
+    V10MTable=table(V10M01(:,1),V10M25(:,1),V10M50(:,1),V10M75(:,1),...
+        V10M90(:,1),V10M100(:,1),...
+        'VariableNames',{'V10M01','V10M25','V10M50',...
+         'V10M75','V10M90','V10M100'});
+    V10MTT = table2timetable(V10MTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='V10MTable V10MTT';
+    MatFileName=strcat('V10MTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    windn10str=strcat('Created V10MTT-','Contains North Wind At 10M-',num2str(26));
+    fprintf(fid,'%s\n',windn10str);
+ %% Create a Table to Store The 10 Meter Specific Humidity ikind=27
+    QV10MTable=table(QV10M01(:,1),QV10M25(:,1),QV10M50(:,1),QV10M75(:,1),...
+        QV10M90(:,1),QV10M100(:,1),...
+        'VariableNames',{'QV10M01','QV10M25','QV10M50',...
+         'QV10M75','QV10M90','QV10M100'});
+    QV10MTT = table2timetable(QV10MTable,'TimeStep',timestep,'StartTime',stime);
+    eval(['cd ' tablepath(1:length(tablepath)-1)]);
+    actionstr='save';
+    varstr1='QV10MTable QV10MTT';
+    MatFileName=strcat('V10MTable',YearMonthStr,TimeStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+    qv10str=strcat('Created QV10MTT-','Contains Specific Humidity At 10M-',num2str(27));
+    fprintf(fid,'%s\n',qv10str);
+    fprintf(fid,'\n')
+    fprintf(fid,'%s\n','----------- End Detailing Table Creation-----------');
+    fprintf(fid,'\n')
+%% Plot the Sea Ice Latent Flux
+   titlestr=strcat('Hourly-Sea-Ice-LatentFlux-',num2str(yd));
+   ikind=1;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+%% Plot the Sea Ice Latent Flux
+   titlestr=strcat('Hourly-OpenWaterLatentFlux-',num2str(yd));
+   ikind=2;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Sea Ice Fraction
+   titlestr=strcat('Hourly-SeaIceFraction-',num2str(yd));
+   ikind=3;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Sea Ice Area in Sq Km
+   titlestr=strcat('Hourly-SeaIceFraction-',num2str(yd));
+   ikind=4;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Sea Ice Upward Heat Flux
+   titlestr=strcat('Hourly-SeaIce-UpHeat',num2str(yd));
+   ikind=5;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Open Water Upward Heat Flux
+   titlestr=strcat('Hourly-OpenWater-UpHeat',num2str(yd));
+   ikind=6;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Sea Ice Downwards Flux
+   titlestr=strcat('Hourly-SeaIce-DownHeat',num2str(yd));
+   ikind=7;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Open Waters Downwards Flux
+   titlestr=strcat('Hourly-OpenWaters-DownHeat',num2str(yd));
+   ikind=8;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 M
+   titlestr=strcat('Hourly-AirTemp-10M',num2str(yd));
+   ikind=9;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Sea Ice Skin Temps
+   titlestr=strcat('Hourly-SeaIce-SkinTemp',num2str(yd));
+   ikind=11;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Open Water Skin Temps
+   titlestr=strcat('Hourly-OpenWater-SkinTemp',num2str(yd));
+   ikind=12;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Sea Ice SW Downward Flux Skin 
+   titlestr=strcat('Hourly-SeaIce-SWDownFlux',num2str(yd));
+   ikind=13;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+%% Plot the Open Water SW Downward Flux Skin 
+   titlestr=strcat('Hourly-OpenWater-SWDownFlux',num2str(yd));
+   ikind=14;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Sea Ice Eastwind Stress
+   titlestr=strcat('Hourly-Sea-Ice-EastWindStress',num2str(yd));
+   ikind=15;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the OPen Water Eastwind Stress
+   titlestr=strcat('Hourly-OpenWater-EastWindStress',num2str(yd));
+   ikind=16;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Sea Ice Eastwind Stress
+   titlestr=strcat('Hourly-Sea-Ice-NorthWindStress',num2str(yd));
+   ikind=17;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Open Water Eastwind Stress
+   titlestr=strcat('Hourly-OpenWater-NorthWindStress',num2str(yd));
+   ikind=18;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Ocean Rainfall Rate
+   titlestr=strcat('Hourly-Ocean-RainfallRate',num2str(yd));
+   ikind=20;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Snow Rainfall Rate
+   titlestr=strcat('Hourly-Ocean-SnowfallRate',num2str(yd));
+   ikind=21;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Rain Total for 24 hours
+   titlestr=strcat('Hourly-Ocean-Rain24Total',num2str(yd));
+   ikind=22;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+  %% Plot the Snow Total for 24 hours
+   titlestr=strcat('Hourly-Ocean-Snow24Total',num2str(yd));
+   ikind=23;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+  %% Plot the East Wind Magnitude at 10 meters
+   titlestr=strcat('Hourly-EastWind-10m',num2str(yd));
+   ikind=25;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+  %% Plot the North Wind Magnitude at 10 meters
+   titlestr=strcat('Hourly-NorthWind-10m',num2str(yd));
+   ikind=26;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+%% Plot the Specific Humidity at 10 meters
+   titlestr=strcat('Hourly-QV-10m',num2str(yd));
+   ikind=27;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+end
 
 end
 

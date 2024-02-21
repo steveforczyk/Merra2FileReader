@@ -1,15 +1,16 @@
-function  DisplayMerra2SeaIceFractionRev1(Stats,SeaIceAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
-% Display the fraction of the sea that is covered by sea ice for dataset 04
-% The Rev 1 version is based on using the stats generate from the
-% GetDistributedStatsRev5 function
+function  DisplayMerra2NetDownLWFluxRev2(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+% Display the downward net  LW or SW flux for dataset 04
+% This Rev1 version of the coe was written to split out the cleaning and
+% calculation of the statistics of the data from the plotting of same
+% This is changed from the Rev1 version to add in Shortwave Downward flux
 % Written By: Stephen Forczyk
-% Created: Jan 29,2024
-% Revised: -----
+% Created: Feb 04,2024
+% Revised:  -----
 % Classification: Unclassified
 
-global LonS LatS TimeS iTimeSlice TimeSlices;
+global LonS LatS TimeS iTimeSlice TimeSlices framecounter;
 global YearMonthDayStr1 YearMonthDayStr2;
-global EFUXICES EFLUXWTRS FRSEAICES HFLUXICES HFLUXWTRS;
+global LWGNTICES LWGNTWTRS SWGNTICES SWGNTWTRS;
 global WorldCityFileName World200TopCities;
 global iCityPlot maxCities;
 global iLogo LogoFileName1 LogoFileName2;
@@ -17,7 +18,7 @@ global iLogo LogoFileName1 LogoFileName2;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter;
 global JpegCounter JpegFileList;
 global RasterLats RasterLons Rpix;
-global Merra2FileName Merra2ShortFileName framecounter;
+global Merra2FileName Merra2ShortFileName;
 
 global widd2 lend2;
 global initialtimestr igrid ijpeg ilog imovie;
@@ -49,67 +50,82 @@ Yearstr=YearMonthDayStr1(1:4);
 Monthstr=YearMonthDayStr1(5:6);
 Daystr=YearMonthDayStr1(7:8);
 Hourstr=char(TimeSlices{iTimeSlice,1});
-if(framecounter==1)
-    fprintf(fid,'%s\n','------- Start Plotting Sea Ice Coverage Fraction  ------');
-end
-if(ikind==3)
-    vmax=FRSEAICES.vmax;
-    vmin=FRSEAICES.vmin;
-    minval=-0.2;
-    maxval=1.2;
-    FillVal=FRSEAICES.FillValue;
-    desc='Sea Ice Fraction';
-    unitstr='unitless';
+
+
+if(ikind==7)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea Ice Net LW Down Flux  ------');
+    end
+    vmax=LWGNTICES.vmax;
+    vmin=LWGNTICES.vmin;
+    minval=-50;
+    maxval=500;
+    FillVal=LWGNTICES.FillValue;
+    desc='Sea Ice LW Net Downward Flux';
+    unitstr='W/m2';
+elseif(ikind==8)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Open Water Net LW Down Flux  ------');
+    end
+    vmax=LWGNTWTRS.vmax;
+    vmin=LWGNTWTRS.vmin;
+    minval=-50;
+    maxval=500;
+    FillVal=LWGNTWTRS.FillValue;
+    desc='Open WaterLW Net Downward Flux';
+    unitstr='W/m2';
+elseif(ikind==13)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea Ice Net SW Down Flux  ------');
+    end
+    vmax=SWGNTICES.vmax;
+    vmin=SWGNTICES.vmin;
+    minval=-50;
+    maxval=500;
+    FillVal=SWGNTICES.FillValue;
+    desc='Sea Ice SW Net Downward Flux';
+    unitstr='W/m2';
+elseif(ikind==14)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Open Water Net SW Down Flux  ------');
+    end
+    vmax=SWGNTWTRS.vmax;
+    vmin=SWGNTWTRS.vmin;
+    minval=-50;
+    maxval=500;
+    FillVal=SWGNTWTRS.FillValue;
+    desc='Open Water SW Net Downward Flux';
+    unitstr='W/m2';
 end
 
-headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data','-ikind-',num2str(ikind));
-ptc1str=strcat('01 % Sea Ice Frac Value=',num2str(Stats(1,3),6));
-ptc25str=strcat('25 % Sea Ice Value=',num2str(Stats(6,3),6));
-ptc50str=strcat('50 % Sea Ice Value=',num2str(Stats(9,3),6));
-ptc75str=strcat('75 % Sea Ice Value=',num2str(Stats(12,3),6));
-ptc99str=strcat('99 % Sea Ice Vallue=',num2str(Stats(17,3),6));
+headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data-ikind-',num2str(ikind));
+ptc1str=strcat('01 % LWGNFlux Value=',num2str(Stats(1,3),6));
+ptc25str=strcat('25 % LWGNFlux Value=',num2str(Stats(6,3),6));
+ptc50str=strcat('50 % LWGNFlux Value=',num2str(Stats(9,3),6));
+ptc75str=strcat('75 % LWGNFlux Value=',num2str(Stats(12,3),6));
+ptc99str=strcat('99 % LWGNFlux Vallue=',num2str(Stats(17,3),6));
 numfracstr=strcat('fracNaN=',num2str(fracNaN,6));
 if(framecounter==1)
     fprintf(fid,'%s\n',headerstr);
+    fprintf(fid,'%s\n',numfracstr);
     fprintf(fid,'%s\n',ptc1str);
     fprintf(fid,'%s\n',ptc25str);
     fprintf(fid,'%s\n',ptc50str);
     fprintf(fid,'%s\n',ptc75str);
     fprintf(fid,'%s\n',ptc99str);
-    fprintf(fid,'%s\n',numfracstr);
-    fprintf(fid,'%s\n',' End Stats for Sea Ice Data');
+    fprintf(fid,'%s\n',' End Stats for SWWNFlux Data');
 end
 zlimits=[minval maxval];
-incsize=(maxval-minval)/64;
-%% Now that the status have been calculated-go back and make any of the adjusted values less than 1E-5 equal to
-% a NaN value for plot purposes
-SeaIceAdj2=SeaIceAdj;
-[irows,jcols]=size(SeaIceAdj);
-iaddNaN=0;
-ntot2=irows*jcols;
-for ii=1:irows
-    for jj=1:jcols
-        nowVal=SeaIceAdj(ii,jj);
-        a1=isnan(nowVal);
-        if(a1~=1)
-            a2=abs(nowVal);
-            if(a2<1E-5)
-                SeaIceAdj2(ii,jj)=NaN;
-                iaddNaN=iaddNaN+1;
-            end
-        end
-    end
-end
-naddFrac=iaddNaN/ntot2;
-ab=2;
+incsize=(maxval-minval)/128;
 %% Fetch the map limits
+
 maplimitstr1='****Map Limits Follow*****';
-maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
-maplimitstr3=strcat('SouthEdge=',num2str(southEdge,7),'-NorthEdge=',num2str(northEdge));
-maplimitstr4='****Map Limits End*****';
 %fprintf(fid,'%s\n',maplimitstr1);
+maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
 %fprintf(fid,'%s\n',maplimitstr2);
+maplimitstr3=strcat('SouthEdge=',num2str(southEdge,7),'-NorthEdge=',num2str(northEdge));
 %fprintf(fid,'%s\n',maplimitstr3);
+maplimitstr4='****Map Limits End*****';
 %fprintf(fid,'%s\n',maplimitstr4);
 %% Set up the map axis
 itype=2;
@@ -127,16 +143,14 @@ elseif(itype==3)
 end
 set(gcf,'MenuBar','none');
 set(gcf,'Position',[hor1 vert1 widd lend])
-%% Plot the surface SeaIce on the map
-geoshow(SeaIceAdj2',Rpix,'DisplayType','surface');
-%zlimits=[minval maxval];
-%demcmap(zlimits);
+%% Plot the surface HFlux on the map
+geoshow(LWGNFluxAdj',Rpix,'DisplayType','surface');
 demcmap('inc',[maxval minval],incsize);
 hc=colorbar;
 ylabel(hc,unitstr,'FontWeight','bold');
 tightmap
 hold on
-maxval2=maxval+1;
+maxval2=maxval+5;
 % load the country borders and plot them
 eval(['cd ' mappath(1:length(mappath)-1)]);
 load('USAHiResBoundaries.mat','USALat','USALon');
@@ -263,9 +277,6 @@ txtstr2=strcat('1 ptile =',num2str(Stats(1,3),6),'//-50 ptile =',num2str(Stats(9
 txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12);
 tx3=.10;
 ty3=.10;
-txtstr3=strcat('Note that for plot purposes values less than-',num2str(1E-5),'-were set to NaN values',...
-    '-this happened for-',num2str(naddFrac),'-frac of all points');
-txt3=text(tx3,ty3,txtstr3,'FontWeight','bold','FontSize',12);
 set(newaxesh,'Visible','Off');
 % Save this chart
 figstr=strcat(titlestr,'.jpg');
@@ -416,7 +427,11 @@ if((iCreatePDFReport==1) && (RptGenPresent==1))
 end
 pause(chart_time);
 if(framecounter==1)
-    fprintf(fid,'%s\n','------- Finished Plotting Latent Energy Flux------');
+    if(ikind<9)
+%        fprintf(fid,'%s\n','------- Finished Plotting Net Long Wave Downwards  Flux------');
+    else
+%        fprintf(fid,'%s\n','------- Finished Plotting Net Short Wave Downwards  Flux------');
+    end
 end
 close('all');
 end

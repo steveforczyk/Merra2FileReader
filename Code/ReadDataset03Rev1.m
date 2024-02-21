@@ -856,7 +856,7 @@ if(framecounter==1)
     lon2=lon1+LonSpacing;
     deg2rad=pi/180;
     areakmlast=0;
-    for k=1:nlats
+    for k=1:nlats % Check this out-this may be wrong SMF Feb 11,2024
         lat1=RasterLats(k,1);
         lat2=RasterLats(k,1)+LatSpacing;
         [arclen1,~]=distance(lat1,lon1,lat2,lon1);

@@ -12,7 +12,7 @@ global LonS LatS TimeS iTimeSlice TimeSlices;
 global YearMonthDayStr1 YearMonthDayStr2;
 global EFLUXICES EFLUXWTRS FRSEAICES HFLUXICES HFLUXWTRS;
 global WorldCityFileName World200TopCities;
-global iCityPlot maxCities;
+global iCityPlot maxCities framecounter;
 global iLogo LogoFileName1 LogoFileName2;
 
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter;
@@ -53,7 +53,9 @@ Hourstr=char(TimeSlices{iTimeSlice,1});
 
 
 if(ikind==5)
-    fprintf(fid,'%s\n','------- Start Plotting Sea Ice Upward Heat Flux  ------');
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea Ice Upward Heat Flux  ------');
+    end
     vmax=HFLUXICES.vmax;
     vmin=HFLUXICES.vmin;
     minval=-100;
@@ -62,7 +64,9 @@ if(ikind==5)
     desc='Sea Ice Upward HeatFlux';
     unitstr='W/m2';
 elseif(ikind==6)
-    fprintf(fid,'%s\n','------- Start Plotting Open Water Upward Heat Flux  ------');
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Open Water Upward Heat Flux  ------');
+    end
     vmax=HFLUXWTRS.vmax;
     vmin=HFLUXWTRS.vmin;
     minval=-200;
@@ -73,34 +77,34 @@ elseif(ikind==6)
 end
 
 headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data-ikind-',num2str(ikind));
-fprintf(fid,'%s\n',headerstr);
-fprintf(fid,'%s\n',headerstr);
 ptc1str=strcat('01 % HFlux Value=',num2str(Stats(1,3),6));
-fprintf(fid,'%s\n',ptc1str);
 ptc25str=strcat('25 % HFlux Value=',num2str(Stats(6,3),6));
-fprintf(fid,'%s\n',ptc25str);
 ptc50str=strcat('50 % HFlux Value=',num2str(Stats(9,3),6));
-fprintf(fid,'%s\n',ptc50str);
 ptc75str=strcat('75 % HFlux Value=',num2str(Stats(12,3),6));
-fprintf(fid,'%s\n',ptc75str);
 ptc99str=strcat('99 % HFlux Vallue=',num2str(Stats(17,3),6));
-fprintf(fid,'%s\n',ptc99str);
 numfracstr=strcat('fracNaN=',num2str(fracNaN,6));
-fprintf(fid,'%s\n',numfracstr);
-fprintf(fid,'%s\n',' End Stats for HFlux Data');
+if(framecounter==1)
+    fprintf(fid,'%s\n',headerstr);
+    fprintf(fid,'%s\n',ptc1str);
+    fprintf(fid,'%s\n',ptc25str);
+    fprintf(fid,'%s\n',ptc50str);
+    fprintf(fid,'%s\n',ptc75str);
+    fprintf(fid,'%s\n',ptc99str);
+    fprintf(fid,'%s\n',numfracstr);
+    fprintf(fid,'%s\n',' End Stats for HFlux Data');
+end
 
 zlimits=[minval maxval];
 incsize=(maxval-minval)/64;
 %% Fetch the map limits
-
 maplimitstr1='****Map Limits Follow*****';
-fprintf(fid,'%s\n',maplimitstr1);
 maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
-fprintf(fid,'%s\n',maplimitstr2);
 maplimitstr3=strcat('SouthEdge=',num2str(southEdge,7),'-NorthEdge=',num2str(northEdge));
-fprintf(fid,'%s\n',maplimitstr3);
 maplimitstr4='****Map Limits End*****';
-fprintf(fid,'%s\n',maplimitstr4);
+%fprintf(fid,'%s\n',maplimitstr1);
+%fprintf(fid,'%s\n',maplimitstr2);
+%fprintf(fid,'%s\n',maplimitstr3);
+%fprintf(fid,'%s\n',maplimitstr4);
 %% Set up the map axis
 itype=2;
 if(itype==1)
@@ -402,7 +406,9 @@ if((iCreatePDFReport==1) && (RptGenPresent==1))
         add(chapter,p2);   
 end
 pause(chart_time);
-fprintf(fid,'%s\n','------- Finished Plotting Latent Energy Flux------');
+if(framecounter==1)
+    fprintf(fid,'%s\n','------- Finished Plotting Latent Energy Flux------');
+end
 close('all');
 end
 

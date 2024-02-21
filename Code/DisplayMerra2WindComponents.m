@@ -1,15 +1,17 @@
-function  DisplayMerra2SeaIceFractionRev1(Stats,SeaIceAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
-% Display the fraction of the sea that is covered by sea ice for dataset 04
-% The Rev 1 version is based on using the stats generate from the
-% GetDistributedStatsRev5 function
+function  DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+% Display the wind components (East and North) for dataset 04
+% And also the specific Humidity
+% 
 % Written By: Stephen Forczyk
-% Created: Jan 29,2024
-% Revised: -----
+% Created: Feb 13,2024
+% Revised: Fev 14,2024 added QV10M
 % Classification: Unclassified
 
-global LonS LatS TimeS iTimeSlice TimeSlices;
+global LonS LatS TimeS iTimeSlice TimeSlices framecounter;
 global YearMonthDayStr1 YearMonthDayStr2;
-global EFUXICES EFLUXWTRS FRSEAICES HFLUXICES HFLUXWTRS;
+global U10MS V10MS QV10MS;
+global QV10MTable QV10MTT QV10M01 QV10M25 QV10M50 QV10M75 QV10M90 QV10M100 QV10MNaN;
+global V10MTable V10MTT V10M01 V10M25 V10M50 V10M75 V10M90 V10M100 V10MNaN;
 global WorldCityFileName World200TopCities;
 global iCityPlot maxCities;
 global iLogo LogoFileName1 LogoFileName2;
@@ -17,7 +19,7 @@ global iLogo LogoFileName1 LogoFileName2;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter;
 global JpegCounter JpegFileList;
 global RasterLats RasterLons Rpix;
-global Merra2FileName Merra2ShortFileName framecounter;
+global Merra2FileName Merra2ShortFileName;
 
 global widd2 lend2;
 global initialtimestr igrid ijpeg ilog imovie;
@@ -49,59 +51,78 @@ Yearstr=YearMonthDayStr1(1:4);
 Monthstr=YearMonthDayStr1(5:6);
 Daystr=YearMonthDayStr1(7:8);
 Hourstr=char(TimeSlices{iTimeSlice,1});
-if(framecounter==1)
-    fprintf(fid,'%s\n','------- Start Plotting Sea Ice Coverage Fraction  ------');
-end
-if(ikind==3)
-    vmax=FRSEAICES.vmax;
-    vmin=FRSEAICES.vmin;
-    minval=-0.2;
-    maxval=1.2;
-    FillVal=FRSEAICES.FillValue;
-    desc='Sea Ice Fraction';
-    unitstr='unitless';
+
+
+if(ikind==25)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting East Wind At 10 M  ------');
+    end
+    vmax=U10MS.vmax;
+    vmin=U10MS.vmin;
+    minval=-50;
+    maxval=50;
+    FillVal=U10MS.FillValue;
+    desc='East Wind m/s';
+    unitstr='m/s';
+elseif(ikind==26)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting North Wind At 10 M  ------');
+    end
+    vmax=V10MS.vmax;
+    vmin=V10MS.vmin;
+    minval=-50;
+    maxval=50;
+    FillVal=V10MS.FillValue;
+    desc='North Wind m/s';
+    unitstr='m/s';
+elseif(ikind==27)
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Specific Humidity at 10 M  ------');
+    end
+    vmax=QV10MS.vmax;
+    vmin=QV10MS.vmin;
+    minval=0;
+    maxval=.03;
+    FillVal=QV10MS.FillValue;
+    desc='Specific Humidity kg/kg';
+    unitstr='kg/kg';
+
 end
 
-headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data','-ikind-',num2str(ikind));
-ptc1str=strcat('01 % Sea Ice Frac Value=',num2str(Stats(1,3),6));
-ptc25str=strcat('25 % Sea Ice Value=',num2str(Stats(6,3),6));
-ptc50str=strcat('50 % Sea Ice Value=',num2str(Stats(9,3),6));
-ptc75str=strcat('75 % Sea Ice Value=',num2str(Stats(12,3),6));
-ptc99str=strcat('99 % Sea Ice Vallue=',num2str(Stats(17,3),6));
+headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data-ikind-',num2str(ikind));
 numfracstr=strcat('fracNaN=',num2str(fracNaN,6));
+if(ikind==25)
+    ptc1str=strcat('01 % East Wind=',num2str(Stats(1,3),6));
+    ptc25str=strcat('25 % East Wind=',num2str(Stats(6,3),6));
+    ptc50str=strcat('50 % East Wind=',num2str(Stats(9,3),6));
+    ptc75str=strcat('75 % East Wind=',num2str(Stats(12,3),6));
+    ptc99str=strcat('99 % East Wind=',num2str(Stats(17,3),6));
+elseif(ikind==26)
+    ptc1str=strcat('01 % North Wind=',num2str(Stats(1,3),6));
+    ptc25str=strcat('25 % North Wind=',num2str(Stats(6,3),6));
+    ptc50str=strcat('50 % North Wind=',num2str(Stats(9,3),6));
+    ptc75str=strcat('75 % North Wind=',num2str(Stats(12,3),6));
+    ptc99str=strcat('99 % North Wind=',num2str(Stats(17,3),6));
+elseif(ikind==27)
+    ptc1str= strcat('01 % Spec Humidity=',num2str(Stats(1,3),6));
+    ptc25str=strcat('25 % Spec Humidity=',num2str(Stats(6,3),6));
+    ptc50str=strcat('50 % Spec Humidity=',num2str(Stats(9,3),6));
+    ptc75str=strcat('75 % Spec Humidity=',num2str(Stats(12,3),6));
+    ptc99str=strcat('99 % Spec Humidity=',num2str(Stats(17,3),6));
+
+end
 if(framecounter==1)
     fprintf(fid,'%s\n',headerstr);
+    fprintf(fid,'%s\n',numfracstr);
     fprintf(fid,'%s\n',ptc1str);
     fprintf(fid,'%s\n',ptc25str);
     fprintf(fid,'%s\n',ptc50str);
     fprintf(fid,'%s\n',ptc75str);
     fprintf(fid,'%s\n',ptc99str);
-    fprintf(fid,'%s\n',numfracstr);
-    fprintf(fid,'%s\n',' End Stats for Sea Ice Data');
+    fprintf(fid,'%s\n',' End Stats for Windstress Data');
 end
 zlimits=[minval maxval];
-incsize=(maxval-minval)/64;
-%% Now that the status have been calculated-go back and make any of the adjusted values less than 1E-5 equal to
-% a NaN value for plot purposes
-SeaIceAdj2=SeaIceAdj;
-[irows,jcols]=size(SeaIceAdj);
-iaddNaN=0;
-ntot2=irows*jcols;
-for ii=1:irows
-    for jj=1:jcols
-        nowVal=SeaIceAdj(ii,jj);
-        a1=isnan(nowVal);
-        if(a1~=1)
-            a2=abs(nowVal);
-            if(a2<1E-5)
-                SeaIceAdj2(ii,jj)=NaN;
-                iaddNaN=iaddNaN+1;
-            end
-        end
-    end
-end
-naddFrac=iaddNaN/ntot2;
-ab=2;
+incsize=(maxval-minval)/128;
 %% Fetch the map limits
 maplimitstr1='****Map Limits Follow*****';
 maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
@@ -127,16 +148,14 @@ elseif(itype==3)
 end
 set(gcf,'MenuBar','none');
 set(gcf,'Position',[hor1 vert1 widd lend])
-%% Plot the surface SeaIce on the map
-geoshow(SeaIceAdj2',Rpix,'DisplayType','surface');
-%zlimits=[minval maxval];
-%demcmap(zlimits);
+%% Plot the surface HFlux on the map
+geoshow(WindAdj',Rpix,'DisplayType','surface');
 demcmap('inc',[maxval minval],incsize);
 hc=colorbar;
 ylabel(hc,unitstr,'FontWeight','bold');
 tightmap
 hold on
-maxval2=maxval+1;
+maxval2=maxval+5;
 % load the country borders and plot them
 eval(['cd ' mappath(1:length(mappath)-1)]);
 load('USAHiResBoundaries.mat','USALat','USALon');
@@ -263,9 +282,6 @@ txtstr2=strcat('1 ptile =',num2str(Stats(1,3),6),'//-50 ptile =',num2str(Stats(9
 txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12);
 tx3=.10;
 ty3=.10;
-txtstr3=strcat('Note that for plot purposes values less than-',num2str(1E-5),'-were set to NaN values',...
-    '-this happened for-',num2str(naddFrac),'-frac of all points');
-txt3=text(tx3,ty3,txtstr3,'FontWeight','bold','FontSize',12);
 set(newaxesh,'Visible','Off');
 % Save this chart
 figstr=strcat(titlestr,'.jpg');
@@ -415,8 +431,14 @@ if((iCreatePDFReport==1) && (RptGenPresent==1))
         add(chapter,p2);   
 end
 pause(chart_time);
-if(framecounter==1)
-    fprintf(fid,'%s\n','------- Finished Plotting Latent Energy Flux------');
+if(framecounter==0)
+    if(ikind==25)
+        fprintf(fid,'%s\n','------- Finished Plotting East Wind At 10 M  ------');
+    elseif(ikind==26)
+        fprintf(fid,'%s\n','------- Finished Plotting North Wind At 10 M  ------');
+    elseif(ikind==27)
+        fprintf(fid,'%s\n','------- Finished Plotting Specific Humidty At 10 M  ------');
+    end
 end
 close('all');
 end

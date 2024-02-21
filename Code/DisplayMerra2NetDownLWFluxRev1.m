@@ -1,15 +1,18 @@
-function  DisplayMerra2NetDownLWFluxRev1(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+function  DisplayMerra2NetDownLWFluxRev2(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
 % Display the downward net  LW flux for dataset 04
 % This Rev1 version of the coe was written to split out the cleaning and
 % calculation of the statistics of the data from the plotting of same
+% This is changed from the Rev1 version to add in
 % Written By: Stephen Forczyk
-% Created: Jan 29,2024
-% Revised: -----
+% Created: Feb 04,2024
+% Revised: Feb 6,2024 changed limits on Open Water Down Flux
+% Revised: Changed Code so stats are only printed to the log file
+% on the first frame of data
 % Classification: Unclassified
 
 global LonS LatS TimeS iTimeSlice TimeSlices;
-global YearMonthDayStr1 YearMonthDayStr2;
-global LWGNTICES LWGNTWTRS;
+global YearMonthDayStr1 YearMonthDayStr2 framecounter;
+global LWGNTICES LWGNTWTRS SWGNTICES SWGNTWTRS;
 global WorldCityFileName World200TopCities;
 global iCityPlot maxCities;
 global iLogo LogoFileName1 LogoFileName2;
@@ -52,53 +55,56 @@ Hourstr=char(TimeSlices{iTimeSlice,1});
 
 
 if(ikind==7)
-    fprintf(fid,'%s\n','------- Start Plotting Sea Ice Net Down Flux  ------');
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea Ice Net Down Flux  ------');
+    end
     vmax=LWGNTICES.vmax;
     vmin=LWGNTICES.vmin;
-    minval=-200;
-    maxval=200;
+    minval=-50;
+    maxval=500;
     FillVal=LWGNTICES.FillValue;
     desc='Sea Ice Net Downward Flux';
     unitstr='W/m2';
 elseif(ikind==8)
-    fprintf(fid,'%s\n','------- Start Plotting Open Water Net Down Flux  ------');
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Open Water Net Down Flux  ------');
+    end
     vmax=LWGNTWTRS.vmax;
     vmin=LWGNTWTRS.vmin;
-    minval=-300;
-    maxval=300;
+    minval=-50;
+    maxval=500;
     FillVal=LWGNTWTRS.FillValue;
     desc='Open Water Net Downward Flux';
     unitstr='W/m2';
 end
 
 headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data-ikind-',num2str(ikind));
-fprintf(fid,'%s\n',headerstr);
-fprintf(fid,'%s\n',headerstr);
 ptc1str=strcat('01 % LWGNFlux Value=',num2str(Stats(1,3),6));
-fprintf(fid,'%s\n',ptc1str);
 ptc25str=strcat('25 % LWGNFlux Value=',num2str(Stats(6,3),6));
-fprintf(fid,'%s\n',ptc25str);
 ptc50str=strcat('50 % LWGNFlux Value=',num2str(Stats(9,3),6));
-fprintf(fid,'%s\n',ptc50str);
 ptc75str=strcat('75 % LWGNFlux Value=',num2str(Stats(12,3),6));
-fprintf(fid,'%s\n',ptc75str);
 ptc99str=strcat('99 % LWGNFlux Vallue=',num2str(Stats(17,3),6));
-fprintf(fid,'%s\n',ptc99str);
 numfracstr=strcat('fracNaN=',num2str(fracNaN,6));
-fprintf(fid,'%s\n',numfracstr);
-fprintf(fid,'%s\n',' End Stats for LGWNFlux Data');
-
+if(framecounter==1)
+    fprintf(fid,'%s\n',headerstr);
+    fprintf(fid,'%s\n',ptc1str);
+    fprintf(fid,'%s\n',ptc25str);
+    fprintf(fid,'%s\n',ptc50str);
+    fprintf(fid,'%s\n',ptc75str);
+    fprintf(fid,'%s\n',ptc99str);
+    fprintf(fid,'%s\n',numfracstr);
+    fprintf(fid,'%s\n',' End Stats for LGWNFlux Data');
+end
 zlimits=[minval maxval];
-incsize=(maxval-minval)/64;
+incsize=(maxval-minval)/128;
 %% Fetch the map limits
-
 maplimitstr1='****Map Limits Follow*****';
-%fprintf(fid,'%s\n',maplimitstr1);
 maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
-%fprintf(fid,'%s\n',maplimitstr2);
 maplimitstr3=strcat('SouthEdge=',num2str(southEdge,7),'-NorthEdge=',num2str(northEdge));
-%fprintf(fid,'%s\n',maplimitstr3);
 maplimitstr4='****Map Limits End*****';
+%fprintf(fid,'%s\n',maplimitstr1);
+%fprintf(fid,'%s\n',maplimitstr2);
+%fprintf(fid,'%s\n',maplimitstr3);
 %fprintf(fid,'%s\n',maplimitstr4);
 %% Set up the map axis
 itype=2;
@@ -399,7 +405,9 @@ if((iCreatePDFReport==1) && (RptGenPresent==1))
         add(chapter,p2);   
 end
 pause(chart_time);
-fprintf(fid,'%s\n','------- Finished Plotting Net Downwards  Flux------');
+if(framecounter==1)
+    fprintf(fid,'%s\n','------- Finished Plotting Net Downwards  Flux------');
+end
 close('all');
 end
 

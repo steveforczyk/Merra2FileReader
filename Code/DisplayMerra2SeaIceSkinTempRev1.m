@@ -12,7 +12,7 @@ global LonS LatS TimeS iTimeSlice TimeSlices;
 global YearMonthDayStr1 YearMonthDayStr2;
 global TSKINICES TSKINWTRS U10MS V10MS;
 global WorldCityFileName World200TopCities;
-global iCityPlot maxCities;
+global iCityPlot maxCities framecounter;
 global iLogo LogoFileName1 LogoFileName2;
 
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter;
@@ -53,7 +53,9 @@ Hourstr=char(TimeSlices{iTimeSlice,1});
 
 
 if(ikind==11)
-    fprintf(fid,'%s\n','------- Start Plotting Sea Ice Skin Temp  ------');
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Sea Ice Skin Temp  ------');
+    end
     vmax=TSKINICES.vmax;
     vmin=TSKINICES.vmin;
     minval=-40;
@@ -62,7 +64,9 @@ if(ikind==11)
     desc='Sea Ice Skin Temp';
     unitstr='Deg-C';
 elseif(ikind==12)
-    fprintf(fid,'%s\n','------- Start Plotting Open Water Skin Temp  ------');
+    if(framecounter==1)
+        fprintf(fid,'%s\n','------- Start Plotting Open Water Skin Temp  ------');
+    end
     vmax=TSKINWTRS.vmax;
     vmin=TSKINWTRS.vmin;
     minval=-40;
@@ -73,32 +77,33 @@ elseif(ikind==12)
 end
 
 headerstr=strcat('Basic Stats wMeans follow for-',desc,'-Data-ikind-',num2str(ikind));
-fprintf(fid,'%s\n',headerstr);
 ptc1str=strcat('01 % Skin Temp Value=',num2str(Stats(1,3),6));
-fprintf(fid,'%s\n',ptc1str);
 ptc25str=strcat('25 % Skin Temp Value=',num2str(Stats(6,3),6));
-fprintf(fid,'%s\n',ptc25str);
 ptc50str=strcat('50 % Skin Temp Value Value=',num2str(Stats(9,3),6));
-fprintf(fid,'%s\n',ptc50str);
 ptc75str=strcat('75 % Skin Temp Value=',num2str(Stats(12,3),6));
-fprintf(fid,'%s\n',ptc75str);
 ptc99str=strcat('99 % Skin Temp Vallue=',num2str(Stats(17,3),6));
-fprintf(fid,'%s\n',ptc99str);
 numfracstr=strcat('fracNaN=',num2str(fracNaN,6));
-fprintf(fid,'%s\n',numfracstr);
-fprintf(fid,'%s\n',' End Stats for Skin Temp Data');
+if(framecounter==1)
+    fprintf(fid,'%s\n',headerstr);
+    fprintf(fid,'%s\n',ptc1str);
+    fprintf(fid,'%s\n',ptc25str);
+    fprintf(fid,'%s\n',ptc50str);
+    fprintf(fid,'%s\n',ptc75str);
+    fprintf(fid,'%s\n',ptc99str);
+    fprintf(fid,'%s\n',numfracstr);
+    fprintf(fid,'%s\n',' End Stats for Skin Temp Data');
+end
 SkinTempAdjC=SkinTempAdj-273.15;
 zlimits=[minval maxval];
 incsize=(maxval-minval)/128;
 %% Fetch the map limits
-
 maplimitstr1='****Map Limits Follow*****';
-%fprintf(fid,'%s\n',maplimitstr1);
 maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
-%fprintf(fid,'%s\n',maplimitstr2);
 maplimitstr3=strcat('SouthEdge=',num2str(southEdge,7),'-NorthEdge=',num2str(northEdge));
-%fprintf(fid,'%s\n',maplimitstr3);
 maplimitstr4='****Map Limits End*****';
+%fprintf(fid,'%s\n',maplimitstr1);
+%fprintf(fid,'%s\n',maplimitstr2);
+%fprintf(fid,'%s\n',maplimitstr3);
 %fprintf(fid,'%s\n',maplimitstr4);
 %% Set up the map axis
 itype=2;
@@ -401,7 +406,9 @@ if((iCreatePDFReport==1) && (RptGenPresent==1))
         add(chapter,p2);   
 end
 pause(chart_time);
-fprintf(fid,'%s\n','------- Finished Plotting Skin Temp------');
+if(framecounter==1)
+    fprintf(fid,'%s\n','------- Finished Plotting Skin Temp------');
+end
 close('all');
 end
 
