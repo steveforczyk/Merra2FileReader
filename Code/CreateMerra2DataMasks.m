@@ -74,7 +74,8 @@ global Merra2GuineaBissauMask Merra2LuxembourgMask Merra2MaldivesMask Merra2Malt
 global Merra2MarshalIslandsMask Merra2MartiniqueMask Merra2MicronesiaMask Merra2MoldovaMask;
 global Merra2PolynesiaMask Merra2SamoaMask Merra2TimorMask Merra2TurksMask;
 global Merra2MontenegroMask Merra2VanuatuMask Merra2VirginIslandsMask;
-global Merra2CentralAfricanRepublicMask;
+global Merra2CentralAfricanRepublicMask Merra2BritishVirginIslandsMask;
+global Merra2FTSMask;
 global numlat numlon Rpix latlim lonlim rasterSize;
 global westEdge eastEdge southEdge northEdge;
 
@@ -1865,38 +1866,38 @@ warning('off');
 % disp(dispstr)
 
 %% Make The Ukraine Mask
-eval(['cd ' mappath(1:length(mappath)-1)]);
-load('UkraineBoundaries.mat','UkraineLat','UkraineLon');
-Merra2UkraineMask=zeros(576,361);
-for i=1:numlon
-    xq(1,1)=Merra2DataRasterLon(i,1)-.312;
-    xq(2,1)=Merra2DataRasterLon(i,1)+.312;
-    xq(3,1)=Merra2DataRasterLon(i,1)+.312;
-    xq(4,1)=Merra2DataRasterLon(i,1)-.312;
-    xq(5,1)=Merra2DataRasterLon(i,1)-.312;
-    xqq=Merra2DataRasterLon(i,1);
-    for j=1:numlat
-        yq(1,1)=Merra2DataRasterLat(j,1)-.25;
-        yq(2,1)=Merra2DataRasterLat(j,1)-.25;
-        yq(3,1)=Merra2DataRasterLat(j,1)+.25;
-        yq(4,1)=Merra2DataRasterLat(j,1)+.25;
-        yq(5,1)=Merra2DataRasterLat(j,1)-.25;
-        yqq=Merra2DataRasterLat(j,1);
-        [in,on]=inpolygon(xqq,yqq, UkraineLon, UkraineLat);
-        Merra2UkraineMask(i,j)=in;
-    end
-    dispstr=strcat('finished with lon#',num2str(i),'-for  Ukraine');
-    disp(dispstr);
-end
-eval(['cd ' maskpath(1:length(maskpath)-1)]);
-actionstr='save';
-varstr='Merra2UkraineMask';
-MatFileName='UkraineMask';
-qualstr='-v7.3';
-[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
-eval(cmdString)
-dispstr=strcat('Wrote Matlab File-',MatFileName);
-disp(dispstr)
+% eval(['cd ' mappath(1:length(mappath)-1)]);
+% load('UkraineBoundaries.mat','UkraineLat','UkraineLon');
+% Merra2UkraineMask=zeros(576,361);
+% for i=1:numlon
+%     xq(1,1)=Merra2DataRasterLon(i,1)-.312;
+%     xq(2,1)=Merra2DataRasterLon(i,1)+.312;
+%     xq(3,1)=Merra2DataRasterLon(i,1)+.312;
+%     xq(4,1)=Merra2DataRasterLon(i,1)-.312;
+%     xq(5,1)=Merra2DataRasterLon(i,1)-.312;
+%     xqq=Merra2DataRasterLon(i,1);
+%     for j=1:numlat
+%         yq(1,1)=Merra2DataRasterLat(j,1)-.25;
+%         yq(2,1)=Merra2DataRasterLat(j,1)-.25;
+%         yq(3,1)=Merra2DataRasterLat(j,1)+.25;
+%         yq(4,1)=Merra2DataRasterLat(j,1)+.25;
+%         yq(5,1)=Merra2DataRasterLat(j,1)-.25;
+%         yqq=Merra2DataRasterLat(j,1);
+%         [in,on]=inpolygon(xqq,yqq, UkraineLon, UkraineLat);
+%         Merra2UkraineMask(i,j)=in;
+%     end
+%     dispstr=strcat('finished with lon#',num2str(i),'-for  Ukraine');
+%     disp(dispstr);
+% end
+% eval(['cd ' maskpath(1:length(maskpath)-1)]);
+% actionstr='save';
+% varstr='Merra2UkraineMask';
+% MatFileName='UkraineMask';
+% qualstr='-v7.3';
+% [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+% eval(cmdString)
+% dispstr=strcat('Wrote Matlab File-',MatFileName);
+% disp(dispstr)
 % %% Make The Germany Mask
 % eval(['cd ' mappath(1:length(mappath)-1)]);
 % load('GermanyBoundaries.mat','GermanyLat','GermanyLon');
@@ -3483,6 +3484,44 @@ disp(dispstr)
 % eval(cmdString)
 % dispstr=strcat('Wrote Matlab File-',MatFileName);
 % disp(dispstr)
+%% Make The Dominica Mask
+% eval(['cd ' mappath(1:length(mappath)-1)]);
+% load('DominicaBoundaries.mat','DominicaLat','DominicaLon');
+% Merra2DominicaMask=zeros(576,361);
+% for i=1:numlon
+%     xq(1,1)=Merra2DataRasterLon(i,1)-.312;
+%     xq(2,1)=Merra2DataRasterLon(i,1)+.312;
+%     xq(3,1)=Merra2DataRasterLon(i,1)+.312;
+%     xq(4,1)=Merra2DataRasterLon(i,1)-.312;
+%     xq(5,1)=Merra2DataRasterLon(i,1)-.312;
+%     xqq=Merra2DataRasterLon(i,1);
+%     for j=1:numlat
+%         yq(1,1)=Merra2DataRasterLat(j,1)-.25;
+%         yq(2,1)=Merra2DataRasterLat(j,1)-.25;
+%         yq(3,1)=Merra2DataRasterLat(j,1)+.25;
+%         yq(4,1)=Merra2DataRasterLat(j,1)+.25;
+%         yq(5,1)=Merra2DataRasterLat(j,1)-.25;
+%         yqq=Merra2DataRasterLat(j,1);
+%         try
+%             [in,on]=inpolygon(xqq,yqq,DominicaLon,DominicaLat);
+%             Merra2DominicaMask(i,j)=in;
+%         catch
+%             Merra2DominicaMask(i,j)=0;
+%         end
+%     end
+%     dispstr=strcat('finished with lon#',num2str(i),'-for Dominica');
+%     disp(dispstr);
+% end
+% eval(['cd ' maskpath(1:length(maskpath)-1)]);
+% actionstr='save';
+% varstr='Merra2DominicaMask';
+% MatFileName='DominicaMask';
+% qualstr='-v7.3';
+% [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+% eval(cmdString)
+% dispstr=strcat('Wrote Matlab File-',MatFileName);
+% disp(dispstr)
+% ab=1;
 %% Make The DomincanRepublic Mask
 % eval(['cd ' mappath(1:length(mappath)-1)]);
 % load('DominicanRepublicBoundaries','DRLat','DRLon');
@@ -8348,5 +8387,71 @@ disp(dispstr)
 % eval(cmdString)
 % dispstr=strcat('Wrote Denmark File-',MatFileName);
 % disp(dispstr)
+%% Make The British Virgin Islands Mask 
+% eval(['cd ' mappath(1:length(mappath)-1)]);
+% load('BritishVirginIslandsBoundaries.mat','BVALat','BVALon');
+% Merra2BritishVirginIslandsMask=zeros(576,361);
+% for i=1:numlon
+%     xq(1,1)=Merra2DataRasterLon(i,1)-.312;
+%     xq(2,1)=Merra2DataRasterLon(i,1)+.312;
+%     xq(3,1)=Merra2DataRasterLon(i,1)+.312;
+%     xq(4,1)=Merra2DataRasterLon(i,1)-.312;
+%     xq(5,1)=Merra2DataRasterLon(i,1)-.312;
+%     xqq=Merra2DataRasterLon(i,1);
+%     for j=1:numlat
+%         yq(1,1)=Merra2DataRasterLat(j,1)-.25;
+%         yq(2,1)=Merra2DataRasterLat(j,1)-.25;
+%         yq(3,1)=Merra2DataRasterLat(j,1)+.25;
+%         yq(4,1)=Merra2DataRasterLat(j,1)+.25;
+%         yq(5,1)=Merra2DataRasterLat(j,1)-.25;
+%         yqq=Merra2DataRasterLat(j,1);
+%         [in,on]=inpolygon(xqq,yqq,BVALon,BVALat);
+%         Merra2BritishVirginIslandsMask(i,j)=in;
+%     end
+%     dispstr=strcat('finished with lon#',num2str(i),'-BristishVirginIslands');
+%     disp(dispstr);
+% end
+% eval(['cd ' maskpath(1:length(maskpath)-1)]);
+% actionstr='save';
+% varstr='Merra2BritishVirginIslandsMask';
+% MatFileName='BritishVirginIslandsMask';
+% qualstr='-v7.3';
+% [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+% eval(cmdString)
+% dispstr=strcat('Wrote BritishVirginIslands File-',MatFileName);
+% disp(dispstr)
+%% Make The FTS Mask 
+eval(['cd ' mappath(1:length(mappath)-1)]);
+load('FTSBoundaries.mat','FTSLat','FTSLon');
+Merra2FTSMask=zeros(576,361);
+for i=1:numlon
+    xq(1,1)=Merra2DataRasterLon(i,1)-.312;
+    xq(2,1)=Merra2DataRasterLon(i,1)+.312;
+    xq(3,1)=Merra2DataRasterLon(i,1)+.312;
+    xq(4,1)=Merra2DataRasterLon(i,1)-.312;
+    xq(5,1)=Merra2DataRasterLon(i,1)-.312;
+    xqq=Merra2DataRasterLon(i,1);
+    for j=1:numlat
+        yq(1,1)=Merra2DataRasterLat(j,1)-.25;
+        yq(2,1)=Merra2DataRasterLat(j,1)-.25;
+        yq(3,1)=Merra2DataRasterLat(j,1)+.25;
+        yq(4,1)=Merra2DataRasterLat(j,1)+.25;
+        yq(5,1)=Merra2DataRasterLat(j,1)-.25;
+        yqq=Merra2DataRasterLat(j,1);
+        [in,on]=inpolygon(xqq,yqq,FTSLon,FTSLat);
+        Merra2FTSMask(i,j)=in;
+    end
+    dispstr=strcat('finished with lon#',num2str(i),'-FTS');
+    disp(dispstr);
+end
+eval(['cd ' maskpath(1:length(maskpath)-1)]);
+actionstr='save';
+varstr='Merra2FTSMask';
+MatFileName='FTSMask';
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
+eval(cmdString)
+dispstr=strcat('Wrote FTS File-',MatFileName);
+disp(dispstr)
 warning('on')
 ab=3;

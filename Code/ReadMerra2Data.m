@@ -32,7 +32,7 @@ global PascalsToMilliBars PascalsToPsi;
 global DustSizeGroups BlackCarbonSizeGroups SeaSaltSizeGroups;
 global DustROICountry MaskList MaskChoices  MaskFileName ;
 global SeaMaskFileName SeaBoundaryFiles SeaMaskChoices numSelectedSeaMasks;
-global SelectedSeaMaskData SortedSBF indexSBF;
+global SelectedSeaMaskData SelectedLandMaskData SortedSBF indexSBF;
 global SelectedMaskData numSelectedMasks numUserSelectedSeaMasks;
 global Merra2FileName Merra2FileNames MapFormFactor;
 global Merra2WorkingMask1 Merra2WorkingMask2 Merra2WorkingMask3;
@@ -44,7 +44,7 @@ global Merra2WorkingSeaMask1 Merra2WorkingSeaMask2 Merra2WorkingSeaMask3;
 global Merra2WorkingSeaMask4 Merra2WorkingSeaMask5;
 global ROIName1 ROIName2 ROIName3 ROIName4 ROIName5;
 global ROIName6 ROIName7 ROIName8 ROIName9 ROIName10;
-global Dataset3Masks;
+global Dataset3Masks Dataset4Masks SelectedMaskIndices;
 global Merra2WorkingSeaBoundary1Lat Merra2WorkingSeaBoundary1Lon Merra2WorkingSeaBoundary1Area;
 global Merra2WorkingSeaBoundary2Lat Merra2WorkingSeaBoundary2Lon Merra2WorkingSeaBoundary2Area;
 global Merra2WorkingSeaBoundary3Lat Merra2WorkingSeaBoundary3Lon Merra2WorkingSeaBoundary3Area;
@@ -52,6 +52,7 @@ global Merra2WorkingSeaBoundary4Lat Merra2WorkingSeaBoundary4Lon Merra2WorkingSe
 global Merra2WorkingSeaBoundary5Lat Merra2WorkingSeaBoundary5Lon Merra2WorkingSeaBoundary5Area;
 global SeaSaltVarCorr;
 global Dataset3TempChanges;
+global NorthPoleFile NPolePOI AfricaTemps;
 
 global Merra2DataPaths Merra2Path MerraDataCollectionTimes;
 global CountyBoundaryFile;
@@ -68,10 +69,10 @@ global JpegCounter JpegFileList;
 global ImageProcessPresent ;
 global iReport ifixedImagePaths;
 global iSubMean iCheckConfig isaveJpeg;
-global MovieFlags;
+global MovieFlags iCamLight;
 global MonthDayStr MonthDayYearStr YearMonthStr YearMonthStrStart YearMonthStrEnd;
 global WorldCityFileName World200TopCities;
-global iCityPlot maxCities;
+global iCityPlot maxCities Merra2Cities Merra2WorldCities;
 global PressureFileName ;
 global SelectedFiles numSelectedFiles path1;
 global iLogo LogoFileName1 LogoFileName2;
@@ -100,8 +101,8 @@ global RCOEFF RCOEFFHist RCOEFFLabels;
 
 global matpath datapath maskpath watermaskpath oceanmappath;
 global antarcticpath antarcticshapefile;
-global jpegpath tiffpath moviepath savepath;
-global excelpath ascpath citypath tablepath;
+global jpegpath tiffpath moviepath savepath geotiffpath;
+global excelpath ascpath citypath tablepath tiffpath tiffpath2;
 global ipowerpoint PowerPointFile scaling stretching padding;
 global ichartnum;
 global ColorList RGBVals ColorList2 xkcdVals LandColors;
@@ -119,7 +120,7 @@ global YearValue MonthValue DayValue HourValue MinValue SecValue frameDate;
 global pwd;
 global HS10 HS25 HS50 HS75 HS90 HS100 HSLow HSHigh HSNaN;
 global O3S10 O3S25 O3S50 O3S75 O3S90 O3S100 O3SLow O3SHigh O3SNaN;
-global brightblue;
+global iFastSave iSelectSet4;
 %% Control Flags DataSet 2
 global iBlackCarbon iDust iOrganicCarbon iSeaSalt iSulfate iAllAerosols;
 global iSeaSaltCalc iDustCalc;
@@ -160,26 +161,30 @@ northamericalakespath='D:\Forczyk\Map_Data\Natural_Earth\Ten_Meter_Physical\';
 NorthAmericaLakes='ne_10m_lakes_north_america.shp';
 jpegpath='D:\Goes16\Imagery\Aug26_2020\Jpeg_Files\';
 pdfpath='K:\Merra-2\PDF_Reports\';
+geotiffpath='K:\Merra-2\Geotiff_Files\';
 %prefpath='D:\Goes16\Preference_Files\';
 govjpegpath='K:\Merra-2\gov_jpeg\';
 figpath='D:\Goes16\Imagery\Oct_FigFiles\';
 logpath='H:\Goes16\Imagery\Oct22_2017\Log_Files\'; %This really needs to be set later!!!
 tiffpath='D:\Forczyk\Map_Data\InterstateSigns\';
+tiffpath2='D:\Merra-2\netCDF\Dataset04\Tiff_Files\';
 Countryshapepath='D:\Forczyk\Map_Data\CountryShapefiles\';
 gridpath='D:\Goes16\Grids\';
 oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
 antarcticpath='K:\NSDIC\Map_Data\Antarctica\';
 antarcticshapefile='yk702xd7587.shp';
+NorthPoleFile='NorthPolePoints.mat';
 %% Set Flags and default values
 % Set some flags to control program execution
 iCreatePDFReport=0;
 iSkipReportFrames=2;
-iSkipDisplayFrames=2;
+iSkipDisplayFrames=5;
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
 icurvefit=1;
 ifixedImagePaths=1;
+iFastSave=1;
 isaveJpeg=1; % Set to 0 to not save jpegs (not recommended),1=print to save (slow)
 % 2= Quick save using screencapture (recommended)
 iPrintTimingInfo=1;
@@ -208,7 +213,7 @@ iSelectSet3=3;
 % Select a Time Slice
 iTimeSlice=2;
 LogoFileName1='Merra2-LogoB.jpg';
-LogoFileName2='CDT_Logo4.jpg';
+LogoFileName2='CDT_Logo6.jpg';
 PressureLevelUsed=cell(5,4);
 PressureLevelUsed{1,1}='Index';
 PressureLevelUsed{1,2}='Model Pressure-hPa';
@@ -250,7 +255,7 @@ DataSetLinks{4,1}='M2T1NXOCN_5.12.4 ';
 DataSetLinks{4,2}='';
 DataSetLinks{4,3}='4';
 DataSetLinks{4,4}='Hourly-Time Averaged';
-DatasetLinks{4,5}='10.5067/Y67YQ1L3ZZ4R';
+DataSetLinks{4,5}='10.5067/Y67YQ1L3ZZ4R';
 DataSetLinks{5,1}=' ';
 DataSetLinks{5,2}='';
 DataSetLinks{5,3}='4';
@@ -436,7 +441,9 @@ integrateRate=0;
 iScale=1;
 viewAZ=-80;
 viewEL=30;
-viewAZInc=2;
+viewAZInc=-.5;
+iSelectSet4=5;
+iCamLight=1;
 %% Set up some initial data
 NumProcFiles=0;
 ProcFileList=cell(1,4);
@@ -589,7 +596,7 @@ igrid=1;
 % Set up parameters for graphs that will center them on the screen
 [hor1,vert1,Fz1,Fz2,machine]=SetScreenCoordinates(widd,lend);
 [hor2,vert2,Fz1,Fz2,machine]=SetScreenCoordinates(widd2,lend2);
-chart_time=3;
+chart_time=5;
 idirector=1;
 initialtimestr=datestr(now);
 igo=1;
@@ -804,10 +811,10 @@ while igo>0 % This setup up a loop to processing various file until user decides
          end
          ab=2;
      elseif(indx==4)
-        jpegpath='K:\Merra-2\netCDF\Dataset04\Jpeg_Files\';
+        jpegpath='D:\Merra-2\netCDF\Dataset04\Jpeg_Files\';
         pdfpath='K:\Merra-2\netCDF\Dataset04\PDF_Files\';
         logpath='K:\Merra-2\netCDF\Dataset04\Log_Files\';
-        moviepath='K:\Merra-2\netCDF\Dataset04\Movies\';
+        moviepath='D:\Merra-2\netCDF\Dataset04\Movies\';
         savepath='K:\Merra-2\netCDF\Dataset04\Matlab_Files\';
         tablepath='K:\Merra-2\netCDF\Dataset04\Tables\';
         logfilename=strcat('Merra2LogFileIndx4-',logfilename,'.txt');
@@ -1242,10 +1249,8 @@ if(numUserSelectedSeaMasks>=4)
     Merra2WorkingSeaBoundary4Area=seaArea;
 else
    eval(['cd ' watermaskpath(1:length(watermaskpath)-1)]) 
-
-   maskFile='NorthAtlanticOceanMask.mat';
-   maskVar=['Merra2NorthAtlanticOcean' ...
-       'Mask'];
+    maskFile='NorthAtlanticOceanMask.mat';
+   maskVar=['Merra2NorthAtlanticOcean','Mask'];
    maskVar2=char(SortedSBF{75,3});
    load(maskFile,maskVar);
    Merra2WorkingSeaMask5=eval(maskVar);
@@ -1388,10 +1393,10 @@ end
         end
         igo=0;
     elseif(indx==4)% M2T1NXOCN
-        jpegpath='K:\Merra-2\netCDF\Dataset04\Jpeg_Files\';
+        jpegpath='D:\Merra-2\netCDF\Dataset04\Jpeg_Files\';
         pdfpath='K:\Merra-2\netCDF\Dataset04\PDF_Files\';
         logpath='K:\Merra-2\netCDF\Dataset04\Log_Files\';
-        moviepath='K:\Merra-2\netCDF\Dataset04\Movies\';
+        moviepath='D:\Merra-2\netCDF\Dataset04\Movies\';
         savepath='K:\Merra-2\netCDF\Dataset04\Matlab_Files\';
         tablepath='K:\Merra-2\netCDF\Dataset04\Tables\';
         logfilename=strcat('Merra2LogFileIndx1-',logfilename,'.txt');
@@ -1416,6 +1421,9 @@ end
         end
         Merra2FileNames=NewFileList;
         Merra2FileName=char(Merra2FileNames{1,1});
+        if(iFastSave==1)
+            chart_time=3;
+        end
         prefixString='NPIceFraction';
         [TempMovieName4A] = CreateMovieFileName(prefixString,Merra2FileName);
         prefixString='SPIceFraction';
@@ -1459,22 +1467,77 @@ end
          HourValue=iTimeSlice-1;
          MinValue=0;
          SecValue=0;
+% Load the List of Merra2 Cities for future use
+load("Merra2CityList.mat");
+maxCities=height(Merra2WorldCities);
+Merra2Cities= table2cell(Merra2WorldCities);
+Dataset4Masks=struct('ROI',[],'File',[],'Mask',[]);
+% Load the List of LandMasks for future use
+eval(['cd ' maskpath(1:length(maskpath)-1)]);
+load(MaskFileName,'MaskList','Dataset4Masks');
+SelectedMaskIndices=zeros(9,1);
+SelectedMaskIndices(1,1)=1;% Africa
+SelectedMaskIndices(2,1)=10;%Algeria
+SelectedMaskIndices(3,1)=42;%Chad
+SelectedMaskIndices(4,1)=56;%Egypt
+SelectedMaskIndices(5,1)=104;%Libya
+SelectedMaskIndices(6,1)=11;%Angola
+SelectedMaskIndices(7,1)=131;%Nigeria
+SelectedMaskIndices(8,1)=95;%Kenya
+SelectedMaskIndices(9,1)=123;% Mozambique
+numSelectedMasks=5;
+
+for jj=1:numSelectedMasks
+    inds=jj;
+    SelectedMaskData{jj,1}=MaskList{inds,1};
+    SelectedMaskData{jj,2}=MaskList{inds,2};
+    SelectedMaskData{jj,3}=MaskList{inds,3};
+end
+% Load up these Masks
+% for jj=1:numSelectedMasks
+%     maskFile=char(SelectedMaskData{jj,1});
+%     maskVar=char(SelectedMaskData{jj,2});
+%     maskROI=char(SelectedMaskData{jj,3});
+%     load(maskFile,maskVar);
+%     Merra2WorkingMask1=eval(maskVar);
+%     Dataset4Masks(jj,1).ROI=maskROI;
+%     Dataset4Masks(jj,1).File=maskFile;
+%     Dataset4Masks(jj,1).Mask=Merra2WorkingMask1;
+%     dispstr=strcat('Added mask #-',num2str(jj),'-for ROI-',maskROI);
+%     disp(dispstr)
+% end
+ab=1;
+% maskFile=char(SelectedMaskData{2,1});
+% maskVar=char(SelectedMaskData{2,2});
+% maskROI=char(SelectedMaskData{2,3});
+% load(maskFile,maskVar);
+% Merra2WorkingMask1=eval(maskVar);
+% Dataset4Masks(2).ROI=maskROI;
+% Dataset4Masks(2).File=maskFile;
+% Dataset4Masks(2).Mask=Merra2WorkingMask1;
+
+ab=1;
+% Load the North Pole Region POI for future use
+eval(['cd ' antarcticpath(1:length(antarcticpath)-1)]);
+load(NorthPoleFile)
+ab=1;
  % Now start looping thru the selected files
        eval(['cd ' moviepath(1:length(moviepath)-1)]);
 %       TempMovieName='ArcticIce';
-       vTemp4A = VideoWriter(TempMovieName4A,'MPEG-4');
-       vTemp4A.Quality=100;
-       vTemp4A.FrameRate=3;
-       open(vTemp4A);
-       vTemp4B = VideoWriter(TempMovieName4B,'MPEG-4');
-       vTemp4B.Quality=100;
-       vTemp4B.FrameRate=3;
-       open(vTemp4B);
+%        vTemp4A = VideoWriter(TempMovieName4A,'MPEG-4');
+%        vTemp4A.Quality=100;
+%        vTemp4A.FrameRate=3;
+%        open(vTemp4A);
+%        vTemp4B = VideoWriter(TempMovieName4B,'MPEG-4');
+%        vTemp4B.Quality=100;
+%        vTemp4B.FrameRate=3;
+%        open(vTemp4B);
        vTemp30 = VideoWriter(TempMovieName30,'MPEG-4');
        vTemp30.Quality=100;
-       vTemp30.FrameRate=3;
+       vTemp30.FrameRate=5;
        open(vTemp30);
        framecounter=0;
+       tic;
         for nn=1:numSelectedFiles
             nowFile=Merra2FileNames{nn,1}; 
             framecounter=framecounter+1;
@@ -1483,10 +1546,19 @@ end
                 '-of-',num2str(numSelectedFiles),'-Files');
             disp(dispstr)
         end
-         close(vTemp4A);
-         close(vTemp4B);
+%          close(vTemp4A);
+%          close(vTemp4B);
          close(vTemp30);
     igo=0;
+    elapsed_time=toc;
+    dispstr=strcat('elapsed run time-',num2str(elapsed_time));
+    disp(dispstr);
+    timeperframe=elapsed_time/framecounter;
+    timeperframestr=strcat('Time to run a frame-',num2str(timeperframe));
+    dispstr=strcat(timeperframestr);
+    runtimestr=dispstr;
+    disp(dispstr);
+    SaveDataset04FinalResults()
     elseif(indx==7)
         ReadDataset07() 
     elseif(indx==8)% M2TMNXRAD_5.12.4
@@ -1956,7 +2028,9 @@ if((iPrintTimingInfo==1) && (framecounter>2) && (NumProcFiles>3))
     end
 end
 %% Run closeout
+
 endruntime=deblank(datestr(now));
+fprintf(fid,'%s\n',runtimestr);
 endrunstr=strcat('Finished Merra 2 Analysis Run at-',endruntime);
 fprintf(fid,'%s\n',endrunstr);
 fclose(fid);

@@ -3,12 +3,14 @@ function PlotWindQuiver(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
 % Written By: Stephen Forczyk using scrips from the ClimateData Toolbox
 % written by Chad Green taken from Matlab Central 
 % Created: Feb 19,2024
-% Revised: ------
+% Revised: Feb 20,2024 added Climate Toolbox Logo and used globle Plot
+% from CDT
+% Revised: Feb 23,2024 added Fast save capability
 % Classification: Public Domain
 global YearMonthStr YearStr MonthStr framecounter numSelectedFiles;
 global YearMonthDayStr1;
 
-global idebug iScale iReset;
+global idebug iScale iReset iCamLight;
 global LonS LatS TimeS iTimeSlice ;
 
 global U10MTable U10MTT U10M01 U10M25 U10M50 U10M75 U10M90 U10M100 U10MNaN;
@@ -17,6 +19,7 @@ global T10MTable T10MTT T10M01 T10M25 T10M50 T10M75 T10M90 T10M100 T10MNaN;
 global QV10MTable QV10MTT QV10M01 QV10M25 QV10M50 QV10M75 QV10M90 QV10M100 QV10MNaN;
 global U10 V10 TAirTempC; 
 global vTemp30 TempMovieName30;
+global SubSolarLat SubSolarLon;
 
 
 global RasterLats RasterLons Rpix;
@@ -28,7 +31,7 @@ global Merra2ShortFileName;
 global numtimeslice TimeSlices;
 global Years Months Days;
 global iTimeSlice iPress42;
-global viewAZ viewEL viewAZInc
+global viewAZ viewEL viewAZInc iFastSave;
 
 global fid;
 global widd2 lend2;
@@ -43,7 +46,7 @@ global iLogo LogoFileName1 LogoFileName2;
 global RptGenPresent iCreatePDFReport pdffilename rpt chapter tocc lof lot;
 
 global matpath datapath;
-global jpegpath tiffpath moviepath savepath;
+global jpegpath tiffpath tiffpath2 moviepath savepath;
 global excelpath ascpath citypath tablepath;
 global ipowerpoint PowerPointFile scaling stretching padding;
 global ichartnum;
@@ -131,12 +134,24 @@ if(ikind==30)
     q = globequiver(lats,lons,U10,V10,'density',75,'k');
     viewAZ=viewAZ+viewAZInc;
     view(viewAZ,viewEL);
-%     if((viewAZ>30) || (iReset>=30))
-%         viewAzInc=-viewAZInc;
-%         iReset=0;
-%     elseif(iReset<30)
-%         iReset=iReset-1;
-%     end
+    hc=colorbar;
+    hc.Label.String='AirTemp-Deg C';
+    hc.Label.FontWeight='bold';
+    hc.Label.Color=[1 1 0];
+    set(hc,'FontWeight','bold');
+    set(hc,'Color',[1 1 0]);
+    set(hc,'Position',[.8681 0.1500 0.0198 0.65]);
+    set(hc,'TickLabels',[-40 -30 -20 -10 0 10 20 30 40]);
+    set(hc,'Ticks',[-40 -30 -20 -10 0 10 20 30 40]);
+    if(iCamLight==1)
+        lightangle(SubSolarLon,SubSolarLat)
+        h.FaceLighting = 'gouraud';
+        h.AmbientStrength = 0.3;
+        h.DiffuseStrength = 0.8;
+        h.SpecularStrength = 0.9;
+        h.SpecularExponent = 25;
+        h.BackFaceLighting = 'unlit';
+    end
     axis tight
 end
 ht=title(titlestr);
@@ -153,7 +168,7 @@ if(iLogo==1)
     [x, ~]=imread(LogoFileName1);
     imshow(x);
     set(ha2,'handlevisibility','off','visible','off')
-    ha3=axes('position',[haPos(1)+.7,haPos(2)-.04, .1,.04,]);
+    ha3=axes('position',[haPos(1)+.70,haPos(2)-.05, .12,.07,]);
     [x2, ~]=imread(LogoFileName2);
     imshow(x2);
     set(ha3,'handlevisibility','off','visible','off')
@@ -169,18 +184,28 @@ tx2=.10;
 ty2=.11;
 txtstr2=strcat('View Az-',num2str(viewAZ,4),'-View El-',num2str(viewEL,4));
 txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12,'Color','y');
-% tx3=.10;
-% ty3=.10;
+tx3=.10;
+ty3=.08;
+txtstr3=strcat('SubSolarLat=',num2str(SubSolarLat,6),'-SubSolarLon=',num2str(SubSolarLon,6));
+txt3=text(tx3,ty3,txtstr3,'FontWeight','bold','FontSize',12,'Color','y');
 set(newaxesh,'Visible','Off');
 frame=getframe(gcf);
 writeVideo(vTemp30,frame);
 pause(chart_time)
 figstr=strcat(titlestr,'.jpg');
-eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
-actionstr='print';
-typestr='-djpeg';
-[cmdString]=MyStrcat2(actionstr,typestr,figstr);
-eval(cmdString);
+figstr2=strcat(titlestr,'.tiff');
+if(iFastSave==0)
+    eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
+    actionstr='print';
+    typestr='-djpeg';
+    [cmdString]=MyStrcat2(actionstr,typestr,figstr);
+    eval(cmdString);    
+else
+% Try a screencapture
+    eval(['cd ' tiffpath2(1:length(tiffpath2)-1)]);
+    screencapture('handle',gcf,'target',figstr2);
+end
+pause(chart_time)
 colormap('jet');
 close('all');
 %% Add data to PDF Report

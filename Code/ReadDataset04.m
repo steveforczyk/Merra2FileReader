@@ -13,6 +13,7 @@ function ReadDataset04(nowFile,nowpath)
 % Revised: Feb 9-10,2024 added more table for ikind 7,11 and 12
 % Revised: Feb 11,2024 added calculation of ratster areas to routine
 % Revised: Feb 12-13,2014 added tables for ikind 19-23
+% Revised: Feb 20,2024 added routine to plot subsolar point
 % and Tables for ikind 13 thru 18
 % Classification: Unclassified
 
@@ -52,17 +53,22 @@ global U10MTable U10MTT U10M01 U10M25 U10M50 U10M75 U10M90 U10M100 U10MNaN;
 global V10MTable V10MTT V10M01 V10M25 V10M50 V10M75 V10M90 V10M100 V10MNaN;
 global QV10MTable QV10MTT QV10M01 QV10M25 QV10M50 QV10M75 QV10M90 QV10M100 QV10MNaN;
 global SeaIceAreaTable SeaIceAreaTT SeaIceAreaKmWorld SeaIceAreaKmNP SeaIceAreaKmSP;
+global MaskList Dataset4Masks SelectedMaskIndices AfricaTemps AlgeriaTemps;
+global ChadTemps LibyaTemps EgyptTemps AngolaTemps NigeriaTemps;
+global KenyaTemps MozambiqueTemps;
 global SeaIceConc TAirTempC Tau U10 V10 ;
 global framecounter numSelectedFiles;
 global westEdge eastEdge northEdge southEdge;
-global yd md dd;
+global yd md dd StartDateStr;
 global YearValue MonthValue DayValue HourValue MinValue SecValue frameDate;
 global SubSolarLat SubSolarLon;
 global iSkipDisplayFrames;
+global iCityPlot maxCities Merra2Cities Merra2WorldCities;
 
 % additional paths needed for mapping
 global matpath1 mappath GOES16path;
 global jpegpath savepath tablepath;
+global maskpath watermaskpath;
 
 global fid isavefiles;
 global vert1 hor1 widd lend;
@@ -103,6 +109,9 @@ monthnum=str2double(MonthStr1);
 MonthStr=MonthName;
 MonthYearStr=strcat(MonthStr,'-',YearStr);
 Daystr=YearMonthStr(7:8);
+if(framecounter==1)
+    StartDateStr=strcat(MonthYearStr,Daystr);
+end
 DayValue=str2num(Daystr);
 datestubstr=YearMonthStr(1:8);
 frameDate=datetime(YearValue,MonthValue,DayValue,HourValue,MinValue,SecValue);
@@ -1806,12 +1815,7 @@ if(framecounter==1)
     md=str2double(YearMonthStr(5:6));
     dd=str2double(YearMonthStr(7:8));
 end
-% Calculate th subsolar point
-% YearStr=YearMonthStr(1:4);
-% YrVal=str2num(YearStr);
-% MonthStr1=YearMonthStr(5:6);
-% MonthVal=str2num(MonthStr1);
-% DayVal=strnum(daystr);
+
 %% Initialize statistics holding arrays
 if(framecounter==1)
 % Initialize Statistic Hold Arrays for HS the geopotential height
@@ -1983,6 +1987,15 @@ if(framecounter==1)
     SFTot90=zeros(numSelectedFiles,1);
     SFTot100=zeros(numSelectedFiles,1);
     SFTotNaN=zeros(numSelectedFiles,1);
+    AfricaTemps=zeros(numSelectedFiles,5);
+    AlgeriaTemps=zeros(numSelectedFiles,5);
+    ChadTemps=zeros(numSelectedFiles,5);
+    LibyaTemps=zeros(numSelectedFiles,5);
+    EgyptTemps=zeros(numSelectedFiles,5);
+    AngolaTemps=zeros(numSelectedFiles,5);
+    NigeriaTemps=zeros(numSelectedFiles,5);
+    KenyaTemps=zeros(numSelectedFiles,5);
+    MozambiqueTemps=zeros(numSelectedFiles,5);
     iReset=0;
 end
 %% Make Plots of the Geo2D variables that were decoded
@@ -2003,8 +2016,16 @@ lowcutoff=-200;
 highcutoff=200;
 ikind=1;
 titlestr=strcat('SeaIce-LatentEnergyFlux-',datestubstr);
+iProj=2;
+icase=2;
+GeoTiffFileName='MercatorBaseMap.tif';
+%[outputArg1,outputArg2] = CreateMerra2BaseMap(iProj,icase,GeoTiffFileName);
 [Stats,EFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(EFLUXICES,lowcutoff,highcutoff);
-DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
+%DisplayMerra2LatentEnergyFluxRev3(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)%
+%this does not work-says current map limits are not geographic
 SILF01(framecounter,1)=Stats(1,3);
 SILF25(framecounter,1)=Stats(6,3);
 SILF50(framecounter,1)=Stats(9,3);
@@ -2019,7 +2040,9 @@ highcutoff=800;
 ikind=2;
 titlestr=strcat('OpenWater-LatentEnergyFlux-',datestubstr);
 [Stats,EFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(EFLUXWTRS,lowcutoff,highcutoff);
-DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 OWLF01(framecounter,1)=Stats(1,3);
 OWLF25(framecounter,1)=Stats(6,3);
 OWLF50(framecounter,1)=Stats(9,3);
@@ -2033,7 +2056,9 @@ ikind=3;
 lowcutoff=0.00;
 highcutoff=1.2;
 [Stats,SeaIceAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(FRSEAICES,lowcutoff,highcutoff);
-DisplayMerra2SeaIceFractionRev1(Stats,SeaIceAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2SeaIceFractionRev1(Stats,SeaIceAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 SEAF01(framecounter,1)=Stats(1,3);
 SEAF25(framecounter,1)=Stats(6,3);
 SEAF50(framecounter,1)=Stats(9,3);
@@ -2052,19 +2077,25 @@ SeaIceAreaKmSP(framecounter,1)=IceAreaSP;
 titlestr=strcat('SeaIceNP-Fraction-',datestubstr);
 SeaIceConc=SeaIceAdj;
 iProj=7;
-DisplayMerra2SeaIceFractionPolarRev1(iProj,IceAreaWorld,IceAreaNP,IceAreaSP,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2SeaIceFractionPolarRev1(iProj,IceAreaWorld,IceAreaNP,IceAreaSP,titlestr)
+end
 % create a polar plot-for the South Pole
 titlestr=strcat('SeaIceSP-Fraction-',datestubstr);
 SeaIceConc=SeaIceAdj;
 iProj=8;
-DisplayMerra2SeaIceFractionPolarRev1(iProj,IceAreaWorld,IceAreaNP,IceAreaSP,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2SeaIceFractionPolarRev1(iProj,IceAreaWorld,IceAreaNP,IceAreaSP,titlestr)
+end
 % Display Upward Heat Flux
 titlestr=strcat('SeaIce-UpwardHeatFlux-',datestubstr);
 ikind=5;
 lowcutoff=-500;
 highcutoff=500;
 [Stats,HFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(HFLUXICES,lowcutoff,highcutoff);
-DisplayMerra2UpwardHeatFluxRev1(Stats,HFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) && (framecounter==1))
+    DisplayMerra2UpwardHeatFluxRev1(Stats,HFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 HFICEF01(framecounter,1)=Stats(1,3);
 HFICEF25(framecounter,1)=Stats(6,3);
 HFICEF50(framecounter,1)=Stats(9,3);
@@ -2078,7 +2109,9 @@ titlestr=strcat('OpenWater-UpwardHeatFlux-',datestubstr);
 lowcutoff=-500;
 highcutoff=1000;
 [Stats,HFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(HFLUXWTRS,lowcutoff,highcutoff);
-DisplayMerra2UpwardHeatFluxRev1(Stats,HFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter-1,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2UpwardHeatFluxRev1(Stats,HFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 HFWTRF01(framecounter,1)=Stats(1,3);
 HFWTRF25(framecounter,1)=Stats(6,3);
 HFWTRF50(framecounter,1)=Stats(9,3);
@@ -2092,7 +2125,9 @@ lowcutoff=-500;
 highcutoff=500;
 ikind=7;
 [Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(LWGNTICES,lowcutoff,highcutoff);
-DisplayMerra2NetDownLWFluxRev1(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2NetDownLWFluxRev1(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 LWGNICE01(framecounter,1)=Stats(1,3);
 LWGNICE25(framecounter,1)=Stats(6,3);
 LWGNICE50(framecounter,1)=Stats(9,3);
@@ -2106,7 +2141,9 @@ ikind=8;
 lowcutoff=-500;
 highcutoff=500;
 [Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(LWGNTWTRS,lowcutoff,highcutoff);
-DisplayMerra2NetDownLWFluxRev1(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2NetDownLWFluxRev1(Stats,LWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 LWGNWTR01(framecounter,1)=Stats(1,3);
 LWGNWTR25(framecounter,1)=Stats(6,3);
 LWGNWTR50(framecounter,1)=Stats(9,3);
@@ -2122,7 +2159,9 @@ ikind=9;
 lowcutoff=200;
 highcutoff=400;
 [Stats,AirTempAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(T10MS,lowcutoff,highcutoff);
-DisplayMerra2AirTemp(Stats,AirTempAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2AirTemp(Stats,AirTempAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 T10M01(framecounter,1)=Stats(1,3)-273.15;% Change the final stats into Deg C
 T10M25(framecounter,1)=Stats(6,3)-273.15;
 T10M50(framecounter,1)=Stats(9,3)-273.15;
@@ -2131,7 +2170,41 @@ T10M90(framecounter,1)=Stats(14,3)-273.15;
 T10M100(framecounter,1)=Stats(18,3)-273.15;
 T10MNaN(framecounter,1)=fracNaN;
 TAirTempC=AirTempAdj-273.15;
-ab=2;
+eval(['cd ' maskpath(1:length(maskpath)-1)]);
+load('AfricaMask.mat','Merra2AfricaMask')
+% Now apply the mask an calculate selected values after application of the
+% mask
+% [nnrows,nncols]=size(AirTempAdj);
+% numvals=nnrows*nncols;
+% Result=AirTempAdj.*Merra2AfricaMask;
+% Result1D=reshape(Result,[numvals,1]);
+% Result1DS=sort(Result1D,'ascend');
+% [ix]=find(Result1DS>0);
+% is=ix(1);
+% ie=numvals;
+% numvals2=ie-is+1;
+% Result1DSNz=zeros(numvals2,1);
+% ncounter=0;
+% for jj=is:ie
+%     ncounter=ncounter+1;
+%     Result1DSNz(ncounter,1)=Result1DS(jj,1);
+% end
+% Result1DSNz=Result1DSNz-273.15;
+% num25=floor(.25*numvals2);
+% num50=floor(.50*numvals2);
+% num75=floor(.75*numvals2);
+% num99=floor(.99*numvals2);
+% val25=Result1DSNz(num25,1);
+% val50=Result1DSNz(num50,1);
+% val75=Result1DSNz(num75,1);
+% val99=Result1DSNz(num99,1);
+
+iMaskSclt=1;
+for jj=1:9
+    iMaskSclt=SelectedMaskIndices(jj,1);
+    Merra2UserMask=Dataset4Masks(iMaskSclt).Mask;
+    [val25,val50,val75,val99] = CalculateMaskedAreaAirTempStats(AirTempAdj,Merra2UserMask,iMaskSclt);
+end
 
 %% Display Ocean Precip Data
 % Note that this can be displayed as rate or as an integrated value ov a 24
@@ -2151,7 +2224,9 @@ ikind=20;
 iScale=3600;
 titlestr=strcat('Ocean-RainFallRate-',datestubstr);
 [Stats,PrecipAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(RAINOCNS,lowcutoff,highcutoff);
-DisplayMerra2OceanPrecip(Stats,PrecipAdj,fraclow,frachigh,fracNaN,ikind,titlestr);
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2OceanPrecip(Stats,PrecipAdj,fraclow,frachigh,fracNaN,ikind,titlestr);
+end
 RFRate01(framecounter,1)=Stats(1,3);
 RFRate25(framecounter,1)=Stats(6,3);
 RFRate50(framecounter,1)=Stats(9,3);
@@ -2164,7 +2239,9 @@ ikind=21;
 iScale=3600;
 titlestr=strcat('Ocean-SnowFallRate-',datestubstr);
 [Stats,PrecipAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(PRECSNOOCNS,lowcutoff,highcutoff);
-DisplayMerra2OceanPrecip(Stats,PrecipAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2OceanPrecip(Stats,PrecipAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 SFRate01(framecounter,1)=Stats(1,3);
 SFRate25(framecounter,1)=Stats(6,3);
 SFRate50(framecounter,1)=Stats(9,3);
@@ -2178,7 +2255,9 @@ ikind=22;
 iScale=3600;
 titlestr=strcat('Ocean-RainFallTotal-',datestubstr);
 [Stats,PrecipSumAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev6(RAINOCNS,lowcutoff,highcutoff);
-DisplayMerra2OceanPrecip(Stats,PrecipSumAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2OceanPrecip(Stats,PrecipSumAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 RFTot01(framecounter,1)=Stats(1,3);
 RFTot25(framecounter,1)=Stats(6,3);
 RFTot50(framecounter,1)=Stats(9,3);
@@ -2194,7 +2273,9 @@ titlestr=strcat('Ocean-SnowFallTotal-',datestubstr);
 lowcutoff=-.1;
 highcutoff=20;
 [Stats,PrecipSumAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev6(PRECSNOOCNS,lowcutoff,highcutoff);
-DisplayMerra2OceanPrecip(Stats,PrecipSumAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2OceanPrecip(Stats,PrecipSumAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 SFTot01(framecounter,1)=Stats(1,3);
 SFTot25(framecounter,1)=Stats(6,3);
 SFTot50(framecounter,1)=Stats(9,3);
@@ -2214,7 +2295,9 @@ iScale=1;
 for nk=1:18
     Stats(nk,3)=Stats(nk,3)-273.15;
 end
-DisplayMerra2SeaIceSkinTempRev1(Stats,TSKINICEAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2SeaIceSkinTempRev1(Stats,TSKINICEAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 TSKINICE01(framecounter,1)=Stats(1,3);
 TSKINICE25(framecounter,1)=Stats(6,3);
 TSKINICE50(framecounter,1)=Stats(9,3);
@@ -2235,7 +2318,9 @@ iScale=1;
 for nk=1:18
     Stats(nk,3)=Stats(nk,3)-273.15;
 end
-DisplayMerra2SeaIceSkinTempRev1(Stats,TSKINWTRAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2SeaIceSkinTempRev1(Stats,TSKINWTRAdj,fraclow,frachigh,fracNaN,ikind,titlestr);
+end
 TSKINWTR01(framecounter,1)=Stats(1,3);
 TSKINWTR25(framecounter,1)=Stats(6,3);
 TSKINWTR50(framecounter,1)=Stats(9,3);
@@ -2251,7 +2336,9 @@ lowcutoff=-500;
 highcutoff=700;
 ikind=13;
 [Stats,SWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(SWGNTICES,lowcutoff,highcutoff);
-DisplayMerra2NetDownLWFluxRev2(Stats,SWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr);
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2NetDownLWFluxRev2(Stats,SWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr);
+end
 SWGNTICE01(framecounter,1)=Stats(1,3);
 SWGNTICE25(framecounter,1)=Stats(6,3);
 SWGNTICE50(framecounter,1)=Stats(9,3);
@@ -2266,7 +2353,9 @@ lowcutoff=-500;
 highcutoff=700;
 ikind=14;
 [Stats,SWGNFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(SWGNTWTRS,lowcutoff,highcutoff);
-DisplayMerra2NetDownLWFluxRev2(Stats,SWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2NetDownLWFluxRev2(Stats,SWGNFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 SWGNTWTR01(framecounter,1)=Stats(1,3);
 SWGNTWTR25(framecounter,1)=Stats(6,3);
 SWGNTWTR50(framecounter,1)=Stats(9,3);
@@ -2295,7 +2384,9 @@ lowcutoff=-10;
 highcutoff=10;
 ikind=16;
 [Stats,TauAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TAUXWTRS,lowcutoff,highcutoff);
-DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 TAUXWTR01(framecounter,1)=Stats(1,3);
 TAUXWTR25(framecounter,1)=Stats(6,3);
 TAUXWTR50(framecounter,1)=Stats(9,3);
@@ -2309,7 +2400,9 @@ lowcutoff=-10;
 highcutoff=10;
 ikind=17;
 [Stats,TauAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TAUYICES,lowcutoff,highcutoff);
-DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 TAUYICE01(framecounter,1)=Stats(1,3);
 TAUYICE25(framecounter,1)=Stats(6,3);
 TAUYICE50(framecounter,1)=Stats(9,3);
@@ -2324,7 +2417,9 @@ lowcutoff=-10;
 highcutoff=10;
 ikind=18;
 [Stats,TauAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TAUYWTRS,lowcutoff,highcutoff);
-DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 TAUYWTR01(framecounter,1)=Stats(1,3);
 TAUYWTR25(framecounter,1)=Stats(6,3);
 TAUYWTR50(framecounter,1)=Stats(9,3);
@@ -2338,7 +2433,7 @@ ikind=25;
 lowcutoff=-100;
 highcutoff=100;
 [Stats,WindAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(U10MS,lowcutoff,highcutoff);
-if(mod(framecounter,iSkipDisplayFrames)==0)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
     DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
 end
 U10M01(framecounter,1)=Stats(1,3);
@@ -2355,7 +2450,7 @@ ikind=26;
 lowcutoff=-100;
 highcutoff=100;
 [Stats,WindAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(V10MS,lowcutoff,highcutoff);
-if(mod(framecounter,iSkipDisplayFrames)==0)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
     DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
 end
 V10M01(framecounter,1)=Stats(1,3);
@@ -2378,10 +2473,10 @@ PlotWindQuiver(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
 % Display The 10 Meter Specific Humidity
 titlestr=strcat('SpecificHumidity-10m-',datestubstr);
 ikind=27;
-lowcutoff=-100;
-highcutoff=100;
+lowcutoff=-1;
+highcutoff=1E-2;
 [Stats,QVAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(QV10MS,lowcutoff,highcutoff);
-if(mod(framecounter,iSkipDisplayFrames)==0)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
     DisplayMerra2WindComponents(Stats,QVAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
 end
 QV10M01(framecounter,1)=Stats(1,3);
@@ -2512,7 +2607,6 @@ if(framecounter==numSelectedFiles)
     eval(cmdString)
     seastr=strcat('Created SEAICETT-','Contains Sea Ice Fraction-',num2str(3));
     fprintf(fid,'%s\n',seastr);
-    ab=2;
 %% Create a Table Holding the Sea Ice Data ikind=4
     SeaIceAreaTable=table(SeaIceAreaKmWorld(:,1),SeaIceAreaKmNP(:,1),SeaIceAreaKmSP(:,1),...
        'VariableNames',{'SeaIceAreaKmWorld','SeaIceAreaKmNP','SeaIceAreaKmSP'});
@@ -2826,9 +2920,9 @@ if(framecounter==numSelectedFiles)
     eval(cmdString)
     qv10str=strcat('Created QV10MTT-','Contains Specific Humidity At 10M-',num2str(27));
     fprintf(fid,'%s\n',qv10str);
-    fprintf(fid,'\n')
+    fprintf(fid,'\n');
     fprintf(fid,'%s\n','----------- End Detailing Table Creation-----------');
-    fprintf(fid,'\n')
+    fprintf(fid,'\n');
 %% Plot the Sea Ice Latent Flux
    titlestr=strcat('Hourly-Sea-Ice-LatentFlux-',num2str(yd));
    ikind=1;

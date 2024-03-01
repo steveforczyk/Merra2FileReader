@@ -13,7 +13,7 @@ function  DisplayMerra2NetDownLWFluxRev2(Stats,LWGNFluxAdj,fraclow,frachigh,frac
 global LonS LatS TimeS iTimeSlice TimeSlices;
 global YearMonthDayStr1 YearMonthDayStr2 framecounter;
 global LWGNTICES LWGNTWTRS SWGNTICES SWGNTWTRS;
-global WorldCityFileName World200TopCities;
+global WorldCityFileName World200TopCities Merra2Cities Merra2WorldCities;
 global iCityPlot maxCities;
 global iLogo LogoFileName1 LogoFileName2;
 
@@ -21,6 +21,7 @@ global RptGenPresent iCreatePDFReport pdffilename rpt chapter;
 global JpegCounter JpegFileList;
 global RasterLats RasterLons Rpix;
 global Merra2FileName Merra2ShortFileName;
+global SubSolarLat SubSolarLon iFastSave;
 
 global widd2 lend2;
 global initialtimestr igrid ijpeg ilog imovie;
@@ -29,7 +30,7 @@ global vert2 hor2 machine;
 global chart_time;
 global Fz1 Fz2 fid;
 global idirector mov izoom iwindow;
-global matpath GOES16path;
+global matpath tiffpath2;
 global jpegpath ;
 global smhrpath excelpath ascpath;
 global ipowerpoint PowerPointFile scaling stretching padding;
@@ -210,22 +211,37 @@ load('EuropeHiResBoundaries.mat','EuropeLat','EuropeLon');
 plot3m(EuropeLat,EuropeLon,maxval2,'r');
 load('AustraliaBoundaries.mat','AustraliaLat','AustraliaLon');
 plot3m(AustraliaLat,AustraliaLon,maxval2,'r');
+
 %% Add Cities to the plot is desired
 if((iCityPlot>0))
+%    load("Merra2CityList.mat");
+    maxCities=height(Merra2WorldCities);
+    Merra2Cities= table2cell(Merra2WorldCities);
+    ab=1;
     for k=1:maxCities
-        nowLat=World200TopCities{1+k,2};
-        nowLon=World200TopCities{1+k,3};
-        nowName=char(World200TopCities{1+k,1});
-        plot3m(nowLat,nowLon,11,'k+');
-        textm(nowLat,nowLon+3,11,nowName,'Color','black','FontSize',8);
+        nowName=char(Merra2Cities{k,2});
+        namelen=length(nowName);
+        if(namelen>5)
+            nowName=nowName(1:5);
+        end
+        nowLat=Merra2Cities{k,3};
+        nowLon=Merra2Cities{k,4};
+        nowRank=Merra2Cities{k,9};
+        if(nowRank<2)
+            plot3m(nowLat,nowLon,11,'k+');
+            textm(nowLat,nowLon+3,11,nowName,'Color','black','FontSize',8);
+        end
     end
 else
     for k=1:maxCities
-        nowLat=World200TopCities{1+k,2};
-        nowLon=World200TopCities{1+k,3};
-        nowName=char(World200TopCities{1+k,1});
-        plot3m(nowLat,nowLon,11,'b+');
-        textm(nowLat,nowLon+3,11,nowName,'Color','blue','FontSize',8);
+        nowName=char(Merra2Cities{k,2});
+        nowLat=Merra2Cities{k,3};
+        nowLon=Merra2Cities{k,4};
+        nowRank=Merra2Cities{k,9};
+        if(nowRank<2)
+            plot3m(nowLat,nowLon,11,'k+');
+            textm(nowLat,nowLon+3,11,nowName,'Color','blue','FontSize',8);
+        end
     end
 end
 title(titlestr)
@@ -256,14 +272,25 @@ txtstr2=strcat('1 ptile =',num2str(Stats(1,3),6),'//-50 ptile =',num2str(Stats(9
 txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12);
 tx3=.10;
 ty3=.10;
+txtstr3=strcat('SubSolarLat=',num2str(SubSolarLat,6),'-SubSolarLon=',num2str(SubSolarLon,6));
+txt3=text(tx3,ty3,txtstr3,'FontWeight','bold','FontSize',12);
 set(newaxesh,'Visible','Off');
 % Save this chart
 figstr=strcat(titlestr,'.jpg');
-eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
-actionstr='print';
-typestr='-djpeg';
-[cmdString]=MyStrcat2(actionstr,typestr,figstr);
-eval(cmdString);
+figstr2=strcat(titlestr,'.tiff');
+if(iFastSave==0)
+    eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
+    actionstr='print';
+    typestr='-djpeg';
+    [cmdString]=MyStrcat2(actionstr,typestr,figstr);
+    eval(cmdString);
+   
+else
+% Try a screencapture
+    eval(['cd ' tiffpath2(1:length(tiffpath2)-1)]);
+    screencapture('handle',gcf,'target',figstr2);
+end
+pause(chart_time)
 close('all');
 if((iCreatePDFReport==1) && (RptGenPresent==1))
     [ibreak]=strfind(GOESFileName,'_e');
