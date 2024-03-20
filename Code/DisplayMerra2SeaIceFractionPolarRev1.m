@@ -96,8 +96,7 @@ apricot=[.984 .807 .694];
 pink=[1.00 .596  .60];
 begonia=[.980 .431 .474];
 blond=[.980 .941 .745];
-%brighblue=[0 0.5 .8];
-%brightblue=[0, 150, 255];
+
 % Get some statistics on the Sea Ice Concentration-for all grid points
 [nrows,ncols]=size(SeaIceConc);
 numvals=nrows*ncols;
@@ -212,10 +211,7 @@ maplimitstr1='****Map Limits Follow*****';
 maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
 maplimitstr3=strcat('SouthEdge=',num2str(southEdge,7),'-NorthEdge=',num2str(northEdge));
 maplimitstr4='****Map Limits End*****';
-% fprintf(fid,'%s\n',maplimitstr1);
-% fprintf(fid,'%s\n',maplimitstr2);
-% fprintf(fid,'%s\n',maplimitstr3);
-% fprintf(fid,'%s\n',maplimitstr4);
+
 if(iProj==2)
     southEdge=19;
     northEdge=50;
@@ -305,21 +301,7 @@ hc=colorbar;
 hc.Label.String='Sea Ice Coverage Fraction';
 hc.Label.FontWeight='bold';
 set(hc,'FontWeight','bold')
-% Save the data if framecounter =1 and iProj=7
-if((framecounter==1) && (iProj==7))
-    MatFileName='SeaIceConc.mat';
-    eval(['cd ' savepath(1:length(savepath)-1)]);
-    actionstr='save';
-    varstr1='Merra2ShortFileName framecounter';
-    varstr2=' SeaIceConc Rpix hor1 vert1 widd lend';
-    varstr=strcat(varstr1,varstr2);
-    qualstr='-v7.3';
-    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
-    eval(cmdString)
-    dispstr=strcat('Wrote Matlab File-',MatFileName);
-    disp(dispstr);
-    ab=1;
-end
+
 
 %% load the country borders and plot them
 eval(['cd ' mappath(1:length(mappath)-1)]);
@@ -377,53 +359,31 @@ if(iProj<7)
     load('LebanonBoundaries.mat','LebanonLat','LebanonLon');
     plot3m(LebanonLat,LebanonLon,'r');
 elseif(iProj==7)
-    eval(['cd ' antarcticpath(1:length(antarcticpath)-1)]);% antarctica land
-    OceanFile='ne_10m_ocean.shp';
     a1=isempty(NorthOceanLat);
-    a2=isempty(GreenLandCDTLat);
-    if((a1==1) || (a2==1))
-        S2=shaperead(OceanFile,'UseGeoCoords',true);
-        NorthOceanLat=S2.Lat;
-        NorthOceanLon=S2.Lon;
+    if((a1==1))
+        eval(['cd ' mappath(1:length(mappath)-1)]);
+        load('NorthPoleBoundaries.mat');
         patchesm(NorthOceanLat,NorthOceanLon,brightblue);
-    %    load('GreenLandBoundariesRed4.mat','GreenLandLat','GreenLandLon')
-        load('GreenLandCDTBoundaries.mat','GreenLandCDTLat','GreenLandCDTLon')
         patchesm(GreenLandCDTLat,GreenLandCDTLon,alabaster);
         eval(['cd ' mappath(1:length(mappath)-1)]);
-       % load('USAHiResBoundaries.mat','USACDTLat','USACDTLon');
-        load('USACDTBoundaries.mat','USACDTLat','USACDTLon');
         patchesm(USACDTLat,USACDTLon,maxval2,begonia)
-      %  load('CanadaBoundariesRed4.mat','CanadaCDTLat','CanadaCDTLon');
-        load('CanadaCDTBoundaries.mat','CanadaCDTLat','CanadaCDTLon');
         patchesm(CanadaCDTLat,CanadaCDTLon,maxval2,blond);
-        %load('AsiaLowResBoundaries.mat','AsiaLat','AsiaLon');
-        patchesm(AsiaLat,AsiaLon,maxval2,apricot);
-        load('RussiaCDTBoundaries.mat','RussiaCDTLat','RussiaCDTLon');
         patchesm(RussiaCDTLat,RussiaCDTLon,maxval2,apricot);
-%         load('EuropeLowResBoundaries.mat','EuropeLat','EuropeLon'); 
-%         patchesm(EuropeLat,EuropeLon,maxval2,pink);
-        load('SwedenBoundariesRed8.mat','SwedenLat','SwedenLon')
         patchesm(SwedenLat,SwedenLon,maxval2,apricot);
-        load('FinlandBoundariesRed4.mat','FinlandLat','FinlandLon')
         patchesm(FinlandLat,FinlandLon,maxval2,begonia);
-        load('NorwayBoundariesRed.mat','NorwayLat','NorwayLon')
         patchesm(NorwayLat,NorwayLon,maxval2,pink);
-        load('IcelandBoundaries.mat','IcelandLat','IcelandLon')
         patchesm(IcelandLat,IcelandLon,maxval2,blond);
-        ab=1;
     else
         patchesm(NorthOceanLat,NorthOceanLon,brightblue);
         patchesm(GreenLandCDTLat,GreenLandCDTLon,alabaster);
         patchesm(USACDTLat,USACDTLon,maxval2,begonia)
         patchesm(CanadaCDTLat,CanadaCDTLon,maxval2,blond);
         patchesm(RussiaCDTLat,RussiaCDTLon,maxval2,apricot);
-%        patchesm(EuropeLat,EuropeLon,maxval2,pink); 
         patchesm(SwedenLat,SwedenLon,maxval2,apricot);
         patchesm(FinlandLat,FinlandLon,maxval2,begonia);
         patchesm(NorwayLat,NorwayLon,maxval2,pink);
         patchesm(IcelandLat,IcelandLon,maxval2,blond);
     end
-    ab=1;
 %     if(framecounter==1)
 %         eval(['cd ' geotiffpath(1:length(geotiffpath)-1)]);
 %         JpegFileName=['Merra2NPBasemap' '.jpg'];
@@ -461,7 +421,6 @@ elseif(iProj==8)
         SouthOceanLat=S1.Lat;
         SouthOceanLon=S1.Lon;
     end
-%    plot3m(SouthPoleLat,SouthPoleLon,maxval2,'r');
     patchesm(SouthOceanLat,SouthOceanLon,brightblue);
     patchesm(SouthPoleLat,SouthPoleLon,[0.7 0.7 0.7]);
 % Added bases as points
@@ -530,14 +489,7 @@ txtstr3=strcat('World Ice Area-',num2str(IceAreaWorld,4),'-North Pole Ice-',...
    num2str(IceAreaNP,4),'- South Pole Ice-',num2str(IceAreaSP,4),'-sq km' );
 txt3=text(tx3,ty3,txtstr3,'FontWeight','bold','FontSize',10);
 set(newaxesh,'Visible','Off');
-% Grab a frame for the movie just for the North Pole
-% if(iProj==7)
-%     frame=getframe(gcf);
-%     writeVideo(vTemp4A,frame);
-% elseif(iProj==8)
-%     frame=getframe(gcf);
-%     writeVideo(vTemp4B,frame);
-% end
+
 % Save this chart
 figstr=strcat(titlestr,'.jpg');
 figstr2=strcat(titlestr,'.tiff');

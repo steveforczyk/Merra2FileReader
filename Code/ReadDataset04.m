@@ -1,6 +1,6 @@
 function ReadDataset04(nowFile,nowpath)
 % Modified: This function will read in the the Merra-2 data set called 04
-% which is hourly avergae data
+% which is hourly average data
 % Written By: Stephen Forczyk
 % Created: Aug 4,2022
 % Revised: Jan 24-27,2024 started recoding this routine
@@ -14,7 +14,10 @@ function ReadDataset04(nowFile,nowpath)
 % Revised: Feb 11,2024 added calculation of ratster areas to routine
 % Revised: Feb 12-13,2014 added tables for ikind 19-23
 % Revised: Feb 20,2024 added routine to plot subsolar point
-% and Tables for ikind 13 thru 18
+% Revised: Feb 21 thru Mar 2024 set up masks for use in gatherting
+% Revised: Mar 1-4 2024 added more countries to list of regional
+% temperature calculations
+% Temperature Stats
 % Classification: Unclassified
 
 global BandDataS MetaDataS;
@@ -55,7 +58,22 @@ global QV10MTable QV10MTT QV10M01 QV10M25 QV10M50 QV10M75 QV10M90 QV10M100 QV10M
 global SeaIceAreaTable SeaIceAreaTT SeaIceAreaKmWorld SeaIceAreaKmNP SeaIceAreaKmSP;
 global MaskList Dataset4Masks SelectedMaskIndices AfricaTemps AlgeriaTemps;
 global ChadTemps LibyaTemps EgyptTemps AngolaTemps NigeriaTemps;
-global KenyaTemps MozambiqueTemps;
+global KenyaTemps MozambiqueTemps EthiopiaTemps MadagascarTemps SouthAfricaTemps;
+global CDRTemps CARTemps NamibiaTemps SomaliaTemps SudanTemps SaudiTemps;
+global IranTemps IraqTemps JordanTemps SyriaTemps TurkeyTemps PakistanTemps;
+global AfganistanTemps IndiaTemps;
+global AfricaTempsTable AfricaTempsTT AlgeriaTempsTable AlgeriaTempsTT;
+global ChadTempsTable ChadTempsTT EgyptTempsTable EgyptTempsTT;
+global LibyaTempsTable LibyaTempsTT AngolaTempsTable AngolaTempsTT;
+global NigeriaTempsTable NigeriaTempsTT KenyaTempsTable KenyaTempsTT;
+global MozambiqueTempsTable MozambiqueTempsTT EthiopiaTempsTable EthiopiaTempsTT;
+global MadagascarTempsTable MadagascarTempsTT SouthAfricaTempsTable SouthAfricaTempsTT;
+global CDRTempsTable CDRTempsTT CARTempsTable CARTempsTT NamibiaTempsTable NamibiaTempsTT;
+global SomaliaTempsTable SomaliaTempsTT SudanTempsTable SudanTempsTT SaudiTempsTable SaudiTempsTT;
+global IranTempsTable IranTempsTT IraqTempsTable IraqTempsTT JordanTempsTable JordanTempsTT;
+global SyriaTempsTable SyriaTempsTT TurkeyTempsTable TurkeyTempsTT PakistanTempsTable PakistanTempsTT;
+global AfganistanTempsTable AfganistanTempsTT IndiaTempsTable IndiaTempsTT;
+global numSelectedMasks
 global SeaIceConc TAirTempC Tau U10 V10 ;
 global framecounter numSelectedFiles;
 global westEdge eastEdge northEdge southEdge;
@@ -1996,6 +2014,21 @@ if(framecounter==1)
     NigeriaTemps=zeros(numSelectedFiles,5);
     KenyaTemps=zeros(numSelectedFiles,5);
     MozambiqueTemps=zeros(numSelectedFiles,5);
+    EthiopiaTemps=zeros(numSelectedFiles,5);
+    MadagascarTemps=zeros(numSelectedFiles,5);
+    SouthAfricaTemps=zeros(numSelectedFiles,5);
+    CDRTemps=zeros(numSelectedFiles,5);
+    CARTemps=zeros(numSelectedFiles,5);
+    NamibiaTemps=zeros(numSelectedFiles,5);
+    SomaliaTemps=zeros(numSelectedFiles,5);
+    SudanTemps=zeros(numSelectedFiles,5);
+    SaudiTemps=zeros(numSelectedFiles,5);
+    IranTemps=zeros(numSelectedFiles,5);
+    IraqTemps=zeros(numSelectedFiles,5);
+    JordanTemps=zeros(numSelectedFiles,5);
+    SyriaTemps=zeros(numSelectedFiles,5);
+    TurkeyTemps=zeros(numSelectedFiles,5);
+    PakistanTemps=zeros(numSelectedFiles,5);
     iReset=0;
 end
 %% Make Plots of the Geo2D variables that were decoded
@@ -2015,14 +2048,18 @@ iScale=1; % This sets a scale factor which should in most cases be 1
 lowcutoff=-200;
 highcutoff=200;
 ikind=1;
-titlestr=strcat('SeaIce-LatentEnergyFlux-',datestubstr);
+titlestr=strcat('WorldSeaIce-LatentEnergyFlux-',datestubstr);
 iProj=2;
 icase=2;
 GeoTiffFileName='MercatorBaseMap.tif';
 %[outputArg1,outputArg2] = CreateMerra2BaseMap(iProj,icase,GeoTiffFileName);
 [Stats,EFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(EFLUXICES,lowcutoff,highcutoff);
 if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
-    DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+    %DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+    DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fracNaN,ikind,iProj,titlestr)
+%     titlestr=strcat('Africa-LatentEnergyFlux-',datestubstr);
+%     iProj=4;
+%     DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fracNaN,ikind,iProj,titlestr)
 end
 %DisplayMerra2LatentEnergyFluxRev3(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)%
 %this does not work-says current map limits are not geographic
@@ -2038,10 +2075,12 @@ ab=1;
 lowcutoff=-100;
 highcutoff=800;
 ikind=2;
-titlestr=strcat('OpenWater-LatentEnergyFlux-',datestubstr);
+iProj=2;
+titlestr=strcat('WorldOpenWater-LatentEnergyFlux-',datestubstr);
 [Stats,EFluxAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(EFLUXWTRS,lowcutoff,highcutoff);
 if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
-    DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+%    DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+    DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fracNaN,ikind,iProj,titlestr)
 end
 OWLF01(framecounter,1)=Stats(1,3);
 OWLF25(framecounter,1)=Stats(6,3);
@@ -2053,11 +2092,12 @@ OWLFNaN(framecounter,1)=fracNaN;
 % Display The Sea Ice Fraction
 titlestr=strcat('SeaIce-Fraction-',datestubstr);
 ikind=3;
+iProj=2;
 lowcutoff=0.00;
 highcutoff=1.2;
 [Stats,SeaIceAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(FRSEAICES,lowcutoff,highcutoff);
 if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
-    DisplayMerra2SeaIceFractionRev1(Stats,SeaIceAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+    DisplayMerra2SeaIceFractionRev1(Stats,SeaIceAdj,fraclow,frachigh,fracNaN,ikind,iProj,titlestr)
 end
 SEAF01(framecounter,1)=Stats(1,3);
 SEAF25(framecounter,1)=Stats(6,3);
@@ -2154,14 +2194,25 @@ LWGNWTRNaN(framecounter,1)=fracNaN;
 
 
 % Display The 10 Meter Air Temp
-titlestr=strcat('AirTemp-10m-',datestubstr);
+titlestr=strcat('World-AirTemp-10m-',datestubstr);
 ikind=9;
 lowcutoff=200;
 highcutoff=400;
+iProj=2;
 [Stats,AirTempAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(T10MS,lowcutoff,highcutoff);
 if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
-    DisplayMerra2AirTemp(Stats,AirTempAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+    DisplayMerra2AirTemp(Stats,AirTempAdj,fraclow,frachigh,fracNaN,ikind,iProj,titlestr)
+    iProj=4;
+    titlestr=strcat('Africa-AirTemp-10m-',datestubstr);
+    DisplayMerra2AirTemp(Stats,AirTempAdj,fraclow,frachigh,fracNaN,ikind,iProj,titlestr)
+    iProj=5;
+    titlestr=strcat('Australia-AirTemp-10m-',datestubstr);
+    DisplayMerra2AirTemp(Stats,AirTempAdj,fraclow,frachigh,fracNaN,ikind,iProj,titlestr)
+    iProj=6;
+    titlestr=strcat('Europe-AirTemp-10m-',datestubstr);
+    DisplayMerra2AirTemp(Stats,AirTempAdj,fraclow,frachigh,fracNaN,ikind,iProj,titlestr)
 end
+iProj=2;
 T10M01(framecounter,1)=Stats(1,3)-273.15;% Change the final stats into Deg C
 T10M25(framecounter,1)=Stats(6,3)-273.15;
 T10M50(framecounter,1)=Stats(9,3)-273.15;
@@ -2170,40 +2221,11 @@ T10M90(framecounter,1)=Stats(14,3)-273.15;
 T10M100(framecounter,1)=Stats(18,3)-273.15;
 T10MNaN(framecounter,1)=fracNaN;
 TAirTempC=AirTempAdj-273.15;
-eval(['cd ' maskpath(1:length(maskpath)-1)]);
-load('AfricaMask.mat','Merra2AfricaMask')
-% Now apply the mask an calculate selected values after application of the
-% mask
-% [nnrows,nncols]=size(AirTempAdj);
-% numvals=nnrows*nncols;
-% Result=AirTempAdj.*Merra2AfricaMask;
-% Result1D=reshape(Result,[numvals,1]);
-% Result1DS=sort(Result1D,'ascend');
-% [ix]=find(Result1DS>0);
-% is=ix(1);
-% ie=numvals;
-% numvals2=ie-is+1;
-% Result1DSNz=zeros(numvals2,1);
-% ncounter=0;
-% for jj=is:ie
-%     ncounter=ncounter+1;
-%     Result1DSNz(ncounter,1)=Result1DS(jj,1);
-% end
-% Result1DSNz=Result1DSNz-273.15;
-% num25=floor(.25*numvals2);
-% num50=floor(.50*numvals2);
-% num75=floor(.75*numvals2);
-% num99=floor(.99*numvals2);
-% val25=Result1DSNz(num25,1);
-% val50=Result1DSNz(num50,1);
-% val75=Result1DSNz(num75,1);
-% val99=Result1DSNz(num99,1);
-
 iMaskSclt=1;
-for jj=1:9
+for jj=1:numSelectedMasks
     iMaskSclt=SelectedMaskIndices(jj,1);
     Merra2UserMask=Dataset4Masks(iMaskSclt).Mask;
-    [val25,val50,val75,val99] = CalculateMaskedAreaAirTempStats(AirTempAdj,Merra2UserMask,iMaskSclt);
+    CalculateMaskedAreaAirTempStats(AirTempAdj,Merra2UserMask,iMaskSclt);
 end
 
 %% Display Ocean Precip Data
@@ -2370,7 +2392,9 @@ lowcutoff=-10;
 highcutoff=10;
 ikind=15;
 [Stats,TauAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(TAUXICES,lowcutoff,highcutoff);
-DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
+    DisplayMerra2WindStress(Stats,TauAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+end
 TAUXICE01(framecounter,1)=Stats(1,3);
 TAUXICE25(framecounter,1)=Stats(6,3);
 TAUXICE50(framecounter,1)=Stats(9,3);
@@ -2428,13 +2452,15 @@ TAUYWTR90(framecounter,1)=Stats(14,3);
 TAUYWTR100(framecounter,1)=Stats(18,3);
 TAUYWTRNaN(framecounter,1)=fracNaN;
 % Display The 10 Meter Eastward Wind
-titlestr=strcat('EastWind-10m-',datestubstr);
+titlestr=strcat('World-EastWind-10m-',datestubstr);
 ikind=25;
 lowcutoff=-100;
 highcutoff=100;
 [Stats,WindAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(U10MS,lowcutoff,highcutoff);
+iProj=2;
 if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
-    DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+%    DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+    DisplayMerra2WindComponents(Stats,WindAdj,fracNaN,ikind,iProj,titlestr)
 end
 U10M01(framecounter,1)=Stats(1,3);
 U10M25(framecounter,1)=Stats(6,3);
@@ -2445,13 +2471,15 @@ U10M100(framecounter,1)=Stats(18,3);
 U10MNaN(framecounter,1)=fracNaN;
 U10=WindAdj;
 % Display The 10 Meter Northward Wind
-titlestr=strcat('NorthWind-10m-',datestubstr);
+titlestr=strcat('World-NorthWind-10m-',datestubstr);
 ikind=26;
 lowcutoff=-100;
 highcutoff=100;
+iProj=2;
 [Stats,WindAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(V10MS,lowcutoff,highcutoff);
 if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
-    DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+%    DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+    DisplayMerra2WindComponents(Stats,WindAdj,fracNaN,ikind,iProj,titlestr)
 end
 V10M01(framecounter,1)=Stats(1,3);
 V10M25(framecounter,1)=Stats(6,3);
@@ -2471,13 +2499,21 @@ iCloseChapter=0;
 PlotWindQuiver(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
 
 % Display The 10 Meter Specific Humidity
-titlestr=strcat('SpecificHumidity-10m-',datestubstr);
+titlestr=strcat('WorldSpecificHumidity-10m-',datestubstr);
 ikind=27;
 lowcutoff=-1;
 highcutoff=1E-2;
+iProj=2;
 [Stats,QVAdj,fraclow,frachigh,fracNaN] = GetDistributionStatsRev5(QV10MS,lowcutoff,highcutoff);
 if((mod(framecounter,iSkipDisplayFrames)==0) || (framecounter==1))
-    DisplayMerra2WindComponents(Stats,QVAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+%    DisplayMerra2WindComponents(Stats,QVAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+    DisplayMerra2WindComponents(Stats,QVAdj,fracNaN,ikind,iProj,titlestr)
+    titlestr=strcat('AfricaSpecificHumidity-10m-',datestubstr);
+    iProj=4;
+    DisplayMerra2WindComponents(Stats,QVAdj,fracNaN,ikind,iProj,titlestr)
+    iProj=5;
+    titlestr=strcat('AustraliaSpecificHumidity-10m-',datestubstr);
+    DisplayMerra2WindComponents(Stats,QVAdj,fracNaN,ikind,iProj,titlestr)
 end
 QV10M01(framecounter,1)=Stats(1,3);
 QV10M25(framecounter,1)=Stats(6,3);
@@ -2486,22 +2522,7 @@ QV10M75(framecounter,1)=Stats(12,3);
 QV10M90(framecounter,1)=Stats(14,3);
 QV10M100(framecounter,1)=Stats(18,3);
 QV10MNaN(framecounter,1)=fracNaN;
-% save some partial run data
-MatFileName=strcat('PartialFile-',datestubstr);
-if(isavefiles==3)
-    eval(['cd ' savepath(1:length(savepath)-1)]);
-    actionstr='save';
-    varstr1='Lons Lats TimeS Merra2FileName Merra2ShortFileName';
-    varstr2=' RasterLats RasterLons Tau U10 V10 TAirTempC';
-    varstr=strcat(varstr1,varstr2);
-    qualstr='-v7.3';
-    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
-    eval(cmdString)
-    dispstr=strcat('Wrote Partial Matlab File-',MatFileName);
-    disp(dispstr);
-%     fprintf(fid,'%s\n',savestr);
-%     disp(savestr)
-end
+
 
 %% Start compilation of data over all frames
 if(framecounter==numSelectedFiles)
@@ -2920,107 +2941,474 @@ if(framecounter==numSelectedFiles)
     eval(cmdString)
     qv10str=strcat('Created QV10MTT-','Contains Specific Humidity At 10M-',num2str(27));
     fprintf(fid,'%s\n',qv10str);
-    fprintf(fid,'\n');
-    fprintf(fid,'%s\n','----------- End Detailing Table Creation-----------');
-    fprintf(fid,'\n');
+
+%% Create a Table to Store the Africa Continent Only Air Temp Values
+AfricaTempsTable=table(AfricaTemps(:,2),AfricaTemps(:,3),AfricaTemps(:,4),AfricaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+AfricaTempsTT=table2timetable(AfricaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='AfricaTempsTable AfricaTempsTT';
+MatFileName=strcat('AfricaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+africatempsstr=strcat('Created AfricaTempsTT-','Contains Temp Dec C at 10 m-',num2str(28));
+fprintf(fid,'%s\n',africatempsstr);
+
+%% Create a Table to Store the Algeria Only Air Temp Values
+AlgeriaTempsTable=table(AlgeriaTemps(:,2),AlgeriaTemps(:,3),AlgeriaTemps(:,4),AlgeriaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+AlgeriaTempsTT=table2timetable(AlgeriaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='AlgeriaTempsTable AlgeriaTempsTT';
+MatFileName=strcat('AlgeriaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+algeriatempsstr=strcat('Created AlgeriaTempsTT-','Contains Temp Dec C at 10 m-',num2str(30));
+
+%% Create a Table to Store the Chad Only Air Temp Values
+ChadTempsTable=table(ChadTemps(:,2),ChadTemps(:,3),ChadTemps(:,4),ChadTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+ChadTempsTT=table2timetable(ChadTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='ChadTempsTable ChadTempsTT';
+MatFileName=strcat('ChadTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+chadtempsstr=strcat('Created ChadTempsTT-','Contains Temp Dec C at 10 m-',num2str(31));
+
+%% Create a Table to Store the Egypt Only Air Temp Values
+EgyptTempsTable=table(EgyptTemps(:,2),EgyptTemps(:,3),EgyptTemps(:,4),EgyptTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+EgyptTempsTT=table2timetable(EgyptTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='EgyptTempsTable EgyptTempsTT';
+MatFileName=strcat('EgyptTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+egypttempsstr=strcat('Created EgyptTempsTT-','Contains Temp Dec C at 10 m-',num2str(32));
+fprintf(fid,'%s\n',egypttempsstr);
+
+%% Create a Table to Store the Libya Only Air Temp Values
+LibyaTempsTable=table(LibyaTemps(:,2),LibyaTemps(:,3),LibyaTemps(:,4),LibyaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+LibyaTempsTT=table2timetable(LibyaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='LibyaTempsTable LibyaTempsTT';
+MatFileName=strcat('LibyaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+libyatempsstr=strcat('Created LibyaTempsTT-','Contains Temp Dec C at 10 m-',num2str(33));
+fprintf(fid,'%s\n',libyatempsstr);
+fprintf(fid,'\n');
+fprintf(fid,'%s\n','----------- End Detailing Table Creation-----------');
+fprintf(fid,'\n');
+
+%% Create a Table to Store the Angola Only Air Temp Values
+AngolaTempsTable=table(AngolaTemps(:,2),AngolaTemps(:,3),AngolaTemps(:,4),AngolaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+AngolaTempsTT=table2timetable(AngolaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='AngolaTempsTable AngolaTempsTT';
+MatFileName=strcat('AngolaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+angolatempsstr=strcat('Created AngolaTempsTT-','Contains Temp Dec C at 10 m-',num2str(34));
+fprintf(fid,'%s\n',angolatempsstr);
+
+%% Create a Table to Store the Nigeria Only Air Temp Values
+NigeriaTempsTable=table(NigeriaTemps(:,2),NigeriaTemps(:,3),NigeriaTemps(:,4),NigeriaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+NigeriaTempsTT=table2timetable(NigeriaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='NigeriaTempsTable NigeriaTempsTT';
+MatFileName=strcat('NigeriaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+nigeriatempsstr=strcat('Created NigeriaTempsTT-','Contains Temp Dec C at 10 m-',num2str(35));
+fprintf(fid,'%s\n',nigeriatempsstr);
+
+%% Create a Table to Store the Kenya Only Air Temp Values
+KenyaTempsTable=table(KenyaTemps(:,2),KenyaTemps(:,3),KenyaTemps(:,4),KenyaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+KenyaTempsTT=table2timetable(KenyaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='KenyaTempsTable KenyaTempsTT';
+MatFileName=strcat('KenyaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+kenyatempsstr=strcat('Created KenyaTempsTT-','Contains Temp Dec C at 10 m-',num2str(36));
+fprintf(fid,'%s\n',kenyatempsstr);
+
+%% Create a Table to Store the Mozambique Only Air Temp Values
+MozambiqueTempsTable=table(MozambiqueTemps(:,2),MozambiqueTemps(:,3),MozambiqueTemps(:,4),MozambiqueTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+MozambiqueTempsTT=table2timetable(MozambiqueTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='MozambiqueTempsTable MozambiqueTempsTT';
+MatFileName=strcat('MozambiqueTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+mozambiquetempsstr=strcat('Created MozambiqueTempsTT-','Contains Temp Dec C at 10 m-',num2str(37));
+fprintf(fid,'%s\n',mozambiquetempsstr);
+
+%% Create a Table to Store the Ethiopia Only Air Temp Values
+EthiopiaTempsTable=table(EthiopiaTemps(:,2),EthiopiaTemps(:,3),EthiopiaTemps(:,4),EthiopiaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+EthiopiaTempsTT=table2timetable(EthiopiaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='EthiopiaTempsTable EthiopiaTempsTT';
+MatFileName=strcat('EthiopiaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+ethiopiatempsstr=strcat('Created EthiopiaTempsTT-','Contains Temp Dec C at 10 m-',num2str(38));
+fprintf(fid,'%s\n',ethiopiatempsstr);
+
+%% Create a Table to Store the Madagascar Only Air Temp Values
+MadagascarTempsTable=table(MadagascarTemps(:,2),MadagascarTemps(:,3),MadagascarTemps(:,4),MadagascarTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+MadagascarTempsTT=table2timetable(MadagascarTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='MadagascarTempsTable MadagascarTempsTT';
+MatFileName=strcat('MadagascarTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+madagascartempsstr=strcat('Created MadagascarTempsTT-','Contains Temp Dec C at 10 m-',num2str(39));
+fprintf(fid,'%s\n',madagascartempsstr);
+
+%% Create a Table to Store the SouthAfrica Only Air Temp Values
+SouthAfricaTempsTable=table(SouthAfricaTemps(:,2),SouthAfricaTemps(:,3),SouthAfricaTemps(:,4),SouthAfricaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+SouthAfricaTempsTT=table2timetable(SouthAfricaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='SouthAfricaTempsTable SouthAfricaTempsTT';
+MatFileName=strcat('SouthAfricaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+southafricatempsstr=strcat('Created SouthAfricaTempsTT-','Contains Temp Dec C at 10 m-',num2str(40));
+fprintf(fid,'%s\n',southafricatempsstr);
+
+
+%% Create a Table to Store the Congo Dem Republic Only Air Temp Values
+CDRTempsTable=table(CDRTemps(:,2),CDRTemps(:,3),CDRTemps(:,4),CDRTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+CDRTempsTT=table2timetable(CDRTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='CDRTempsTable CDRTempsTT';
+MatFileName=strcat('CDRTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+cdrtempsstr=strcat('Created CDRTempsTT-','Contains Temp Dec C at 10 m-',num2str(41));
+fprintf(fid,'%s\n',cdrtempsstr);
+
+%% Create a Table to Store the CAR Only Air Temp Values
+CARTempsTable=table(CARTemps(:,2),CARTemps(:,3),CARTemps(:,4),CARTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+CARTempsTT=table2timetable(CARTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='CARTempsTable CARTempsTT';
+MatFileName=strcat('CARTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+cartempsstr=strcat('Created CARTempsTT-','Contains Temp Dec C at 10 m-',num2str(42));
+fprintf(fid,'%s\n',cartempsstr);
+
+%% Create a Table to Store the Namibia Only Air Temp Values
+NamibiaTempsTable=table(NamibiaTemps(:,2),NamibiaTemps(:,3),NamibiaTemps(:,4),NamibiaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+NamibiaTempsTT=table2timetable(NamibiaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='NamibiaTempsTable NamibiaTempsTT';
+MatFileName=strcat('NamibiaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+namtempsstr=strcat('Created NamibiaTempsTT-','Contains Temp Dec C at 10 m-',num2str(43));
+fprintf(fid,'%s\n',namtempsstr);
+
+%% Create a Table to Store the Somalia Only Air Temp Values
+SomaliaTempsTable=table(SomaliaTemps(:,2),SomaliaTemps(:,3),SomaliaTemps(:,4),SomaliaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+SomaliaTempsTT=table2timetable(SomaliaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='SomaliaTempsTable SomaliaTempsTT';
+MatFileName=strcat('SomaliaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+somtempsstr=strcat('Created SomaliaTempsTT-','Contains Temp Dec C at 10 m-',num2str(44));
+fprintf(fid,'%s\n',somtempsstr);
+
+%% Create a Table to Store the Sudan Only Air Temp Values
+SudanTempsTable=table(SudanTemps(:,2),SudanTemps(:,3),SudanTemps(:,4),SudanTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+SudanTempsTT=table2timetable(SudanTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='SudanTempsTable SudanTempsTT';
+MatFileName=strcat('SudanTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+sudantempsstr=strcat('Created SudanTempsTT-','Contains Temp Dec C at 10 m-',num2str(45));
+fprintf(fid,'%s\n',sudantempsstr);
+
+%% Create a Table to Store the Saudi Only Air Temp Values
+SaudiTempsTable=table(SaudiTemps(:,2),SaudiTemps(:,3),SaudiTemps(:,4),SaudiTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+SaudiTempsTT=table2timetable(SaudiTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='SaudiTempsTable SaudiTempsTT';
+MatFileName=strcat('SaudiTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+sauditempsstr=strcat('Created SaudiTempsTT-','Contains Temp Dec C at 10 m-',num2str(46));
+fprintf(fid,'%s\n',sauditempsstr);
+
+%% Create a Table to Store the Iran Only Air Temp Values
+IranTempsTable=table(IranTemps(:,2),IranTemps(:,3),IranTemps(:,4),IranTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+IranTempsTT=table2timetable(IranTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='IranTempsTable IranTempsTT';
+MatFileName=strcat('IranTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+irantempsstr=strcat('Created IranTempsTT-','Contains Temp Dec C at 10 m-',num2str(47));
+fprintf(fid,'%s\n',irantempsstr);
+
+%% Create a Table to Store the  Iraq Only Air Temp Values
+IraqTempsTable=table(IraqTemps(:,2),IraqTemps(:,3),IraqTemps(:,4),IraqTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+IraqTempsTT=table2timetable(IraqTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='IraqTempsTable IraqTempsTT';
+MatFileName=strcat('IraqTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+iraqtempsstr=strcat('Created IraqTempsTT-','Contains Temp Dec C at 10 m-',num2str(48));
+fprintf(fid,'%s\n',iraqtempsstr);
+
+
+%% Create a Table to Store the Jordan Only Air Temp Values
+JordanTempsTable=table(JordanTemps(:,2),JordanTemps(:,3),JordanTemps(:,4),JordanTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+JordanTempsTT=table2timetable(JordanTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='JordanTempsTable JordanTempsTT';
+MatFileName=strcat('JordanTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+jordantempsstr=strcat('Created JordanTempsTT-','Contains Temp Dec C at 10 m-',num2str(49));
+fprintf(fid,'%s\n',jordantempsstr);
+
+%% Create a Table to Store the Syria Only Air Temp Values
+SyriaTempsTable=table(SyriaTemps(:,2),SyriaTemps(:,3),SyriaTemps(:,4),SyriaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+SyriaTempsTT=table2timetable(SyriaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='SyriaTempsTable SyriaTempsTT';
+MatFileName=strcat('SyriaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+syriatempsstr=strcat('Created SyriaTempsTT-','Contains Temp Dec C at 10 m-',num2str(50));
+fprintf(fid,'%s\n',syriatempsstr);
+
+%% Create a Table to Store the Turkey Only Air Temp Values
+TurkeyTempsTable=table(TurkeyTemps(:,2),TurkeyTemps(:,3),TurkeyTemps(:,4),TurkeyTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+TurkeyTempsTT=table2timetable(TurkeyTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='TurkeyTempsTable TurkeyTempsTT';
+MatFileName=strcat('TurkeyTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+turkeytempsstr=strcat('Created TurkeyTempsTT-','Contains Temp Dec C at 10 m-',num2str(51));
+fprintf(fid,'%s\n',turkeytempsstr);
+
+%% Create a Table to Store the Pakistan Only Air Temp Values
+PakistanTempsTable=table(PakistanTemps(:,2),PakistanTemps(:,3),PakistanTemps(:,4),PakistanTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+PakistanTempsTT=table2timetable(PakistanTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='PakistanTempsTable PakistanTempsTT';
+MatFileName=strcat('PakistanTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+paktempsstr=strcat('Created PakistanTempsTT-','Contains Temp Dec C at 10 m-',num2str(52));
+fprintf(fid,'%s\n',paktempsstr);
+
+%% Create a Table to Store the Afganistan Only Air Temp Values
+AfganistanTempsTable=table(AfganistanTemps(:,2),AfganistanTemps(:,3),AfganistanTemps(:,4),AfganistanTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+AfganistanTempsTT=table2timetable(AfganistanTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='AfganistanTempsTable AfganistanTempsTT';
+MatFileName=strcat('AfganistanTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+afgantempsstr=strcat('Created AfganistanTempsTT-','Contains Temp Dec C at 10 m-',num2str(33));
+fprintf(fid,'%s\n',afgantempsstr);
+%% Create a Table to Store the India Only Air Temp Values
+IndiaTempsTable=table(IndiaTemps(:,2),IndiaTemps(:,3),IndiaTemps(:,4),IndiaTemps(:,5),...
+        'VariableNames',{'Ptile25','Ptile50','Ptile75','Ptile99'});
+IndiaTempsTT=table2timetable(IndiaTempsTable,'TimeStep',timestep,'StartTime',stime);
+eval(['cd ' tablepath(1:length(tablepath)-1)]);
+actionstr='save';
+varstr1='IndiaTempsTable IndiaTempsTT';
+MatFileName=strcat('IndiaTempsTable',YearMonthStr,TimeStr,'.mat');
+qualstr='-v7.3';
+[cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+eval(cmdString)
+indiatempsstr=strcat('Created IndiaTempsTT-','Contains Temp Dec C at 10 m-',num2str(33));
+fprintf(fid,'%s\n',indiatempsstr);
+fprintf(fid,'\n');
+fprintf(fid,'%s\n','----------- End Detailing Table Creation-----------');
+fprintf(fid,'\n');
+
 %% Plot the Sea Ice Latent Flux
-   titlestr=strcat('Hourly-Sea-Ice-LatentFlux-',num2str(yd));
-   ikind=1;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-Sea-Ice-LatentFlux-',num2str(yd));
+ikind=1;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
 %% Plot the Sea Ice Latent Flux
-   titlestr=strcat('Hourly-OpenWaterLatentFlux-',num2str(yd));
-   ikind=2;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-OpenWaterLatentFlux-',num2str(yd));
+ikind=2;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Sea Ice Fraction
-   titlestr=strcat('Hourly-SeaIceFraction-',num2str(yd));
-   ikind=3;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-SeaIceFraction-',num2str(yd));
+ikind=3;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Sea Ice Area in Sq Km
-   titlestr=strcat('Hourly-SeaIceFraction-',num2str(yd));
-   ikind=4;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-SeaIceFraction-',num2str(yd));
+ikind=4;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Sea Ice Upward Heat Flux
-   titlestr=strcat('Hourly-SeaIce-UpHeat',num2str(yd));
-   ikind=5;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-SeaIce-UpHeat',num2str(yd));
+ikind=5;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Open Water Upward Heat Flux
-   titlestr=strcat('Hourly-OpenWater-UpHeat',num2str(yd));
-   ikind=6;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-OpenWater-UpHeat',num2str(yd));
+ikind=6;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Sea Ice Downwards Flux
-   titlestr=strcat('Hourly-SeaIce-DownHeat',num2str(yd));
-   ikind=7;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-SeaIce-DownHeat',num2str(yd));
+ikind=7;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Open Waters Downwards Flux
-   titlestr=strcat('Hourly-OpenWaters-DownHeat',num2str(yd));
-   ikind=8;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-OpenWaters-DownHeat',num2str(yd));
+ikind=8;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Air Temp at 10 M
-   titlestr=strcat('Hourly-AirTemp-10M',num2str(yd));
-   ikind=9;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-AirTemp-10M',num2str(yd));
+ikind=9;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Sea Ice Skin Temps
-   titlestr=strcat('Hourly-SeaIce-SkinTemp',num2str(yd));
-   ikind=11;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-SeaIce-SkinTemp',num2str(yd));
+ikind=11;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Open Water Skin Temps
-   titlestr=strcat('Hourly-OpenWater-SkinTemp',num2str(yd));
-   ikind=12;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-OpenWater-SkinTemp',num2str(yd));
+ikind=12;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Sea Ice SW Downward Flux Skin 
-   titlestr=strcat('Hourly-SeaIce-SWDownFlux',num2str(yd));
-   ikind=13;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-SeaIce-SWDownFlux',num2str(yd));
+ikind=13;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
 %% Plot the Open Water SW Downward Flux Skin 
-   titlestr=strcat('Hourly-OpenWater-SWDownFlux',num2str(yd));
-   ikind=14;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-OpenWater-SWDownFlux',num2str(yd));
+ikind=14;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the Sea Ice Eastwind Stress
-   titlestr=strcat('Hourly-Sea-Ice-EastWindStress',num2str(yd));
-   ikind=15;
-   iAddToReport=0;
-   iNewChapter=0;
-   iCloseChapter=0;
-   PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+titlestr=strcat('Hourly-Sea-Ice-EastWindStress',num2str(yd));
+ikind=15;
+iAddToReport=0;
+iNewChapter=0;
+iCloseChapter=0;
+PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
  %% Plot the OPen Water Eastwind Stress
    titlestr=strcat('Hourly-OpenWater-EastWindStress',num2str(yd));
    ikind=16;
@@ -3091,6 +3479,188 @@ if(framecounter==numSelectedFiles)
    iNewChapter=0;
    iCloseChapter=0;
    PlotDataset04Table(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+%% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('AfricaAirTemp-10m',num2str(yd));
+   ikind=40;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('AlgeriaAirTemp-10m',num2str(yd));
+   ikind=41;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('ChadAirTemp-10m',num2str(yd));
+   ikind=42;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+%% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('EgyptAirTemp-10m',num2str(yd));
+   ikind=43;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+%% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('LibyaAirTemp-10m',num2str(yd));
+   ikind=44;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('AngolaAirTemp-10m',num2str(yd));
+   ikind=45;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('NigeriaAirTemp-10m',num2str(yd));
+   ikind=46;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('KenyaAirTemp-10m',num2str(yd));
+   ikind=47;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('MozambiqueAirTemp-10m',num2str(yd));
+   ikind=48;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('EthiopiaAirTemp-10m',num2str(yd));
+   ikind=49;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('MadagascarAirTemp-10m',num2str(yd));
+   ikind=50;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('SouthAgricaAirTemp-10m',num2str(yd));
+   ikind=51;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('CDRAirTemp-10m',num2str(yd));
+   ikind=52;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('CARAirTemp-10m',num2str(yd));
+   ikind=53;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('NamibiaAirTemp-10m',num2str(yd));
+   ikind=54;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('SomaliaAirTemp-10m',num2str(yd));
+   ikind=55;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('SudanAirTemp-10m',num2str(yd));
+   ikind=56;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('SaudiAirTemp-10m',num2str(yd));
+   ikind=57;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('IranAirTemp-10m',num2str(yd));
+   ikind=58;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('IraqAirTemp-10m',num2str(yd));
+   ikind=59;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('JordanAirTemp-10m',num2str(yd));
+   ikind=60;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('SyriaAirTemp-10m',num2str(yd));
+   ikind=61;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('TurkeyAirTemp-10m',num2str(yd));
+   ikind=62;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('PakistanAirTemp-10m',num2str(yd));
+   ikind=63;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('AfganistanAirTemp-10m',num2str(yd));
+   ikind=64;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
+ %% Plot the Air Temp at 10 meters for a specific Region
+   titlestr=strcat('IndiaAirTemp-10m',num2str(yd));
+   ikind=65;
+   iAddToReport=0;
+   iNewChapter=0;
+   iCloseChapter=0;
+   PlotDataset04RegionalTable(titlestr,ikind,iAddToReport,iNewChapter,iCloseChapter)
 end
 
 end

@@ -97,18 +97,18 @@ igrid=1;
 chart_time=5;
 
 
-load('FinlandBoundaries.mat','FinlandLat','FinlandLon')
-ReducedFileName='FinlandBoundariesRed4.mat';
-[nrows,ncols]=size(FinlandLat);
+load('NorthOceanBoundaries.mat','NorthOceanLat','NorthOceanLon')
+ReducedFileName='NorthOceanBoundariesRed4.mat';
+[nrows,ncols]=size(NorthOceanLat);
 if(ncols>nrows)
-    FinlandLat=FinlandLat';
-    FinlandLon=FinlandLon';
+    NorthOceanLat=NorthOceanLat';
+    NorthOceanLon=NorthOceanLon';
 end
-numfullpoints=length(FinlandLat);
+numfullpoints=length(NorthOceanLat);
 numretain=0;
-fullnancount=sum(isnan(FinlandLat));
+fullnancount=sum(isnan(NorthOceanLat));
 for n=1:numfullpoints
-    nowVal=FinlandLat(n,1);
+    nowVal=NorthOceanLat(n,1);
     a1=isnan(nowVal);
     R1=mod(n,nfilter);
     if(a1==1)
@@ -117,32 +117,32 @@ for n=1:numfullpoints
         numretain=numretain+1;
     end
 end
-FinlandLatR=zeros(numretain,1);
-FinlandLonR=zeros(numretain,1);
+NorthOceanLatR=zeros(numretain,1);
+NorthOceanLonR=zeros(numretain,1);
 numretain2=0;
 for n=1:numfullpoints
-    nowVal1=FinlandLat(n,1);
-    nowVal2=FinlandLon(n,1);
+    nowVal1=NorthOceanLat(n,1);
+    nowVal2=NorthOceanLon(n,1);
     a1=isnan(nowVal1);
     R1=mod(n,nfilter);
     if(a1==1)
         numretain2=numretain2+1;
-        FinlandLatR(numretain2,1)=NaN;
-        FinlandLonR(numretain2,1)=NaN;
+        NorthOceanLatR(numretain2,1)=NaN;
+        NorthOceanLonR(numretain2,1)=NaN;
     elseif((R1~=0) && (a1==0))
         numretain2=numretain2+1;
-        FinlandLatR(numretain2,1)=nowVal1;
-        FinlandLonR(numretain2,1)=nowVal2;
+        NorthOceanLatR(numretain2,1)=nowVal1;
+        NorthOceanLonR(numretain2,1)=nowVal2;
     end
 end
 ab=1;
 eval(['cd ' reducedpath(1:length(reducedpath)-1)]);
-reducednancount=sum(isnan(FinlandLatR));
-FinlandLat=FinlandLatR;
-FinlandLon=FinlandLonR;
+reducednancount=sum(isnan(NorthOceanLatR));
+NorthOceanLat=NorthOceanLatR;
+NorthOceanLon=NorthOceanLonR;
 % save the data to a file
 actionstr='save';
-varstr='FinlandLat FinlandLon numfullpoints numretain2 nfilter reducednancount fullnancount';
+varstr='NorthOceanLat NorthOceanLon numfullpoints numretain2 nfilter reducednancount fullnancount';
 qualstr='-v7.3';
 [cmdString]=MyStrcatV73(actionstr,ReducedFileName,varstr,qualstr);
 eval(cmdString)

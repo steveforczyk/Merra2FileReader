@@ -522,7 +522,7 @@ Datasets{3,1}='Dataset03-Instantaneous M2IUNPANA';
 Datasets{4,1}='Dataset04-Hourly Time Averaged M2T1NXOCN';
 Datasets{5,1}='Dataset05';
 Datasets{6,1}='Dataset06';
-Datasets{7,1}='Dataset07';
+Datasets{7,1}='Dataset07-Hourly Instantaeous M2I6NPANA';
 Datasets{8,1}='Dataset08-Monthly Rad Diagnostics';
 Datasets{9,1}='Dataset09-COT-3Hr-Test Mode';
 Datasets{10,1}='Dataset09-COT-3Hr to 1Day';
@@ -650,6 +650,9 @@ while igo>0 % This setup up a loop to processing various file until user decides
     elseif(indx==4)
         logfilename=strcat('Merra2LogFileIndx4-',logfilename,'.txt');
         pdfpath='K:\Merra-2\netCDF\Dataset04\PDF_Files\';
+    elseif(indx==7)
+        logfilename=strcat('Merra2LogFileIndx7-',logfilename,'.txt');
+        pdfpath='K:\Merra-2\netCDF\Dataset07\PDF_Files\';
     end
     eval(['cd ' logpath(1:length(logpath)-1)]);
     fid=fopen(logfilename,'w');
@@ -1475,7 +1478,7 @@ Dataset4Masks=struct('ROI',[],'File',[],'Mask',[]);
 % Load the List of LandMasks for future use
 eval(['cd ' maskpath(1:length(maskpath)-1)]);
 load(MaskFileName,'MaskList','Dataset4Masks');
-SelectedMaskIndices=zeros(9,1);
+SelectedMaskIndices=zeros(26,1);
 SelectedMaskIndices(1,1)=1;% Africa
 SelectedMaskIndices(2,1)=10;%Algeria
 SelectedMaskIndices(3,1)=42;%Chad
@@ -1485,7 +1488,24 @@ SelectedMaskIndices(6,1)=11;%Angola
 SelectedMaskIndices(7,1)=131;%Nigeria
 SelectedMaskIndices(8,1)=95;%Kenya
 SelectedMaskIndices(9,1)=123;% Mozambique
-numSelectedMasks=5;
+SelectedMaskIndices(10,1)=61;% Ethiopia
+SelectedMaskIndices(11,1)=108;% Madagascar
+SelectedMaskIndices(12,1)=159;% SouthAfrica
+SelectedMaskIndices(13,1)=35;% Congo Dem Republic
+SelectedMaskIndices(14,1)=41;% Central African Republic
+SelectedMaskIndices(15,1)=124;% Namibia
+SelectedMaskIndices(16,1)=158;% Somalia
+SelectedMaskIndices(17,1)=163;% Sudan
+SelectedMaskIndices(18,1)=150;% Saudi
+SelectedMaskIndices(19,1)=85;% Iran
+SelectedMaskIndices(20,1)=86;%Iraq
+SelectedMaskIndices(21,1)=93;% Jordan
+SelectedMaskIndices(22,1)=168;%Syria
+SelectedMaskIndices(23,1)=176;% Turkey
+SelectedMaskIndices(24,1)=135;% Pakistan
+SelectedMaskIndices(25,1)=8;% Afganistan
+SelectedMaskIndices(26,1)=83;% India
+numSelectedMasks=26;
 
 for jj=1:numSelectedMasks
     inds=jj;
@@ -1493,30 +1513,8 @@ for jj=1:numSelectedMasks
     SelectedMaskData{jj,2}=MaskList{inds,2};
     SelectedMaskData{jj,3}=MaskList{inds,3};
 end
-% Load up these Masks
-% for jj=1:numSelectedMasks
-%     maskFile=char(SelectedMaskData{jj,1});
-%     maskVar=char(SelectedMaskData{jj,2});
-%     maskROI=char(SelectedMaskData{jj,3});
-%     load(maskFile,maskVar);
-%     Merra2WorkingMask1=eval(maskVar);
-%     Dataset4Masks(jj,1).ROI=maskROI;
-%     Dataset4Masks(jj,1).File=maskFile;
-%     Dataset4Masks(jj,1).Mask=Merra2WorkingMask1;
-%     dispstr=strcat('Added mask #-',num2str(jj),'-for ROI-',maskROI);
-%     disp(dispstr)
-% end
-ab=1;
-% maskFile=char(SelectedMaskData{2,1});
-% maskVar=char(SelectedMaskData{2,2});
-% maskROI=char(SelectedMaskData{2,3});
-% load(maskFile,maskVar);
-% Merra2WorkingMask1=eval(maskVar);
-% Dataset4Masks(2).ROI=maskROI;
-% Dataset4Masks(2).File=maskFile;
-% Dataset4Masks(2).Mask=Merra2WorkingMask1;
 
-ab=1;
+
 % Load the North Pole Region POI for future use
 eval(['cd ' antarcticpath(1:length(antarcticpath)-1)]);
 load(NorthPoleFile)
@@ -1559,8 +1557,57 @@ ab=1;
     runtimestr=dispstr;
     disp(dispstr);
     SaveDataset04FinalResults()
-    elseif(indx==7)
-        ReadDataset07() 
+    elseif(indx==7)% M2I6NPANA
+        jpegpath='K:\Merra-2\netCDF\Dataset07\Jpeg_Files\';
+        pdfpath='K:\Merra-2\netCDF\Dataset07\PDF_Files\';
+        logpath='K:\Merra-2\netCDF\Dataset07\Log_Files\';
+        moviepath='k:\Merra-2\netCDF\Dataset07\Movies\';
+        savepath='K:\Merra-2\netCDF\Dataset07\Matlab_Files2\';
+        tablepath='K:\Merra-2\netCDF\Dataset07\Tables\';
+         % Select A Time slice for extra analysis and most plots
+        TimeSlices=cell(4,1);
+        TimeSlices{1,1}='0 HRS GMT';
+        TimeSlices{2,1}='6 HRS GMT';
+        TimeSlices{3,1}='12 HRS GMT';
+        TimeSlices{4,1}='18 HRS GMT';
+        iTimeSlice=1;
+        tic;
+        logfilename=strcat('Merra2LogFileIndx7-',logfilename,'.txt');
+        isavefiles=2;% Set to this value to save some partial run data
+                     % for quiver function test !
+        [Merra2FileNames,nowpath] = uigetfile('*.nc4','Select Multiple Files', ...
+        'MultiSelect', 'on');
+        a1=isempty(Merra2FileNames);
+        if(a1==0)
+            Merra2FileNames=Merra2FileNames';
+            numSelectedFiles=length(Merra2FileNames);
+            fprintf(fid,'\n');
+            fprintf(fid,'%s\n','----- List of Files to Be processed-----');
+            for nn=1:numSelectedFiles
+                nowFile=Merra2FileNames{nn,1};
+                filestr='File Num';
+                fprintf(fid,'%s\n',nowFile);
+            end
+            fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
+            
+            [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
+        end
+        Merra2FileNames=NewFileList;
+        Merra2FileName=char(Merra2FileNames{1,1});
+        if(iFastSave==1)
+            chart_time=3;
+        end
+        isavefiles=1;
+        for nn=1:numSelectedFiles
+            nowFile=Merra2FileNames{nn,1}; 
+            framecounter=framecounter+1;
+            ReadDataset07Rev2(nowFile,nowpath)
+            dispstr=strcat('Finished Processing File-',nowFile,'-which is file-',num2str(nn),...
+                '-of-',num2str(numSelectedFiles),'-Files');
+            disp(dispstr)
+        end
+        elapsed_time=toc;
+        runtimestr=strcat('Run took-',num2str(elapsed_time),'-seconds');
     elseif(indx==8)% M2TMNXRAD_5.12.4
         [Merra2FileNames,nowpath] = uigetfile('*.nc4','Select Multiple Files', ...
         'MultiSelect', 'on');
@@ -2030,7 +2077,11 @@ end
 %% Run closeout
 
 endruntime=deblank(datestr(now));
-fprintf(fid,'%s\n',runtimestr);
+if(indx~=7)
+    fprintf(fid,'%s\n',runtimestr);
+else
+
+end
 endrunstr=strcat('Finished Merra 2 Analysis Run at-',endruntime);
 fprintf(fid,'%s\n',endrunstr);
 fclose(fid);

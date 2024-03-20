@@ -1,4 +1,4 @@
-function  DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+function  DisplayMerra2LatentEnergyFluxRev1(Stats,EFluxAdj,fracNaN,ikind,iProj,titlestr)
 % Display the latent energy flux for dataset 04 the original script was
 % called DisplayMerra2LatentEnergyFlux and was created on Jan 27
 % this new version of the script will have the image adjment functions and
@@ -48,6 +48,21 @@ global figpath screencapturepath;
 global shapepath2 countrypath countryshapepath usstateboundariespath;
 
 global westEdge eastEdge northEdge southEdge;
+
+persistent AfricaLat AfricaLon  ArgentinaLat ArgentinaLon AsiaLat AsiaLon;
+persistent AustraliaLat AustraliaLon BelizeLat BelizeLon BoliviaLat BoliviaLon;
+persistent BrazilLat BrazilLon CanadaLat CanadaLon ChileLat ChileLon;
+persistent ColumbiaLat ColumbiaLon CostaRicaLat CostaRicaLon CubaLat CubaLon;
+persistent DRLat DRLon EcuadorLat EcuadorLon ElSalvadorLat ElSalvadorLon;
+persistent EuropeLat EuropeLon FrenchGuianaLat FrenchGuianaLon;
+persistent GautemalaLat GautemalaLon GuyanaLat GuyanaLon HaitiLat HaitiLon;
+persistent HondurasLat HondurasLon IranLat IranLon IraqLat IraqLon JamaicaLat JamaicaLon;
+persistent JordanLat JordanLon LebanonLat LebanonLon MexicoLat MexicoLon;
+persistent NicaraguaLat NicaraguaLon OmanLat OmanLon PanamaLat PanamaLon;
+persistent PeruLat PeruLon SaudiLat SaudiLon SurinameLat SurinameLon;
+persistent SyriaLat SyriaLon TurkeyLat TurkeyLon USALat USALon UruguayLat  UruguayLon;
+persistent VenezuelaLat VenezuelaLon YemenLat YemenLon;
+
 if((iCreatePDFReport==1) && (RptGenPresent==1))
     import mlreportgen.dom.*;
     import mlreportgen.report.*;
@@ -108,22 +123,26 @@ maplimitstr1='****Map Limits Follow*****';
 maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
 maplimitstr3=strcat('SouthEdge=',num2str(southEdge,7),'-NorthEdge=',num2str(northEdge));
 maplimitstr4='****Map Limits End*****';
-%fprintf(fid,'%s\n',maplimitstr1);
-%fprintf(fid,'%s\n',maplimitstr2);
-%fprintf(fid,'%s\n',maplimitstr3);
-%fprintf(fid,'%s\n',maplimitstr4);
+
 %% Set up the map axis
-itype=2;
-if(itype==1)
+if(iProj==1)
     axesm ('globe','Frame','on','Grid','on','meridianlabel','off','parallellabel','on',...
         'plabellocation',[-60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60],'mlabellocation',[]);
-elseif(itype==2)
+elseif(iProj==2)
     axesm ('pcarree','Frame','on','Grid','on','MapLatLimit',[southEdge northEdge],...
      'MapLonLimit',[westEdge eastEdge],'meridianlabel','on','parallellabel','on','plabellocation',20,'mlabellocation',30,...
      'MLabelParallel','south');    
-elseif(itype==3)
+elseif(iProj==3)
     axesm ('pcarree','Frame','on','Grid','on','MapLatLimit',[southEdge northEdge],...
      'MapLonLimit',[westEdge eastEdge],'meridianlabel','on','parallellabel','on','plabellocation',10,'mlabellocation',20,...
+     'MLabelParallel','south');
+elseif(iProj==4)
+    westEdge1=-20;
+    eastEdge1=60;
+    northEdge1=40;
+    southEdge1=-40;
+    axesm ('pcarree','Frame','on','Grid','on','MapLatLimit',[southEdge1 northEdge1],...
+     'MapLonLimit',[westEdge1 eastEdge1],'meridianlabel','on','parallellabel','on','plabellocation',5,'mlabellocation',10,...
      'MLabelParallel','south');
 end
 set(gcf,'MenuBar','none');
@@ -136,88 +155,53 @@ ylabel(hc,unitstr,'FontWeight','bold');
 tightmap
 hold on
 maxval2=maxval+5;
-% load the country borders and plot them
-eval(['cd ' mappath(1:length(mappath)-1)]);
-%load('USAHiResBoundaries.mat','USALat','USALon');
-load('USALowResBoundaries.mat','USALat','USALon');
+a1=isempty(MexicoLat);
+if(a1==1)
+% load the country borders and plot them-pull them all from the same file
+% if they are not currently in memory
+    eval(['cd ' mappath(1:length(mappath)-1)]);
+    load('WorldMercatorBoundaries.mat');
+end
 plot3m(USALat,USALon,maxval2,'r');
-%load('CanadaBoundaries.mat','CanadaLat','CanadaLon');
-load('CanadaBoundariesRed4.mat','CanadaLat','CanadaLon');
 plot3m(CanadaLat,CanadaLon,maxval2,'r');
-load('MexicoBoundaries.mat','MexicoLat','MexicoLon');
 plot3m(MexicoLat,MexicoLon,maxval2,'r');
-load('CubaBoundaries.mat','CubaLat','CubaLon');
 plot3m(CubaLat,CubaLon,maxval2,'r');
-load('DominicanRepublicBoundaries.mat','DRLat','DRLon');
 plot3m(DRLat,DRLon,maxval2,'r');
-load('HaitiBoundaries.mat','HaitiLat','HaitiLon');
 plot3m(HaitiLat,HaitiLon,maxval2,'r');
-load('BelizeBoundaries.mat','BelizeLat','BelizeLon');
 plot3m(BelizeLat,BelizeLon,maxval2,'r');
-load('GautemalaBoundaries.mat','GautemalaLat','GautemalaLon');
 plot3m(GautemalaLat,GautemalaLon,maxval2,'r')
-load('JamaicaBoundaries.mat','JamaicaLat','JamaicaLon');
 plot3m(JamaicaLat,JamaicaLon,maxval2,'r');
-load('NicaraguaBoundaries.mat','NicaraguaLat','NicaraguaLon');
 plot3m(NicaraguaLat,NicaraguaLon,maxval2,'r')
-load('HondurasBoundaries.mat','HondurasLat','HondurasLon');
 plot3m(HondurasLat,HondurasLon,maxval2,'r')
-load('ElSalvadorBoundaries.mat','ElSalvadorLat','ElSalvadorLon');
 plot3m(ElSalvadorLat,ElSalvadorLon,maxval2,'r');
-load('PanamaBoundaries.mat','PanamaLat','PanamaLon');
 plot3m(PanamaLat,PanamaLon,maxval2,'r');
-load('ColumbiaBoundaries.mat','ColumbiaLat','ColumbiaLon');
 plot3m(ColumbiaLat,ColumbiaLon,maxval2,'r');
-load('VenezuelaBoundaries.mat','VenezuelaLat','VenezuelaLon');
 plot3m(VenezuelaLat,VenezuelaLon,maxval2,'r')
-load('PeruBoundaries.mat','PeruLat','PeruLon');
 plot3m(PeruLat,PeruLon,maxval2,'r');
-load('EcuadorBoundaries.mat','EcuadorLat','EcuadorLon');
-plot3m(EcuadorLat,EcuadorLon,maxval2,'r')
-load('BrazilBoundaries.mat','BrazilLat','BrazilLon');
+plot3m(EcuadorLat,EcuadorLon,maxval2,'r');
 plot3m(BrazilLat,BrazilLon,maxval2,'r');
-load('BoliviaBoundaries.mat','BoliviaLat','BoliviaLon');
 plot3m(BoliviaLat,BoliviaLon,maxval2,'r')
-load('ChileBoundaries.mat','ChileLat','ChileLon');
 plot3m(ChileLat,ChileLon,maxval2,'r');
-load('ArgentinaBoundaries.mat','ArgentinaLat','ArgentinaLon');
 plot3m(ArgentinaLat,ArgentinaLon,maxval2,'r');
-load('UruguayBoundaries.mat','UruguayLat','UruguayLon');
 plot3m(UruguayLat,UruguayLon,maxval2,'r');
-load('CostaRicaBoundaries.mat','CostaRicaLat','CostaRicaLon');
 plot3m(CostaRicaLat,CostaRicaLon,maxval2,'r');
-load('FrenchGuianaBoundaries.mat','FrenchGuianaLat','FrenchGuianaLon');
 plot3m(FrenchGuianaLat,FrenchGuianaLon,maxval2,'r');
-load('GuyanaBoundaries.mat','GuyanaLat','GuyanaLon');
 plot3m(GuyanaLat,GuyanaLon,maxval2,'r');
-load('SurinameBoundaries.mat','SurinameLat','SurinameLon');
 plot3m(SurinameLat,SurinameLon,maxval2,'r');
-load('IranBoundaries.mat','IranLat','IranLon');
 plot3m(IranLat,IranLon,maxval2,'r');
-load('IraqBoundaries.mat','IraqLat','IraqLon');
 plot3m(IraqLat,IraqLon,maxval2,'r');
-load('TurkeyBoundaries.mat','TurkeyLat','TurkeyLon');
 plot3m(TurkeyLat,TurkeyLon,maxval2,'r');
-load('SyriaBoundaries.mat','SyriaLat','SyriaLon');
 plot3m(SyriaLat,SyriaLon,maxval2,'r');
-load('SaudiBoundaries.mat','SaudiLat','SaudiLon');
 plot3m(SaudiLat,SaudiLon,maxval2,'r');
-load('LebanonBoundaries.mat','LebanonLat','LebanonLon');
 plot3m(LebanonLat,LebanonLon,maxval2,'r');
-load('OmanBoundaries.mat','OmanLat','OmanLon');
 plot3m(OmanLat,OmanLon,maxval2,'r');
-load('YemenBoundaries.mat','YemenLat','YemenLon');
 plot3m(YemenLat,YemenLon,maxval2,'r');
-load('JordanBoundaries.mat','JordanLat','JordanLon');
 plot3m(JordanLat,JordanLon,maxval2,'r');
-load('AfricaHiResBoundaries','AfricaLat','AfricaLon');
 plot3m(AfricaLat,AfricaLon,maxval2,'r');
-load('AsiaHiResBoundaries.mat','AsiaLat','AsiaLon');
 plot3m(AsiaLat,AsiaLon,maxval2,'r');
-load('EuropeHiResBoundaries.mat','EuropeLat','EuropeLon');
 plot3m(EuropeLat,EuropeLon,maxval2,'r');
-load('AustraliaBoundaries.mat','AustraliaLat','AustraliaLon');
 plot3m(AustraliaLat,AustraliaLon,maxval2,'r');
+
 %% Add Cities to the plot is desired
 if((iCityPlot>0))
 %    load("Merra2CityList.mat");
@@ -249,6 +233,7 @@ else
         end
     end
 end
+plot3m(SubSolarLat,SubSolarLon,'y','MarkerSize',12);
 title(titlestr)
 hold off
 %% Add a logo

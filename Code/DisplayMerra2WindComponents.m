@@ -1,4 +1,4 @@
-function  DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,ikind,titlestr)
+function  DisplayMerra2WindComponents(Stats,WindAdj,fracNaN,ikind,iProj,titlestr)
 % Display the wind components (East and North) for dataset 04
 % And also the specific Humidity
 % 
@@ -6,6 +6,8 @@ function  DisplayMerra2WindComponents(Stats,WindAdj,fraclow,frachigh,fracNaN,iki
 % Created: Feb 13,2024
 % Revised: Fev 14,2024 added QV10M
 % Revised: Feb 23,2024 added Fast Save capability
+% Revised: Mar 2,2024 added Africa Detailed Map
+% Revised: Mar 5,2024 added Australia detailed map
 % Classification: Unclassified
 
 global LonS LatS TimeS iTimeSlice TimeSlices framecounter;
@@ -14,6 +16,7 @@ global U10MS V10MS QV10MS;
 global QV10MTable QV10MTT QV10M01 QV10M25 QV10M50 QV10M75 QV10M90 QV10M100 QV10MNaN;
 global V10MTable V10MTT V10M01 V10M25 V10M50 V10M75 V10M90 V10M100 V10MNaN;
 global WorldCityFileName World200TopCities Merra2Cities Merra2WorldCities;
+global SubSolarLat SubSolarLon;
 global iCityPlot maxCities iFastSave;
 global iLogo LogoFileName1 LogoFileName2;
 
@@ -43,6 +46,21 @@ global figpath screencapturepath;
 global shapepath2 countrypath countryshapepath usstateboundariespath;
 
 global westEdge eastEdge northEdge southEdge;
+persistent AfricaLat AfricaLon  ArgentinaLat ArgentinaLon AsiaLat AsiaLon;
+persistent AustraliaLat AustraliaLon BelizeLat BelizeLon BoliviaLat BoliviaLon;
+persistent BrazilLat BrazilLon CanadaLat CanadaLon ChileLat ChileLon;
+persistent ColumbiaLat ColumbiaLon CostaRicaLat CostaRicaLon CubaLat CubaLon;
+persistent DRLat DRLon EcuadorLat EcuadorLon ElSalvadorLat ElSalvadorLon;
+persistent EuropeLat EuropeLon FrenchGuianaLat FrenchGuianaLon;
+persistent GautemalaLat GautemalaLon GuyanaLat GuyanaLon HaitiLat HaitiLon;
+persistent HondurasLat HondurasLon IranLat IranLon IraqLat IraqLon JamaicaLat JamaicaLon;
+persistent JordanLat JordanLon LebanonLat LebanonLon MexicoLat MexicoLon;
+persistent NicaraguaLat NicaraguaLon OmanLat OmanLon PanamaLat PanamaLon;
+persistent PeruLat PeruLon SaudiLat SaudiLon SurinameLat SurinameLon;
+persistent SyriaLat SyriaLon TurkeyLat TurkeyLon USALat USALon UruguayLat  UruguayLon;
+persistent VenezuelaLat VenezuelaLon YemenLat YemenLon;
+persistent AfricanCities numAfricanCities AfricanCitiesList;
+persistent AustralianCities numAustralianCities AustralianCitiesList;
 if((iCreatePDFReport==1) && (RptGenPresent==1))
     import mlreportgen.dom.*;
     import mlreportgen.report.*;
@@ -135,20 +153,45 @@ maplimitstr4='****Map Limits End*****';
 %fprintf(fid,'%s\n',maplimitstr4);
 %% Set up the map axis
 itype=2;
-if(itype==1)
+if(iProj==1)
     axesm ('globe','Frame','on','Grid','on','meridianlabel','off','parallellabel','on',...
         'plabellocation',[-60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60],'mlabellocation',[]);
-elseif(itype==2)
+elseif(iProj==2)% Default World Mercator Map
     axesm ('pcarree','Frame','on','Grid','on','MapLatLimit',[southEdge northEdge],...
      'MapLonLimit',[westEdge eastEdge],'meridianlabel','on','parallellabel','on','plabellocation',20,'mlabellocation',30,...
      'MLabelParallel','south');    
-elseif(itype==3)
+elseif(iProj==3)
     axesm ('pcarree','Frame','on','Grid','on','MapLatLimit',[southEdge northEdge],...
      'MapLonLimit',[westEdge eastEdge],'meridianlabel','on','parallellabel','on','plabellocation',10,'mlabellocation',20,...
      'MLabelParallel','south');
+elseif(iProj==4)% Africa Map
+    westEdge1=-20;
+    eastEdge1=60;
+    northEdge1=40;
+    southEdge1=-40;
+    axesm ('pcarree','Frame','on','Grid','on','MapLatLimit',[southEdge1 northEdge1],...
+     'MapLonLimit',[westEdge1 eastEdge1],'meridianlabel','on','parallellabel','on','plabellocation',5,'mlabellocation',10,...
+     'MLabelParallel','south');
+elseif(iProj==5)% AustraliaMap
+    westEdge1=108;
+    eastEdge1=160;
+    northEdge1=-10;
+    southEdge1=-40;
+    westEdge=min(-180);
+    eastEdge=max(180);
+    southEdge=min(-90);
+    northEdge=max(90);
+    axesm ('pcarree','Frame','on','Grid','on','MapLatLimit',[southEdge1 northEdge1],...
+     'MapLonLimit',[westEdge1 eastEdge1],'meridianlabel','on','parallellabel','on','plabellocation',5,'mlabellocation',10,...
+     'MLabelParallel','south');
+end
+
+if(iProj<4)
+    set(gcf,'Position',[hor1 vert1 widd lend])
+else
+    set(gcf,'Position',[hor1 vert1+40 widd lend-60])
 end
 set(gcf,'MenuBar','none');
-set(gcf,'Position',[hor1 vert1 widd lend])
 %% Plot the surface HFlux on the map
 geoshow(WindAdj',Rpix,'DisplayType','surface');
 demcmap('inc',[maxval minval],incsize);
@@ -157,89 +200,91 @@ ylabel(hc,unitstr,'FontWeight','bold');
 tightmap
 hold on
 maxval2=maxval+5;
-% load the country borders and plot them
-eval(['cd ' mappath(1:length(mappath)-1)]);
-load('USAHiResBoundaries.mat','USALat','USALon');
+% load the country borders from a single larger file and plot them
+a1=isempty(MexicoLat);
+if(a1==1)
+% load the country borders and plot them-pull them all from the same file
+% if they are not currently in memory
+    eval(['cd ' mappath(1:length(mappath)-1)]);
+    load('WorldMercatorBoundaries.mat');
+end
 plot3m(USALat,USALon,maxval2,'r');
-load('CanadaBoundaries.mat','CanadaLat','CanadaLon');
 plot3m(CanadaLat,CanadaLon,maxval2,'r');
-load('MexicoBoundaries.mat','MexicoLat','MexicoLon');
 plot3m(MexicoLat,MexicoLon,maxval2,'r');
-load('CubaBoundaries.mat','CubaLat','CubaLon');
 plot3m(CubaLat,CubaLon,maxval2,'r');
-load('DominicanRepublicBoundaries.mat','DRLat','DRLon');
 plot3m(DRLat,DRLon,maxval2,'r');
-load('HaitiBoundaries.mat','HaitiLat','HaitiLon');
 plot3m(HaitiLat,HaitiLon,maxval2,'r');
-load('BelizeBoundaries.mat','BelizeLat','BelizeLon');
 plot3m(BelizeLat,BelizeLon,maxval2,'r');
-load('GautemalaBoundaries.mat','GautemalaLat','GautemalaLon');
 plot3m(GautemalaLat,GautemalaLon,maxval2,'r')
-load('JamaicaBoundaries.mat','JamaicaLat','JamaicaLon');
 plot3m(JamaicaLat,JamaicaLon,maxval2,'r');
-load('NicaraguaBoundaries.mat','NicaraguaLat','NicaraguaLon');
 plot3m(NicaraguaLat,NicaraguaLon,maxval2,'r')
-load('HondurasBoundaries.mat','HondurasLat','HondurasLon');
 plot3m(HondurasLat,HondurasLon,maxval2,'r')
-load('ElSalvadorBoundaries.mat','ElSalvadorLat','ElSalvadorLon');
 plot3m(ElSalvadorLat,ElSalvadorLon,maxval2,'r');
-load('PanamaBoundaries.mat','PanamaLat','PanamaLon');
 plot3m(PanamaLat,PanamaLon,maxval2,'r');
-load('ColumbiaBoundaries.mat','ColumbiaLat','ColumbiaLon');
 plot3m(ColumbiaLat,ColumbiaLon,maxval2,'r');
-load('VenezuelaBoundaries.mat','VenezuelaLat','VenezuelaLon');
 plot3m(VenezuelaLat,VenezuelaLon,maxval2,'r')
-load('PeruBoundaries.mat','PeruLat','PeruLon');
 plot3m(PeruLat,PeruLon,maxval2,'r');
-load('EcuadorBoundaries.mat','EcuadorLat','EcuadorLon');
-plot3m(EcuadorLat,EcuadorLon,maxval2,'r')
-load('BrazilBoundaries.mat','BrazilLat','BrazilLon');
+plot3m(EcuadorLat,EcuadorLon,maxval2,'r');
 plot3m(BrazilLat,BrazilLon,maxval2,'r');
-load('BoliviaBoundaries.mat','BoliviaLat','BoliviaLon');
 plot3m(BoliviaLat,BoliviaLon,maxval2,'r')
-load('ChileBoundaries.mat','ChileLat','ChileLon');
 plot3m(ChileLat,ChileLon,maxval2,'r');
-load('ArgentinaBoundaries.mat','ArgentinaLat','ArgentinaLon');
 plot3m(ArgentinaLat,ArgentinaLon,maxval2,'r');
-load('UruguayBoundaries.mat','UruguayLat','UruguayLon');
 plot3m(UruguayLat,UruguayLon,maxval2,'r');
-load('CostaRicaBoundaries.mat','CostaRicaLat','CostaRicaLon');
 plot3m(CostaRicaLat,CostaRicaLon,maxval2,'r');
-load('FrenchGuianaBoundaries.mat','FrenchGuianaLat','FrenchGuianaLon');
 plot3m(FrenchGuianaLat,FrenchGuianaLon,maxval2,'r');
-load('GuyanaBoundaries.mat','GuyanaLat','GuyanaLon');
 plot3m(GuyanaLat,GuyanaLon,maxval2,'r');
-load('SurinameBoundaries.mat','SurinameLat','SurinameLon');
 plot3m(SurinameLat,SurinameLon,maxval2,'r');
-load('IranBoundaries.mat','IranLat','IranLon');
 plot3m(IranLat,IranLon,maxval2,'r');
-load('IraqBoundaries.mat','IraqLat','IraqLon');
 plot3m(IraqLat,IraqLon,maxval2,'r');
-load('TurkeyBoundaries.mat','TurkeyLat','TurkeyLon');
 plot3m(TurkeyLat,TurkeyLon,maxval2,'r');
-load('SyriaBoundaries.mat','SyriaLat','SyriaLon');
 plot3m(SyriaLat,SyriaLon,maxval2,'r');
-load('SaudiBoundaries.mat','SaudiLat','SaudiLon');
 plot3m(SaudiLat,SaudiLon,maxval2,'r');
-load('LebanonBoundaries.mat','LebanonLat','LebanonLon');
 plot3m(LebanonLat,LebanonLon,maxval2,'r');
-load('OmanBoundaries.mat','OmanLat','OmanLon');
 plot3m(OmanLat,OmanLon,maxval2,'r');
-load('YemenBoundaries.mat','YemenLat','YemenLon');
 plot3m(YemenLat,YemenLon,maxval2,'r');
-load('JordanBoundaries.mat','JordanLat','JordanLon');
 plot3m(JordanLat,JordanLon,maxval2,'r');
-load('AfricaHiResBoundaries','AfricaLat','AfricaLon');
 plot3m(AfricaLat,AfricaLon,maxval2,'r');
-load('AsiaHiResBoundaries.mat','AsiaLat','AsiaLon');
 plot3m(AsiaLat,AsiaLon,maxval2,'r');
-load('EuropeHiResBoundaries.mat','EuropeLat','EuropeLon');
 plot3m(EuropeLat,EuropeLon,maxval2,'r');
-load('AustraliaBoundaries.mat','AustraliaLat','AustraliaLon');
 plot3m(AustraliaLat,AustraliaLon,maxval2,'r');
 
+
 %% Add Cities to the plot is desired
-if((iCityPlot>0))
+% if((iCityPlot>0))
+% %    load("Merra2CityList.mat");
+%     maxCities=height(Merra2WorldCities);
+%     Merra2Cities= table2cell(Merra2WorldCities);
+%     ab=1;
+%     for k=1:maxCities
+%         nowName=char(Merra2Cities{k,2});
+%         namelen=length(nowName);
+%         if(namelen>5)
+%             nowName=nowName(1:5);
+%         end
+%         nowLat=Merra2Cities{k,3};
+%         nowLon=Merra2Cities{k,4};
+%         nowRank=Merra2Cities{k,9};
+%         if(nowRank<2)
+%             plot3m(nowLat,nowLon,11,'k+');
+%             textm(nowLat,nowLon+3,11,nowName,'Color','black','FontSize',8);
+%         end
+%     end
+% else
+%     for k=1:maxCities
+%         nowName=char(Merra2Cities{k,2});
+%         nowLat=Merra2Cities{k,3};
+%         nowLon=Merra2Cities{k,4};
+%         nowRank=Merra2Cities{k,9};
+%         if(nowRank<2)
+%             plot3m(nowLat,nowLon,11,'k+');
+%             textm(nowLat,nowLon+3,11,nowName,'Color','blue','FontSize',8);
+%         end
+%     end
+% end
+% title(titlestr)
+% hold off
+%% Add Cities to the plot is desired
+if((iCityPlot>0) && (iProj<4))
 %    load("Merra2CityList.mat");
     maxCities=height(Merra2WorldCities);
     Merra2Cities= table2cell(Merra2WorldCities);
@@ -256,6 +301,48 @@ if((iCityPlot>0))
         if(nowRank<2)
             plot3m(nowLat,nowLon,11,'k+');
             textm(nowLat,nowLon+3,11,nowName,'Color','black','FontSize',8);
+        end
+    end
+elseif((iCityPlot>0) && (iProj==4))
+    if(framecounter==1)
+        load("AfricanPrimaryCities.mat",'AfricanCities');
+        numAfricanCities=height(AfricanCities);
+        AfricanCitiesList= table2cell(AfricanCities);
+        ab=1;
+    end
+    for k=1:numAfricanCities
+        nowName=char(AfricanCitiesList{k,1});
+        namelen=length(nowName);
+        if(namelen>7)
+            nowName=nowName(1:7);
+        end
+        nowLat=AfricanCitiesList{k,2};
+        nowLon=AfricanCitiesList{k,3};
+        nowRank=AfricanCitiesList{k,10};
+        if(nowRank<2)
+            plot3m(nowLat,nowLon,maxval+5,'b+');
+            textm(nowLat,nowLon+.5,maxval+5,nowName,'Color','blue','FontSize',8);
+        end
+    end
+  elseif((iCityPlot>0) && (iProj==5))
+    if(framecounter==1)
+        load("AustralianPrimaryCities.mat",'AustralianCities');
+        numAustralianCities=height(AustralianCities);
+        AustralianCitiesList= table2cell(AustralianCities);
+        ab=1;
+    end
+    for k=1:numAustralianCities
+        nowName=char(AustralianCitiesList{k,1});
+        namelen=length(nowName);
+        if(namelen>7)
+            nowName=nowName(1:7);
+        end
+        nowLat=AustralianCitiesList{k,2};
+        nowLon=AustralianCitiesList{k,3};
+        nowRank=AustralianCitiesList{k,10};
+        if(nowRank<2)
+            plot3m(nowLat,nowLon,maxval+5,'b+');
+            textm(nowLat,nowLon+.5,maxval+5,nowName,'Color','blue','FontSize',8);
         end
     end
 else
@@ -288,16 +375,23 @@ end
 newaxesh=axes('Position',[0 0 1 1]);
 set(newaxesh,'XLim',[0 1],'YLim',[0 1]);
 tx1=.10;
-ty1=.18;
+if(iProj~=4)
+    ty1=.18;
+else
+    ty1=.10;
+end
 txtstr1=strcat('Year',Yearstr,'-Month-',Monthstr,'-Day-',Daystr,'-Hour-',Hourstr);
 txt1=text(tx1,ty1,txtstr1,'FontWeight','bold','FontSize',12);
 tx2=.10;
-ty2=.14;
+ty2=ty1-.03;
 txtstr2=strcat('1 ptile =',num2str(Stats(1,3),6),'//-50 ptile =',num2str(Stats(9,3),6),...
     '//-99 ptile=',num2str(Stats(17,3),6),'//-',desc);
 txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12);
 tx3=.10;
-ty3=.10;
+ty3=ty2-.03;
+
+txtstr3=strcat('SubSolarLat=',num2str(SubSolarLat,6),'-SubSolarLon=',num2str(SubSolarLon,6));
+txt3=text(tx3,ty3,txtstr3,'FontWeight','bold','FontSize',12);
 set(newaxesh,'Visible','Off');
 % Save this chart
 figstr=strcat(titlestr,'.jpg');

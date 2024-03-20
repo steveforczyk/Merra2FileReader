@@ -2,7 +2,7 @@ function SaveDataset04FinalResults()
 % This function will save the end of run results for Dataset04
 % Written By: Stephen Forczyk
 % Created: Feb 28,2024
-% Revised: -----
+% Revised: Mar 1-7,2024 added data from more countries
 % Classification: Unclassified Public Domain
 
 global Merra2FileName Merra2ShortFileName Merra2Data Merra2FileNames;
@@ -41,9 +41,15 @@ global U10MTable U10MTT U10M01 U10M25 U10M50 U10M75 U10M90 U10M100 U10MNaN;
 global V10MTable V10MTT V10M01 V10M25 V10M50 V10M75 V10M90 V10M100 V10MNaN;
 global QV10MTable QV10MTT QV10M01 QV10M25 QV10M50 QV10M75 QV10M90 QV10M100 QV10MNaN;
 global SeaIceAreaTable SeaIceAreaTT SeaIceAreaKmWorld SeaIceAreaKmNP SeaIceAreaKmSP;
+global AfricaTempsTT AlgeriaTempsTT ChadTempsTT EgyptTempsTT LibyaTempsTT AngolaTempsTT;
+global NigeriaTempsTT KenyaTempsTT MozambiqueTempsTT EthiopiaTempsTT MadagascarTempsTT SouthAfricaTempsTT;
+global CDRTempsTT  CARTempsTT  NamibiaTempsTT SomaliaTempsTT SudanTempsTT SaudiTempsTT;
+global IranTempsTT IraqTempsTT JordanTempsTT SyriaTempsTT TurkeyTempsTT PakistanTempsTT;
+global AfganistanTempsTT IndiaTempsTT;
 global MaskList Dataset4Masks AfricaTemps AlgeriaTemps ChadTemps LibyaTemps EgyptTemps;
-global AngolaTemps NigeriaTemps;
-global KenyaTemps MozambiqueTemps
+global AngolaTemps NigeriaTemps EthiopiaTemps MadagascarTemps SouthAfricaTemps;
+global KenyaTemps MozambiqueTemps EthiopiaTemps MadagascarTemps SouthAfricaTemps;
+global CDRTemps CARTemps NamibiaTemps ;
 global SeaIceConc TAirTempC Tau U10 V10 ;
 global SelectedMaskData SelectedMaskIndices;
 global framecounter numSelectedFiles;
@@ -77,9 +83,16 @@ varstr5=' T10MTT TAUXICETT TAUXWTRTT TAUYICETT TAUYWTRTT';
 varstr6=' RFRateTT SFRateTT RFTotalTT SFTotalTT U10MTT V10MTT QV10MTT';
 varstr7=' SeaIceAreaTT RasterLats RasterLons Rpix RasterAreas RadiusCalc RasterPtLats RasterLatAreas';
 varstr8=' AfricaTemps AlgeriaTemps ChadTemps LibyaTemps EgyptTemps AngolaTemps NigeriaTemps';
-varstr9=' KenyaTemps MozambiqueTemps';
+varstr9=' KenyaTemps MozambiqueTemps EthiopiaTemps MadagascarTemps SouthAfricaTemps';
+varstr10=' CDRTemps CARTemps NamibiaTemps AfricaTempsTT AlgeriaTempsTT ChadTempsTT EgyptTempsTT';
+varstr11=' LibyaTempsTT AngolaTempsTT NigeriaTempsTT KenyaTempsTT MozambiqueTempsTT EthiopiaTempsTT';
+varstr12=' MadagascarTempsTT SouthAfricaTempsTT CDRTempsTT  CARTempsTT  NamibiaTempsTT';
+varstr13=' SomaliaTempsTT SudanTempsTT SaudiTempsTT IranTempsTT IraqTempsTT';
+varstr14=' JordanTempsTT SyriaTempsTT TurkeyTempsTT PakistanTempsTT';
+varstr15=' AfganistanTempsTT IndiaTempsTT';
 varstr=strcat(varstr1,varstr2,varstr3,varstr4);
-varstr=strcat(varstr,varstr5,varstr6,varstr7,varstr8,varstr9);
+varstr=strcat(varstr,varstr5,varstr6,varstr7,varstr8,varstr9,varstr10,varstr11,varstr12,varstr13);
+varstr=strcat(varstr,varstr14,varstr15);
 qualstr='-v7.3';
 [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
 eval(cmdString)

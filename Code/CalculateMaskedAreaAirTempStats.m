@@ -1,13 +1,17 @@
-function [val25,val50,val75,val99] = CalculateMaskedAreaAirTempStats(AirTempAdj,UserMask,iMaskSlct)
+function CalculateMaskedAreaAirTempStats(AirTempAdj,UserMask,iMaskSlct)
 % This function will apply a geographic area mask  to air temps
 % Written By: Stephen Forczyk
 % Created: Feb 27,2024
-% Revised: Feb 28,2024 added iMaskSlct variable to difrect data to proper
+% Revised: Feb 28,2024 added iMaskSlct variable to direct data to proper
 % array
+% Revised: Mar1-5,2024 added additional countries to list
 % Classification: Unclassified/Public Domain
 global MaskList Dataset4Masks AfricaTemps AlgeriaTemps;
 global ChadTemps LibyaTemps EgyptTemps AngolaTemps NigeriaTemps;
-global KenyaTemps MozambiqueTemps
+global KenyaTemps MozambiqueTemps EthiopiaTemps MadagascarTemps SouthAfricaTemps;
+global CDRTemps CARTemps NamibiaTemps SomaliaTemps SudanTemps SaudiTemps;
+global IranTemps IraqTemps JordanTemps SyriaTemps TurkeyTemps PakistanTemps;
+global AfganistanTemps IndiaTemps;
 global framecounter;
 val25=0;
 val50=0;
@@ -43,6 +47,12 @@ if(iMaskSlct==1)
     AfricaTemps(framecounter,3)=val50;
     AfricaTemps(framecounter,4)=val75;
     AfricaTemps(framecounter,5)=val99;
+elseif(iMaskSlct==8)
+    AfganistanTemps(framecounter,1)=framecounter;
+    AfganistanTemps(framecounter,2)=val25;
+    AfganistanTemps(framecounter,3)=val50;
+    AfganistanTemps(framecounter,4)=val75;
+    AfganistanTemps(framecounter,5)=val99;
 elseif(iMaskSlct==10)
     AlgeriaTemps(framecounter,1)=framecounter;
     AlgeriaTemps(framecounter,2)=val25;
@@ -55,6 +65,18 @@ elseif(iMaskSlct==11)
     AngolaTemps(framecounter,3)=val50;
     AngolaTemps(framecounter,4)=val75;
     AngolaTemps(framecounter,5)=val99;
+elseif(iMaskSlct==35)
+    CDRTemps(framecounter,1)=framecounter;
+    CDRTemps(framecounter,2)=val25;
+    CDRTemps(framecounter,3)=val50;
+    CDRTemps(framecounter,4)=val75;
+    CDRTemps(framecounter,5)=val99;
+elseif(iMaskSlct==41)
+    CORTemps(framecounter,1)=framecounter;
+    CORTemps(framecounter,2)=val25;
+    CORTemps(framecounter,3)=val50;
+    CORTemps(framecounter,4)=val75;
+    CORTemps(framecounter,5)=val99;
 elseif(iMaskSlct==42)
     ChadTemps(framecounter,1)=framecounter;
     ChadTemps(framecounter,2)=val25;
@@ -67,6 +89,36 @@ elseif(iMaskSlct==56)
     EgyptTemps(framecounter,3)=val50;
     EgyptTemps(framecounter,4)=val75;
     EgyptTemps(framecounter,5)=val99;
+elseif(iMaskSlct==61)
+    EthiopiaTemps(framecounter,1)=framecounter;
+    EthiopiaTemps(framecounter,2)=val25;
+    EthiopiaTemps(framecounter,3)=val50;
+    EthiopiaTemps(framecounter,4)=val75;
+    EthipiaTemps(framecounter,5)=val99;
+elseif(iMaskSlct==83)
+    IndiaTemps(framecounter,1)=framecounter;
+    IndiaTemps(framecounter,2)=val25;
+    IndiaTemps(framecounter,3)=val50;
+    IndiaTemps(framecounter,4)=val75;
+    IndiaTemps(framecounter,5)=val99;
+elseif(iMaskSlct==85)
+    IranTemps(framecounter,1)=framecounter;
+    IranTemps(framecounter,2)=val25;
+    IranTemps(framecounter,3)=val50;
+    IranTemps(framecounter,4)=val75;
+    IranTemps(framecounter,5)=val99;
+elseif(iMaskSlct==86)
+    IraqTemps(framecounter,1)=framecounter;
+    IraqTemps(framecounter,2)=val25;
+    IraqTemps(framecounter,3)=val50;
+    IraqTemps(framecounter,4)=val75;
+    IraqTemps(framecounter,5)=val99;
+elseif(iMaskSlct==93)
+    JordanTemps(framecounter,1)=framecounter;
+    JordanTemps(framecounter,2)=val25;
+    JordanTemps(framecounter,3)=val50;
+    JordanTemps(framecounter,4)=val75;
+    JordanTemps(framecounter,5)=val99;
 elseif(iMaskSlct==95)
     KenyaTemps(framecounter,1)=framecounter;
     KenyaTemps(framecounter,2)=val25;
@@ -79,18 +131,72 @@ elseif(iMaskSlct==104)
     LibyaTemps(framecounter,3)=val50;
     LibyaTemps(framecounter,4)=val75;
     LibyaTemps(framecounter,5)=val99;
+elseif(iMaskSlct==108)
+    MadagascarTemps(framecounter,1)=framecounter;
+    MadagascarTemps(framecounter,2)=val25;
+    MadagascarTemps(framecounter,3)=val50;
+    MadagascarTemps(framecounter,4)=val75;
+    MadagascarTemps(framecounter,5)=val99;
 elseif(iMaskSlct==123)
     MozambiqueTemps(framecounter,1)=framecounter;
     MozambiqueTemps(framecounter,2)=val25;
     MozambiqueTemps(framecounter,3)=val50;
     MozambiqueTemps(framecounter,4)=val75;
     MozambiqueTemps(framecounter,5)=val99;
+elseif(iMaskSlct==124)
+    NamibiaTemps(framecounter,1)=framecounter;
+    NamibiaTemps(framecounter,2)=val25;
+    NamibiaTemps(framecounter,3)=val50;
+    NamibiaTemps(framecounter,4)=val75;
+    NamibiaTemps(framecounter,5)=val99;
 elseif(iMaskSlct==131)
     NigeriaTemps(framecounter,1)=framecounter;
     NigeriaTemps(framecounter,2)=val25;
     NigeriaTemps(framecounter,3)=val50;
     NigeriaTemps(framecounter,4)=val75;
     NigeriaTemps(framecounter,5)=val99;
+elseif(iMaskSlct==135)
+    PakistanTemps(framecounter,1)=framecounter;
+    PakistanTemps(framecounter,2)=val25;
+    PakistanTemps(framecounter,3)=val50;
+    PakistanTemps(framecounter,4)=val75;
+    PakistanTemps(framecounter,5)=val99;
+elseif(iMaskSlct==150)
+    SaudiTemps(framecounter,1)=framecounter;
+    SaudiTemps(framecounter,2)=val25;
+    SaudiTemps(framecounter,3)=val50;
+    SaudiTemps(framecounter,4)=val75;
+    SaudiTemps(framecounter,5)=val99;
+elseif(iMaskSlct==158)
+    SomaliaTemps(framecounter,1)=framecounter;
+    SomaliaTemps(framecounter,2)=val25;
+    SomaliaTemps(framecounter,3)=val50;
+    SomaliaTemps(framecounter,4)=val75;
+    SomaliaTemps(framecounter,5)=val99;
+elseif(iMaskSlct==159)
+    SouthAfricaTemps(framecounter,1)=framecounter;
+    SouthAfricaTemps(framecounter,2)=val25;
+    SouthAfricaTemps(framecounter,3)=val50;
+    SouthAfricaTemps(framecounter,4)=val75;
+    SouthAfricaTemps(framecounter,5)=val99;
+elseif(iMaskSlct==163)
+    SudanTemps(framecounter,1)=framecounter;
+    SudanTemps(framecounter,2)=val25;
+    SudanTemps(framecounter,3)=val50;
+    SudanTemps(framecounter,4)=val75;
+    SudanTemps(framecounter,5)=val99;
+elseif(iMaskSlct==168)
+    SyriaTemps(framecounter,1)=framecounter;
+    SyriaTemps(framecounter,2)=val25;
+    SyriaTemps(framecounter,3)=val50;
+    SyriaTemps(framecounter,4)=val75;
+    SyriaTemps(framecounter,5)=val99;
+elseif(iMaskSlct==176)
+    TurkeyTemps(framecounter,1)=framecounter;
+    TurkeyTemps(framecounter,2)=val25;
+    TurkeyTemps(framecounter,3)=val50;
+    TurkeyTemps(framecounter,4)=val75;
+    TurkeyTemps(framecounter,5)=val99;
 
 end
 end
