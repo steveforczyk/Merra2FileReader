@@ -8,6 +8,7 @@
 % Revised: Sep 17,2023 deactived CreateMerra2Aerosol Diagnostic Report
 %          due to errors added dialog to load pre calculated Political 
 % Revised: Sept 19,2023 problems with CreateMerra2Aerosol Diagnostic Report
+
 % Revised: Oct 10,2023 Brought under Git Control Using Remote Repo
 % Revised: Oct 10,2023 Add Sea Mask Files
 % Revised: Oct 27-Oct 30 added ReadDatatset03 code
@@ -79,10 +80,11 @@ global iLogo LogoFileName1 LogoFileName2;
 global iSeaOnly iLandOnly integrateRate;
 global iPostProcessDataset3;
 global numtimeslice iScale datestubstr;
+global iExcelTable iBaseLine iBaseLineFiles iBaseLineHits iBaseLineCal;
 
 global fid;
 global widd2 lend2;
-global initialtimestr igrid ijpeg ilog imovie;
+global initialtimestr igrid ijpeg ilog ;
 global vert1 hor1 widd lend;
 global vert2 hor2 machine;
 global chart_time;
@@ -109,7 +111,7 @@ global ColorList RGBVals ColorList2 xkcdVals LandColors;
 global orange bubblegum brown brightblue;
 global viewAZ viewEL viewAZInc;
 % additional paths needed for mapping
-global matpath1 mappath matlabpath USshapefilepath;
+global matpath1 mappath matlabpath USshapefilepath tiffpath;
 global northamericalakespath logpath pdfpath govjpegpath;
 
 global shapefilepath Countryshapepath figpath pressurepath averaged1Daypath;
@@ -163,7 +165,7 @@ jpegpath='D:\Goes16\Imagery\Aug26_2020\Jpeg_Files\';
 pdfpath='K:\Merra-2\PDF_Reports\';
 geotiffpath='K:\Merra-2\Geotiff_Files\';
 %prefpath='D:\Goes16\Preference_Files\';
-govjpegpath='K:\Merra-2\gov_jpeg\';
+govjpegpath='D:\Merra-2\gov_jpeg\';
 figpath='D:\Goes16\Imagery\Oct_FigFiles\';
 logpath='H:\Goes16\Imagery\Oct22_2017\Log_Files\'; %This really needs to be set later!!!
 tiffpath='D:\Forczyk\Map_Data\InterstateSigns\';
@@ -178,17 +180,22 @@ NorthPoleFile='NorthPolePoints.mat';
 % Set some flags to control program execution
 iCreatePDFReport=0;
 iSkipReportFrames=2;
-iSkipDisplayFrames=5;
+iSkipDisplayFrames=4;
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
 icurvefit=1;
 ifixedImagePaths=1;
-iFastSave=1;
+iFastSave=1;% Save file using screen capture
+iExcelTable=1;% Save Matlab Tables to Excel Tables
+iBaseLine=1;% Calculate Baseline values for comparisions over time
+iBaseLineFiles=5;% number of files that will go into baselines comparison
+iBaseLineHits=zeros(12,1);
+iBaseLineCal=0;
 isaveJpeg=1; % Set to 0 to not save jpegs (not recommended),1=print to save (slow)
 % 2= Quick save using screencapture (recommended)
 iPrintTimingInfo=1;
-iMovie=0;
+iMovie=1;
 MovieFlags=zeros(27,1);
 MovieFlags(4,1)=1;
 MovieFlags(5,1)=1;
@@ -523,7 +530,7 @@ Datasets{4,1}='Dataset04-Hourly Time Averaged M2T1NXOCN';
 Datasets{5,1}='Dataset05';
 Datasets{6,1}='Dataset06';
 Datasets{7,1}='Dataset07-Hourly Instantaeous M2I6NPANA';
-Datasets{8,1}='Dataset08-Monthly Rad Diagnostics';
+Datasets{8,1}='Dataset08-Monthly Rad Diagnostics M2TMNXRAD';
 Datasets{9,1}='Dataset09-COT-3Hr-Test Mode';
 Datasets{10,1}='Dataset09-COT-3Hr to 1Day';
 Datasets{11,1}='Dataset09-Daily Mean COT';
@@ -843,14 +850,17 @@ while igo>0 % This setup up a loop to processing various file until user decides
         savepath='K:\Merra-2\netCDF\Dataset07\Matlab_Files\'; 
         logfilename=strcat('Merra2LogFileIndx7-',logfilename,'.txt');
       elseif(indx==8)
-        jpegpath='K:\Merra-2\netCDF\Dataset08\Jpeg_Files\';
-        %pdfpath='K:\Merra-2\netCDF\Dataset08\PDF_Files\';
-        logpath='K:\Merra-2\netCDF\Dataset08\Log_Files\';
-        moviepath='K:\Merra-2\netCDF\Dataset08\Movies\';
-        savepath='K:\Merra-2\netCDF\Dataset08\Matlab_Files\';
-        tablepath='K:\Merra-2\netCDF\Dataset08\Tables\';
-        pdfpath='K:\Merra-2\netCDF\Dataset08\PDF_Files\';
+        jpegpath='D:\Merra-2\netCDF\Dataset08\Jpeg_Files\';
+        tiffpath='D:\Merra-2\netCDF\Dataset08\Tiff_Files\';
+        logpath='D:\Merra-2\netCDF\Dataset08\Log_Files\';
+        moviepath='D:\Merra-2\netCDF\Dataset08\Movies\';
+        savepath='D:\Merra-2\netCDF\Dataset08\Matlab_Files\';
+        tablepath='D:\Merra-2\netCDF\Dataset08\Tables\';
+        pdfpath='D:\Merra-2\netCDF\Dataset08\PDF_Files\';
+        excelpath='D:\Merra-2\netCDF\Dataset08\Excel_Files\';
         logfilename=strcat('Merra2LogFileIndx8-',logfilename,'.txt');
+        iFastSave=2;
+        chart_time=2;
       elseif(indx==9)
         jpegpath='K:\Merra-2\netCDF\Dataset09\Jpeg_Files\';
         pdfpath='K:\Merra-2\netCDF\Dataset09\PDF_Files\';
@@ -1615,7 +1625,6 @@ ab=1;
         numSelectedFiles=length(Merra2FileNames);
         [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
         Merra2FileNames=NewFileList;
-        profile on
         fprintf(fid,'\n');
         fprintf(fid,'%s\n','----- List of Files to Be processed-----');
         for nn=1:numSelectedFiles
@@ -1630,6 +1639,7 @@ ab=1;
         [iper]=strfind(testFile,'.');
         is=iper(2)+1;
         ie=iper(3)-1;
+        tic;
         if(iMovie>0)
             YearMonthStr=testFile(is:ie);
             YearMonthStrStart=YearMonthStr;
@@ -1642,14 +1652,14 @@ ab=1;
             vTemp.Quality=100;
             vTemp.FrameRate=3;
             open(vTemp);
-            vTemp17 = VideoWriter(TempMovieName17,'MPEG-4');
-            vTemp17.Quality=100;
-            vTemp17.FrameRate=2;
-            open(vTemp17);
-            vTemp34 = VideoWriter(TempMovieName34,'MPEG-4');
-            vTemp34.Quality=100;
-            vTemp34.FrameRate=3;
-            open(vTemp34);
+%             vTemp17 = VideoWriter(TempMovieName17,'MPEG-4');
+%             vTemp17.Quality=100;
+%             vTemp17.FrameRate=2;
+%             open(vTemp17);
+%             vTemp34 = VideoWriter(TempMovieName34,'MPEG-4');
+%             vTemp34.Quality=100;
+%             vTemp34.FrameRate=3;
+%             open(vTemp34);
         end
         ab=1;
         for nn=1:numSelectedFiles
@@ -1661,8 +1671,8 @@ ab=1;
         end
         if(iMovie>0)
             close(vTemp);
-            close(vTemp17);
-            close(vTemp34);
+%             close(vTemp17);
+%             close(vTemp34);
         end
  % Plot TimeTables Specific to this item
  % Start with the Surface Albedo
@@ -1931,6 +1941,12 @@ ab=1;
         end
     end
     fprintf(fid,'\n');
+    elapsed_time=toc;
+    etimestr=strcat('Run Time=',num2str(elapsed_time),'-sec');
+    fprintf(fid,'%s\n',etimestr);
+    timeperframe=elapsed_time/numSelectedFiles;
+    tpfstr=strcat('Time Per Frame-',num2str(timeperframe),'-sec');
+    fprintf(fid,'%s\n',tpfstr);
     igo=0;
     elseif(indx==9)
         isavefiles=2;
@@ -2078,9 +2094,10 @@ end
 
 endruntime=deblank(datestr(now));
 if(indx~=7)
+    runtimestr='all done';
     fprintf(fid,'%s\n',runtimestr);
 else
-
+    runtimestr='all done';
 end
 endrunstr=strcat('Finished Merra 2 Analysis Run at-',endruntime);
 fprintf(fid,'%s\n',endrunstr);

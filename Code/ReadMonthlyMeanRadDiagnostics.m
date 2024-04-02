@@ -60,6 +60,9 @@ global SWTNTCLNTable SWTNTCLNTT SWTNTCLRTable SWTNTCLRTT;
 global SWTNTCLRCLNTable SWTNTCLRCLNTT  TSTable TSTT;
 global AlbnirdfTable  AlbnirdfTT AlbnirdrTable AlbnirdrTT;
 global AlbvisdrTable  AlbvisdrTT ;
+global AlbedoJanTT AlbedoFebTT AlbedoMarTT AlbedoAprTT;
+global AlbedoMayTT AlbedoJunTT AlbedoJulTT AlbedoAugTT;
+global AlbedoSepTT AlbedoOctTT AlbedoNovTT AlbedoDecTT;
 global westEdge eastEdge southEdge northEdge;
 
 % Create some holding arrays for data that will be put into tables
@@ -136,26 +139,32 @@ global TAUTOT90 TAUTOT100 TAUTOTLow TAUTOTHigh TAUTOTNaN TAUTOTValues;
 global TS10 TS20 TS30 TS40 TS50 TS60 TS70 TS80;
 global TS90 TS100 TSLow TSHigh TSNaN TSValues;
 global EMISValues TSValues;
+global FillValue;
 
 global RCOEFF RCOEFFHist RCOEFFLabels;
-global iCityPlot;
+global iCityPlot iSkipDisplayFrames;
+global iExcelTable iBaseLine iBaseLineFiles iBaseLineHits;
+global BaselineSurfaceAlbedo  BaseLineFileName iBaseLineCal;
 
 % additional paths needed for mapping
-global matpath1 mappath ;
+global matpath1 mappath excelpath;
 global jpegpath savepath tablepath;
 
 global fid isavefiles;
-
+persistent duration start_time end_time;
+if(framecounter==1)
+    duration=0;
+end
 
 fprintf(fid,'\n');
 fprintf(fid,'%s\n','**************Start reading dataset 08 Radiation Diagnostics data***************');
 
-%[nc_filenamesuf,path]=uigetfile('*nc','Select One Data File');% SMF Modification
 nc_filenamesuf=nowFile;
 Merra2FileName=RemoveUnderScores(nowFile);
 nc_filename=strcat(path,nc_filenamesuf);
 ncid=netcdf.open(nc_filename,'nowrite');
-openfilestr=strcat('Opening file-',Merra2FileName,'-for reading');
+openfilestr=strcat('Opening file-',Merra2FileName,'-for reading file#-',num2str(framecounter),...
+    '-of-',num2str(numSelectedFiles));
 fprintf(fid,'%s\n',openfilestr);
 [iper]=strfind(Merra2FileName,'.');
 numper=length(iper);
@@ -248,7 +257,9 @@ Var_TSS=AlbedoS;
 % Get information about the contents of the file.
 [numdims, numvars, numglobalatts, unlimdimID] = netcdf.inq(ncid);
 numvarstr=strcat('The number of variables read from the Monthly Mean Rad Diagnostics file=',num2str(numvars));
-fprintf(fid,'%s\n',numvarstr);
+if(framecounter==1)
+    fprintf(fid,'%s\n',numvarstr);
+end
     
 if(idebug==1)
     disp(' '),disp(' '),disp(' ')
@@ -4255,7 +4266,7 @@ if(idebug==1)
     disp(' '),disp(' ')
 end
 netcdf.close(ncid);
-fprintf(fid,'%s\n','Finished reading netCDF data file');
+%fprintf(fid,'%s\n','Finished reading netCDF data file');
 %% Create Georeference object Rpix
 latlim=[-90 90];
 lonlim=[-180 180];
@@ -4300,8 +4311,42 @@ else
 
     end
 end
-
-%% Display the Plot Selected Parameters
+% Save any selected varibales to holding arrays to later allow the
+% calculation of parameter changes over time
+if((iBaseLine==1) && (framecounter==1))
+    BaselineSurfaceAlbedo=zeros(576,361,12);
+end
+if(iBaseLine==1)
+    MonthIndex=str2double(MonthStr);
+    if(iBaseLineHits(MonthIndex,1)<iBaseLineFiles)
+        SAlbedo=AlbedoS.values;
+        FillValue=AlbedoS.FillValue;
+        nanreplacement=0;
+        [SAlbedo2,~] = SubstituteNaNValues(SAlbedo,nanreplacement,FillValue);
+        BaselineSurfaceAlbedo(:,:,MonthIndex)=SAlbedo2;
+        iBaseLineHits(MonthIndex,1)=iBaseLineHits(MonthIndex,1)+1;
+        ab=1;
+    end
+end
+%% First divide the results by the number of hits and then save the data
+% if this is the last accumilation frame
+if((iBaseLine==1) && (framecounter==iBaseLineFiles*12))
+    BaselineSurfaceAlbedo=BaselineSurfaceAlbedo/iBaseLineFiles;
+    eval(['cd ' savepath(1:length(savepath)-1)]);
+    actionstr='save';
+    varstr='BaselineSurfaceAlbedo iBaseLineHits iBaseLineFiles';
+    qualstr='-v7.3';
+    BaseLineFileName=strcat('BaselineFile3Yrs-',YearMonthStr,'.mat');
+    [cmdString]=MyStrcatV73(actionstr,BaseLineFileName,varstr,qualstr);
+    eval(cmdString)
+    dispstr=strcat('Wrote BaseLine File-',BaseLineFileName);
+    disp(dispstr);
+    savestr=strcat('Saved BaseLine File Data to =',BaseLineFileName);
+    fprintf(fid,'%s\n',savestr);
+    disp(savestr)
+    iBaseLineCal=1;
+end
+%% Display the selected Plot Variables
  ikind=1;
  itype=3;
  varname='Albedo';
@@ -4309,6 +4354,7 @@ end
  iNewChapter=1;
  iCloseChapter=0;
  iCityPlot=1;
+ FillValue=AlbedoS.FillValue;
  DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
  ikind=2;
  itype=3;
@@ -4317,238 +4363,340 @@ end
  iNewChapter=0;
  iCloseChapter=0;
  iCityPlot=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=3;
  itype=3;
  varname='ALBIRDR';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=4;
  itype=3;
  varname='ALVISDF';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=5;
  itype=3;
  varname='ALVISDR';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=6;
  itype=3;
  varname='CLDHGH';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=7;
  itype=3;
  varname='CLDLOW';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=8;
  itype=3;
  varname='CLDMID';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=9;
  itype=3;
  varname='CLDTOT';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=10;
  itype=3;
  varname='EMIS';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=13;
  itype=3;
  varname='LWGAB';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=14;
  itype=3;
  varname='LWGABCLR';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=15;
  itype=3;
  varname='LWGABCLRCLN';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=16;
  itype=3;
  varname='LWGEM';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=17;
  itype=3;
  varname='LWGNT';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=18;
  itype=3;
  varname='LWGNTCLR';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=19;
  itype=3;
  varname='LWGNTCLRCLN';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=20;
  itype=3;
  varname='LWTUP';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter);
+ end
  ikind=21;
  itype=3;
  varname='LWTUPCLR';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=22;
  itype=3;
  varname='LWTUPCLRCLN';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=23;
  itype=3;
  varname='SWGDN';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=24;
  itype=3;
  varname='SWGDNCLR';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=25;
  itype=3;
  varname='SWGNT';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=26;
  itype=3;
  varname='SWGNTCLN';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=27;
  itype=3;
  varname='SWGNTCLR';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=28;
  itype=3;
  varname='SWGNTCLRCLN';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=29;
  itype=3;
  varname='SWTDN';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=30;
  itype=3;
  varname='SWTNT';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=31;
  itype=3;
  varname='SWTNTCLN';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=32;
  itype=3;
  varname='SWTNTCLR';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=33;
  itype=3;
  varname='SWTNTCLRCLN';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=34;
  itype=3;
  varname='TAUHGH';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=35;
  itype=3;
  varname='TAULOW';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=36;
  itype=3;
  varname='TAUMID';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=37;
  itype=3;
  varname='TAUTOT';
  iAddToReport=1;
  iNewChapter=0;
  iCloseChapter=0;
- DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ a1=mod(framecounter,iSkipDisplayFrames);
+ if(a1==0)
+    DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
+ end
  ikind=39;
  itype=3;
  varname='TS';
@@ -4565,6 +4713,7 @@ if(framecounter<=numSelectedFiles)
   AlbedoValues=AlbedoS.values;
   lowcutoff=0;
   highcutoff=1;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(AlbedoValues,lowcutoff,highcutoff);
   Albedo10(framecounter,1)=val10;
   Albedo20(framecounter,1)=val20;
@@ -5220,6 +5369,8 @@ if(framecounter<=numSelectedFiles)
   TSHigh(framecounter,1)=frachigh;
   TSNaN(framecounter,1)=fracNaN;
 end
+end_time=cputime;
+duration=end_time-start_time+duration;
 if(framecounter==1)
     yd=str2double(YearMonthStr(1:4));
     md=str2double(YearMonthStr(5:6));
@@ -5374,14 +5525,20 @@ if(framecounter==numSelectedFiles)
             'Albedo40','Albedo50','Albedo60','Albedo70',...
             'Albedo80','Albedo90','Albedo100'});
   AlbedoTT = table2timetable(AlbedoTable,'TimeStep',timestep,'StartTime',stime);
+% For the Albedo also create monthly tables
+  TransformYearlyAlbedoToMonthlyTimeTable
+% Now save the yearly and monthly tables together
   eval(['cd ' tablepath(1:length(tablepath)-1)]);
   actionstr='save';
-  varstr1='AlbedoTable AlbedoTT';
+  varstr1='AlbedoTable AlbedoTT AlbedoJanTT AlbedoFebTT';
+  varstr2=' AlbedoMarTT AlbedoAprTT AlbedoMayTT AlbedoJunTT AlbedoJulTT AlbedoAugTT';
+  varstr3=' AlbedoSepTT AlbedoOctTT AlbedoNovTT AlbedoDecTT';
+  varstr=strcat(varstr1,varstr2,varstr3);
   MatFileName=strcat('AlbedoTable',YearMonthStr,'.mat');
   qualstr='-v7.3';
-  [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+  [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
   eval(cmdString)
-  albedostr=strcat('Created AlbedoTT-','Contains Surface Alebedo Data-',num2str(1));
+  albedostr=strcat('Created AlbedoTT-','Contains Surface Albedo Data-',num2str(1));
   fprintf(fid,'%s\n',albedostr);
 
 % Create the Albedo Table ikind=2
@@ -5401,7 +5558,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   albedonirstr=strcat('Created AlbnirdfTT-','Contains Surface NearIRAlebedo Data-',num2str(2));
   fprintf(fid,'%s\n',albedonirstr);
-
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(AlbnirdfTT,tablefilename,'Sheet','SurfaceAlebdoNIRD');
   % Create the Albedo Table ikind=3
   AlbnirdrTable=table(Albnirdr10(:,1),Albnirdr20(:,1),Albnirdr30(:,1),...
             Albnirdr40(:,1),Albnirdr50(:,1),Albnirdr60(:,1),...
@@ -5419,6 +5577,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   albedonirdstr=strcat('Created AlbnirdrTT-','Contains Surface NearIR Albedo Beam Data -',num2str(3));
   fprintf(fid,'%s\n',albedonirdstr);
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(AlbnirdrTT,tablefilename,'Sheet','SurfaceAlebdoNIBeam');
 
 % Create the Albedo Table ikind=4
   AlbvisdfTable=table(Albvisdf10(:,1),Albvisdf20(:,1),Albvisdf30(:,1),...
@@ -5437,7 +5597,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   albedovisdstr=strcat('Created AlbvisdfTableTT-','Contains Surface Visible Albedo Difuse Data -',num2str(3));
   fprintf(fid,'%s\n',albedovisdstr);
-
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(AlbvisdfTT,tablefilename,'Sheet','SurfaceAlebdoVisDiff');
  % Create the Albedo Table ikind=5
   AlbvisdrTable=table(Albvisdr10(:,1),Albvisdr20(:,1),Albvisdr30(:,1),...
             Albvisdr40(:,1),Albvisdr50(:,1),Albvisdr60(:,1),...
@@ -5455,7 +5616,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   albedovisdstr=strcat('Created AlbvisdrTableTT-','Contains Surface Visible Albedo Beam Data -',num2str(3));
   fprintf(fid,'%s\n',albedovisdstr);
-
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(AlbvisdrTT,tablefilename,'Sheet','SurfaceAlebdoVisBeam');
 % Create the High Altitude Cloud Fraction Table ikind=6
   CLDHGHTable=table(CLDHGH10(:,1),CLDHGH20(:,1),CLDHGH30(:,1),...
             CLDHGH40(:,1),CLDHGH50(:,1),CLDHGH60(:,1),...
@@ -5473,7 +5635,9 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   cloudhighstr=strcat('Created CLDHGHTTTT-','Contains High Cloud Area Fraction-',num2str(6));
   fprintf(fid,'%s\n',cloudhighstr);
-
+  eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   tablefilename=strcat('CloudFrac-',YearMonthStr,'.xlsx');
+%   writetimetable(CLDHGHTT,tablefilename,'Sheet','HighCloudFrac');
  % Create the Low Altitude Cloud Fraction Table ikind=7
   CLDLOWTable=table(CLDLOW10(:,1),CLDLOW20(:,1),CLDLOW30(:,1),...
             CLDLOW40(:,1),CLDLOW50(:,1),CLDLOW60(:,1),...
@@ -5491,7 +5655,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   cloudlowstr=strcat('Created CLDLOWTT-','Contains Low Cloud Area Fraction-',num2str(6));
   fprintf(fid,'%s\n',cloudlowstr);
-
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(CLDLOWTT,tablefilename,'Sheet','LowCloudFrac');
  % Create the Mid Altitude Cloud Fraction Table ikind=8
   CLDMIDTable=table(CLDMID10(:,1),CLDMID20(:,1),CLDMID30(:,1),...
             CLDMID40(:,1),CLDMID50(:,1),CLDMID60(:,1),...
@@ -5509,6 +5674,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   cloudmidstr=strcat('Created CLDMIDTT-','Contains Mid Cloud Area Fraction-',num2str(6));
   fprintf(fid,'%s\n',cloudmidstr);
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(CLDMIDTT,tablefilename,'Sheet','MidCloudFrac');
 
  % Create the High Total Cloud Fraction Table ikind=9
   CLDTOTTable=table(CLDTOT10(:,1),CLDTOT20(:,1),CLDTOT30(:,1),...
@@ -5527,6 +5694,9 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   cloudtotstr=strcat('Created CLDTOTTTTT-','Contains Total Cloud Area Fraction-',num2str(9));
   fprintf(fid,'%s\n',cloudtotstr);
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(CLDTOTTT,tablefilename,'Sheet','TotalCloudFrac');
+
   % Create the Surface Emissivity Table ikind=11
   SurfaceEmissTable=table(SEmis10(:,1),SEmis20(:,1),SEmis30(:,1),...
             SEmis40(:,1),SEmis50(:,1),SEmis60(:,1),...
@@ -5542,6 +5712,9 @@ if(framecounter==numSelectedFiles)
   qualstr='-v7.3';
   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
   eval(cmdString)
+  eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   tablefilename=strcat('SurfaceEmiss-',YearMonthStr,'.xlsx');
+%   writetimetable(SurfaceEmissTT,tablefilename,'Sheet','SurfaceEmissivity');
 
 % Create the Long Wave Surface Absorption Table ikind=13
   LWGABTable=table(LWGAB10(:,1),LWGAB20(:,1),LWGAB30(:,1),...
@@ -5560,7 +5733,9 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgabstr=strcat('Created LWGABTT-','Contains Long Wave Surface Absorption-',num2str(13));
   fprintf(fid,'%s\n',lwgabstr);
-
+  eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   tablefilename=strcat('LWIRAbsorption-',YearMonthStr,'.xlsx');
+%   writetimetable(LWGABTT,tablefilename,'Sheet','LWIRSurfAbs');
  % Create the Long Wave Surface Absorption Clear Sky Table ikind=14
   LWGABCLRTable=table(LWGABCLR10(:,1),LWGABCLR20(:,1),LWGABCLR30(:,1),...
             LWGABCLR40(:,1),LWGABCLR50(:,1),LWGABCLR60(:,1),...
@@ -5578,6 +5753,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgab1str=strcat('Created LWGABCLRTT-','Contains Long Wave Surface Absorption Clear Sky-',num2str(14));
   fprintf(fid,'%s\n',lwgab1str);
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(LWGABCLRTT,tablefilename,'Sheet','LWIRClearSkySurfAbs');
 
   % Create the Long Wave Surface Absorption Clear Sky Table No Aerosol ikind=15
   LWGABCLRCLNTable=table(LWGABCLRCLN10(:,1),LWGABCLRCLN20(:,1),LWGABCLRCLN30(:,1),...
@@ -5596,6 +5773,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgab2str=strcat('Created LWGABCLRCLNTT-','Contains Long Wave Surface Absorption Clear Sky No Aerosol-',num2str(15));
   fprintf(fid,'%s\n',lwgab2str);
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(LWGABCLRCLNTT,tablefilename,'Sheet','LWIRClearSkyNoAeroSurfAbs');
 
   % Create the Long Wave Surface Emission Table ikind=16
   LWGEMTable=table(LWGEM10(:,1),LWGEM20(:,1),LWGEM30(:,1),...
@@ -5614,6 +5793,9 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgemstr=strcat('Created LWGEMTT-','Contains Long Wave Surface Emission-',num2str(16));
   fprintf(fid,'%s\n',lwgemstr);
+%  eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   tablefilename=strcat('LWIREmiss-',YearMonthStr,'.xlsx');
+%   writetimetable(LWGEMTT,tablefilename,'Sheet','LWIRSurfEmiss');
 
 % Create the Long Wave Surface Net Downward Flux ikind=17
   LWGNTTable=table(LWGNT10(:,1),LWGNT20(:,1),LWGNT30(:,1),...
@@ -5632,6 +5814,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgem2str=strcat('Created LWGNTTT-','Contains Long Wave Surface Net Downwards Flux-',num2str(17));
   fprintf(fid,'%s\n',lwgem2str);
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(LWGNTTT,tablefilename,'Sheet','LWIRNetDownFlux');
 
  % Create the Long Wave Surface Net Downward Clear Sky Flux ikind=18
   LWGNTCLRTable=table(LWGNTCLR10(:,1),LWGNTCLR20(:,1),LWGNTCLR30(:,1),...
@@ -5650,6 +5834,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgem3str=strcat('Created LWGNTCLRTT-','Contains Long Wave Surface Net Downwards Clear Sky Flux-',num2str(18));
   fprintf(fid,'%s\n',lwgem3str);
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(LWGNTCLRTT,tablefilename,'Sheet','LWIRNetDownClearFlux');
 
  % Create the Long Wave Surface Net Downward Clear Sky/No Aero Flux
  % ikind=19
@@ -5669,6 +5855,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgem4str=strcat('Created LWGNTCLRCLNTT-','Contains Long Wave Surface Net Downwards Clear Sky/No Aero Flux-',num2str(19));
   fprintf(fid,'%s\n',lwgem4str);
+%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   writetimetable(LWGNTCLRCLNTT,tablefilename,'Sheet','LWIRNetDownClrSkyNoAero');
 
  % Create the Long Wave upwelling radiation at the TOA (LWTUP) ikind=20
   LWTUPTable=table(LWTUP10(:,1),LWTUP20(:,1),LWTUP30(:,1),...
@@ -5687,6 +5875,9 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwtupstr=strcat('Created LWTUPTT-','Contains Long Wave Upwelling radiation-',num2str(20));
   fprintf(fid,'%s\n',lwtupstr);
+  %  eval(['cd ' excelpath(1:length(excelpath)-1)]);
+%   tablefilename=strcat('LWUpwelling-',YearMonthStr,'.xlsx');
+%   writetimetable(LWTUPTT,tablefilename,'Sheet','LWUPTOA');
 
  % Create the Long Wave clear sky upwelling radiation at the TOA (LWTUPCLR) ikind=21
   LWTUPCLRTable=table(LWTUPCLR10(:,1),LWTUPCLR20(:,1),LWTUPCLR30(:,1),...
@@ -5705,7 +5896,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwtup1str=strcat('Created LWTUPCLRTT-','Contains Long Wave clear sky Upwelling radiation-',num2str(21));
   fprintf(fid,'%s\n',lwtup1str);
-
+ %writetimetable(LWTUPCLRTT,tablefilename,'Sheet','LWUPClearSkyTOA'); 
  % Create the Long Wave clear sky no/aero upwelling radiation at the TOA (LWTUPCLRCLN)
  % ikind=22
   LWTUPCLRCLNTable=table(LWTUPCLRCLN10(:,1),LWTUPCLRCLN20(:,1),LWTUPCLRCLN30(:,1),...% Fix this
@@ -5724,6 +5915,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwtup2str=strcat('Created LWTUPCLRCLNTT-','Contains Long Wave clear sky no/aero Upwelling radiation-',num2str(22));
   fprintf(fid,'%s\n',lwtup2str);
+ % writetimetable(LWTUPCLRCLNTT,tablefilename,'Sheet','LWUPClearSkyNoAeroTOA'); 
 
  % Create the Surface Incoming ShortWave Flux ikind=23
    SWGDNTable=table(SWGDN10(:,1),SWGDN20(:,1),SWGDN30(:,1),...
@@ -5742,6 +5934,9 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwtupstr=strcat('Created SWGDNTT-','Contains Surface Incoming ShortWave Flux-',num2str(23));
   fprintf(fid,'%s\n',lwtupstr);
+%   tablefilename=strcat('SWIRFlux-',YearMonthStr,'.xlsx');
+%   writetimetable(SWGDNTT,tablefilename,'Sheet','SurfIncSWIRFlux');
+
 
  % Create the Surface Incoming Clear Sky ShortWave Flux ikind=24
    SWGDNCLRTable=table(SWGDNCLR10(:,1),SWGDNCLR20(:,1),SWGDNCLR30(:,1),...
@@ -5760,6 +5955,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swdgn1str=strcat('Created SWDGNCLRTT-','Contains Surface Clear Sky Incoming ShortWave Flux-',num2str(24));
   fprintf(fid,'%s\n',swdgn1str);
+  %   writetimetable(SWGDNCLRTT,tablefilename,'Sheet','SurfIncSWIRClrSkyFlux');
 
 % Create the Surface Net Downwards Flux ikind=25
    SWGNTTable=table(SWGNT10(:,1),SWGNT20(:,1),SWGNT30(:,1),...
@@ -5778,6 +5974,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swdgn1str=strcat('Created SWGNTTT-','Contains Surface Net Downwards Flux-',num2str(25));
   fprintf(fid,'%s\n',swdgn1str);
+   %   writetimetable(SWGNTTT,tablefilename,'Sheet','SurfNetDownFlux');
 
 % Create the Surface Net Downwards Flux ikind=26
    SWGNTCLNTable=table(SWGNTCLN10(:,1),SWGNTCLN20(:,1),SWGNTCLN30(:,1),...
@@ -5796,6 +5993,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swdgn2str=strcat('Created SWGNTCLNTT-','Contains Surface Net Downwards Flux No Aerosol-',num2str(26));
   fprintf(fid,'%s\n',swdgn2str);
+ % writetimetable(SWGNTCLNTT,tablefilename,'Sheet','SurfNetDownFluxNoAero');
 
  % Create the Surface Net Downwards Flux ikind=27
    SWGNTCLRTable=table(SWGNTCLR10(:,1),SWGNTCLR20(:,1),SWGNTCLR30(:,1),...
@@ -5814,6 +6012,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swdgn3str=strcat('Created SWGNTCLRTT-','Contains Surface Net Downwards Flux Clear Sky-',num2str(27));
   fprintf(fid,'%s\n',swdgn3str);
+  % writetimetable(SWGNTCLRTT,tablefilename,'Sheet','SurfNetDownFluxClearSky');
  
  % Create the Surface Net Downwards Flux ikind=28
    SWGNTCLRCLNTable=table(SWGNTCLRCLN10(:,1),SWGNTCLRCLN20(:,1),SWGNTCLRCLN30(:,1),...
@@ -5832,6 +6031,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swdgn4str=strcat('Created SWGNTCLRCLNTT-','Contains Surface Net Downwards Flux Clear Sky No Aero-',num2str(27));
   fprintf(fid,'%s\n',swdgn4str);
+  % writetimetable(SWGNTCLRCLNTT,tablefilename,'Sheet','SurfNetDownFluxClearSkyNoAero');
   
 
 % Create the Toa Incoming ShortWave Flux ikind=29
@@ -5851,6 +6051,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swtdnstr=strcat('Created SWTDNTT-','Contains Toa Incoming ShortWave Flux-',num2str(29));
   fprintf(fid,'%s\n',swtdnstr);
+%  tablefilename=strcat('SWIRIncomingFlux-',YearMonthStr,'.xlsx');
+%  writetimetable(SWTDNTT,tablefilename,'Sheet','TOAIncSWIRFlux');
 
  % Create the Toa Net ShortWave Flux ikind=30
    SWTNTTable=table(SWTNT10(:,1),SWTNT20(:,1),SWTNT30(:,1),...
@@ -5869,6 +6071,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swtntstr=strcat('Created SWTNTTT-','Contains Toa Net ShortWave Flux-',num2str(29));
   fprintf(fid,'%s\n',swtntstr);
+%  writetimetable(SWTNTTT,tablefilename,'Sheet','TOANetSWIRFlux');
 
  % Create the Toa Net ShortWave Flux No Aero ikind=31
    SWTNTCLNTable=table(SWTNTCLN10(:,1),SWTNTCLN20(:,1),SWTNTCLN30(:,1),...
@@ -5887,6 +6090,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swtntstr1=strcat('Created SWTNTCLNTT-','Contains Toa Net No Aero ShortWave Flux-',num2str(31));
   fprintf(fid,'%s\n',swtntstr1);
+%  writetimetable(SWTNTCLNTT,tablefilename,'Sheet','TOANetSWIRFluxNoAero');
 
  % Create the Toa Net ShortWave Flux Clear Sky ikind=32
    SWTNTCLRTable=table(SWTNTCLR10(:,1),SWTNTCLR20(:,1),SWTNTCLR30(:,1),...
@@ -5905,6 +6109,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swtntstr2=strcat('Created SWTNTCLRTT-','Contains Toa Net Clear Sky ShortWave Flux-',num2str(32));
   fprintf(fid,'%s\n',swtntstr2);
+  %writetimetable(SWTNTCLRTT,tablefilename,'Sheet','TOANetSWIRFluxClearSky');
+
 
  % Create the Toa Net ShortWave Flux Clear Sky/No Aero ikind=33
    SWTNTCLRCLNTable=table(SWTNTCLRCLN10(:,1),SWTNTCLRCLN20(:,1),SWTNTCLRCLN30(:,1),...
@@ -5923,6 +6129,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swtntstr3=strcat('Created SWTNTCLRCLNTT-','Contains Toa Net Clear Sky/No Aero ShortWave Flux-',num2str(32));
   fprintf(fid,'%s\n',swtntstr3);
+  %writetimetable(SWTNTCLRCLNTT,tablefilename,'Sheet','TOANetSWIRFluxClearSkyNoAero');
+
 
 % Create the High Cloud Optical Thickness ikind=34
    TAUHGHTable=table(TAUHGH10(:,1),TAUHGH20(:,1),TAUHGH30(:,1),...
@@ -5941,6 +6149,9 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   tauhghstr=strcat('Created TAUHGHTT-','Contains High Cloud Optical Thickness-',num2str(34));
   fprintf(fid,'%s\n',tauhghstr);
+  eval(['cd ' excelpath(1:length(excelpath)-1)]);
+  tablefilename=strcat('OpticalThickness-',YearMonthStr,'.xlsx');
+  writetimetable(TAUHGHTT,tablefilename,'Sheet','HighClouds');
 
  % Create the Low Cloud Optical Thickness ikind=35
    TAULOWTable=table(TAULOW10(:,1),TAULOW20(:,1),TAULOW30(:,1),...
@@ -5959,7 +6170,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   tauhghstr1=strcat('Created TAULOWTT-','Contains LOW Cloud Optical Thickness-',num2str(35));
   fprintf(fid,'%s\n',tauhghstr1);
-
+  eval(['cd ' excelpath(1:length(excelpath)-1)]);
+  writetimetable(TAULOWTT,tablefilename,'Sheet','LowClouds');
  % Create the Mid Cloud Optical Thickness ikind=36
    TAUMIDTable=table(TAUMID10(:,1),TAUMID20(:,1),TAUMID30(:,1),...
             TAUMID40(:,1),TAUMID50(:,1),TAUMID60(:,1),...
@@ -5977,7 +6189,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   tauhghstr2=strcat('Created TAUMIDTT-','Contains Mid Cloud Optical Thickness-',num2str(36));
   fprintf(fid,'%s\n',tauhghstr2);
-
+  eval(['cd ' excelpath(1:length(excelpath)-1)]);
+  writetimetable(TAUMIDTT,tablefilename,'Sheet','MidClouds');
 % Create the Tot Cloud Optical Thickness ikind=37
    TAUTOTTable=table(TAUTOT10(:,1),TAUTOT20(:,1),TAUTOT30(:,1),...
             TAUTOT40(:,1),TAUTOT50(:,1),TAUTOT60(:,1),...
@@ -5995,7 +6208,8 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   tauhghstr3=strcat('Created TAUTOTTT-','Contains Tot Cloud Optical Thickness-',num2str(37));
   fprintf(fid,'%s\n',tauhghstr3);
-
+  eval(['cd ' excelpath(1:length(excelpath)-1)]);
+  writetimetable(TAUTOTTT,tablefilename,'Sheet','TotalThickness');
 % Create the TS or Skin Temperature ikind=39
    TSTable=table(TS10(:,1),TS20(:,1),TS30(:,1),...
             TS40(:,1),TS50(:,1),TS60(:,1),...
@@ -6013,8 +6227,54 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   tsstr=strcat('Created TSTT-','Contains Skin Temp-',num2str(39));
   fprintf(fid,'%s\n',tsstr);
-
+  eval(['cd ' excelpath(1:length(excelpath)-1)]);
+  tablefilename=strcat('SkinTemp-',YearMonthStr,'.xlsx');
+  writetimetable(TSTT,tablefilename,'Sheet','SkinTemp');
   fprintf(fid,'%s\n','----End Creating Tables----');
+% Write these tables in Excel Format if requested
+    if(iExcelTable==1)
+        eval(['cd ' excelpath(1:length(excelpath)-1)]);
+        tablefilename=strcat('Albedo-',YearMonthStr,'.xlsx');% Start with Albedo
+        writetimetable(AlbedoTT,tablefilename,'Sheet','SurfaceAlebdo');
+        writetimetable(AlbnirdfTT,tablefilename,'Sheet','SurfaceAlebdoNIRD');
+        writetimetable(AlbnirdrTT,tablefilename,'Sheet','SurfaceAlebdoNIBeam');
+        writetimetable(AlbvisdfTT,tablefilename,'Sheet','SurfaceAlebdoVisDiff');
+        writetimetable(AlbvisdrTT,tablefilename,'Sheet','SurfaceAlebdoVisBeam');
+        tablefilename=strcat('CloudFrac-',YearMonthStr,'.xlsx');% continue with th cloud frac
+        writetimetable(CLDHGHTT,tablefilename,'Sheet','HighCloudFrac');
+        writetimetable(CLDLOWTT,tablefilename,'Sheet','LowCloudFrac');
+        writetimetable(CLDMIDTT,tablefilename,'Sheet','MidCloudFrac');
+        writetimetable(CLDTOTTT,tablefilename,'Sheet','TotalCloudFrac');
+        tablefilename=strcat('SurfaceEmiss-',YearMonthStr,'.xlsx');% Surface Emissivity
+        writetimetable(SurfaceEmissTT,tablefilename,'Sheet','SurfaceEmissivity');
+        tablefilename=strcat('LWIRAbsorption-',YearMonthStr,'.xlsx');% Long Wave Absorption
+        writetimetable(LWGABTT,tablefilename,'Sheet','LWIRSurfAbs');
+        writetimetable(LWGABCLRTT,tablefilename,'Sheet','LWIRClearSkySurfAbs');
+        writetimetable(LWGABCLRCLNTT,tablefilename,'Sheet','LWIRClearSkyNoAeroSurfAbs');
+        tablefilename=strcat('LWIREmiss-',YearMonthStr,'.xlsx');% Long wave surface emission
+        writetimetable(LWGEMTT,tablefilename,'Sheet','LWIRSurfEmiss');
+        writetimetable(LWGNTTT,tablefilename,'Sheet','LWIRNetDownFlux');
+        writetimetable(LWGNTCLRTT,tablefilename,'Sheet','LWIRNetDownClearFlux');
+        writetimetable(LWGNTCLRCLNTT,tablefilename,'Sheet','LWIRNetDownClrSkyNoAero');
+        tablefilename=strcat('LWUpwelling-',YearMonthStr,'.xlsx');% LW Upwelling
+        writetimetable(LWTUPTT,tablefilename,'Sheet','LWUPTOA');
+        writetimetable(LWTUPCLRTT,tablefilename,'Sheet','LWUPClearSkyTOA');
+        writetimetable(LWTUPCLRCLNTT,tablefilename,'Sheet','LWUPClearSkyNoAeroTOA'); 
+        tablefilename=strcat('SWIRFlux-',YearMonthStr,'.xlsx');% SWIR Incoming Flux
+        writetimetable(SWGDNTT,tablefilename,'Sheet','SurfIncSWIRFlux');
+        writetimetable(SWGDNCLRTT,tablefilename,'Sheet','SurfIncSWIRClrSkyFlux');
+        writetimetable(SWGNTTT,tablefilename,'Sheet','SurfNetDownFlux');
+        writetimetable(SWGNTCLNTT,tablefilename,'Sheet','SurfNetDownFluxNoAero');
+        writetimetable(SWGNTCLRTT,tablefilename,'Sheet','SurfNetDownFluxClearSky');
+        writetimetable(SWGNTCLRCLNTT,tablefilename,'Sheet','SurfNetDownFluxClearSkyNoAero');
+        tablefilename=strcat('SWIRIncomingFlux-',YearMonthStr,'.xlsx');%SWIR Incoming Flux
+        writetimetable(SWTDNTT,tablefilename,'Sheet','TOAIncSWIRFlux');
+        writetimetable(SWTNTTT,tablefilename,'Sheet','TOANetSWIRFlux');
+        writetimetable(SWTNTCLNTT,tablefilename,'Sheet','TOANetSWIRFluxNoAero');
+        writetimetable(SWTNTCLRTT,tablefilename,'Sheet','TOANetSWIRFluxClearSky');
+        writetimetable(SWTNTCLRCLNTT,tablefilename,'Sheet','TOANetSWIRFluxClearSkyNoAero');
+
+    end
 end
 
 

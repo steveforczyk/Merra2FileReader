@@ -10,9 +10,9 @@ function  DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iN
 % Revised: May 10,2023 - added Chart ikind=31 and 32
 % Revised: May 11,2023 added chart ikind=35 and 36
 % Revised: May 12,2023 added chart ikind=37
-
+% Revised: Mar 26,2024 added Fast Save Option as screengrab
 % Classification: Unclassified
-global BandDataS MetaDataS;
+global BandDataS MetaDataS framecounter;
 global LatSpacing LonSpacing RasterAreas;
 global RasterLats RasterLons;
 global Merra2FileName Merra2ShortFileName Merra2Dat;
@@ -25,7 +25,7 @@ global LWGEMS LWGNTS LWGNTCLRS LWGNTCLRCLNS LWTUPS LWTUPCLRS;
 global LWTUPCLRCLNS SWGDNS SWGDNCLRS SWGNTS SWGNTCLNS;
 global SWGNTCLRS SWGNTCLRCLNS SWTDNS SWTNTS;
 global SWTNTCLNS SWTNTCLRS SWTNTCLRCLNS TAUHGHS TAULOWS TAUMIDS TAUTOTS TSS;
-global westEdge eastEdge southEdge northEdge;
+global westEdge eastEdge southEdge northEdge FillValue;
 global vTemp TempMovieName iMovie;
 global vTemp17 TempMovieName17;
 global vTemp34 TempmovieName34;
@@ -37,8 +37,8 @@ global YearMonthStr YearStr MonthStr DayStr YearMonthDayStr FullTimeStr;
 
 % additional paths needed for mapping
 global matpath1 mappath ;
-global jpegpath savepath;
-global fid isavefiles;
+global jpegpath savepath tiffpath;
+global fid isavefiles iFastSave;
 
 
 
@@ -62,6 +62,24 @@ global trajpath militarypath;
 global figpath screencapturepath;
 global shapepath2 countrypath countryshapepath usstateboundariespath;
 global govjpegpath;
+
+persistent xlogo numcalled;
+global westEdge eastEdge northEdge southEdge;
+persistent AfricaLat AfricaLon  ArgentinaLat ArgentinaLon AsiaLat AsiaLon;
+persistent AustraliaLat AustraliaLon BelizeLat BelizeLon BoliviaLat BoliviaLon;
+persistent BrazilLat BrazilLon CanadaLat CanadaLon ChileLat ChileLon;
+persistent ColumbiaLat ColumbiaLon CostaRicaLat CostaRicaLon CubaLat CubaLon;
+persistent DRLat DRLon EcuadorLat EcuadorLon ElSalvadorLat ElSalvadorLon;
+persistent EuropeLat EuropeLon FrenchGuianaLat FrenchGuianaLon;
+persistent GautemalaLat GautemalaLon GuyanaLat GuyanaLon HaitiLat HaitiLon;
+persistent HondurasLat HondurasLon IranLat IranLon IraqLat IraqLon JamaicaLat JamaicaLon;
+persistent JordanLat JordanLon LebanonLat LebanonLon MexicoLat MexicoLon;
+persistent NicaraguaLat NicaraguaLon OmanLat OmanLon PanamaLat PanamaLon;
+persistent PeruLat PeruLon SaudiLat SaudiLon SurinameLat SurinameLon;
+persistent SyriaLat SyriaLon TurkeyLat TurkeyLon USALat USALon UruguayLat  UruguayLon;
+persistent VenezuelaLat VenezuelaLon YemenLat YemenLon;
+persistent AfricanCities numAfricanCities AfricanCitiesList;
+persistent AustralianCities numAustralianCities AustralianCitiesList;
 if((iCreatePDFReport==1) && (RptGenPresent==1))
     import mlreportgen.dom.*;
     import mlreportgen.report.*;
@@ -72,7 +90,9 @@ monthnum=str2double(MonthStr);
 
 if(ikind==1)
     PlotArray=AlbedoS.values;
-    labelstr='Albedo-diemnsionless';
+    nanreplacement=0;
+    FillValue=AlbedoS.FillValue;
+    labelstr='Albedo-dimensionless';
     [nrows,ncols]=size(PlotArray);
     numtot=nrows*ncols;
     [ihigh,jhigh]=find(PlotArray>1);
@@ -92,6 +112,7 @@ if(ikind==1)
     FullTimeStr=YearMonthStr;
 elseif(ikind==2)
     PlotArray=AlbnirdfS.values;
+    FillValue=AlbnirdfS.FillValue;
     labelstr='ALBNIRDF-dimensionless';
     [nrows,ncols]=size(PlotArray);
     numtot=nrows*ncols;
@@ -1015,83 +1036,122 @@ numpts=nrows*ncols;
 if((ikind==1) ||(ikind==6) || (ikind==9) || (ikind==10))
     PlotArray1D=reshape(PlotArray,nrows*ncols,1);
     PlotArray1DS=sort(PlotArray1D);
-    num01=floor(.01*numpts);
-    num25=floor(.25*numpts);
-    num50=floor(.50*numpts);
-    num75=floor(.75*numpts);
-    num99=floor(.99*numpts);
+    [ibad]=isnan(PlotArray1DS);
+    numgood=numpts;
+    a1=isempty(ibad);
+    if((a1==0) && (ikind==1))
+        numbad=sum(ibad);
+        numgood=numpts-(numbad+1);
+    else
+        numgood=numpts;
+    end
+    num01=floor(.01*numgood);
+    num25=floor(.25*numgood);
+    num50=floor(.50*numgood);
+    num75=floor(.75*numgood);
+    num99=floor(.99*numgood);
     val01=PlotArray1DS(num01,1);
     val25=PlotArray1DS(num25,1);
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',descstr);
-    ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
-    ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
-    ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
-    ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
-    ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
+    ptc1str= strcat('01 % Ptile-',desc,'-',num2str(val01,6));
+    ptc25str=strcat('25 % Ptile-',desc,'-',num2str(val25,6));
+    ptc50str=strcat('50 % Ptile-',desc,'-',num2str(val50,6));
+    ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
+    ptc99str=strcat('99 % Ptile -',desc,'-',num2str(val99,6));
     endstr=strcat('End stats for-',desc);
-    fprintf(fid,'%s\n',endstr);
+    if(framecounter==1)
+        fprintf(fid,'%s\n',descstr);
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        fprintf(fid,'%s\n',endstr);
+    end
     maxval2=1;
+    if(ikind==10)
+        maxval=1;
+        minval=.95;
+        incsize=(maxval-minval)/64;
+    end
 elseif(ikind==2)
     PlotArray1D=reshape(PlotArray,nrows*ncols,1);
     PlotArray1DS=sort(PlotArray1D);
-    num01=floor(.01*numpts);
-    num25=floor(.25*numpts);
-    num50=floor(.50*numpts);
-    num75=floor(.75*numpts);
-    num99=floor(.99*numpts);
+    [ibad]=isnan(PlotArray1DS);
+    numgood=numpts;
+    a1=isempty(ibad);
+    if((a1==0) && (ikind==2))
+        numbad=sum(ibad);
+        numgood=numpts-(numbad+1);
+    else
+        numgood=numpts;
+    end
+    num01=floor(.01*numgood);
+    num25=floor(.25*numgood);
+    num50=floor(.50*numgood);
+    num75=floor(.75*numgood);
+    num99=floor(.99*numgood);
     val01=PlotArray1DS(num01,1);
     val25=PlotArray1DS(num25,1);
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
     ptc1str= strcat('01 % Ptile ALBNIRDF=',num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
     ptc25str=strcat('25 % Ptile ALBNIRDF=',num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
     ptc50str=strcat('50 % Ptile ALBNIRDF=',num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
     ptc75str=strcat('75 % Ptile ALBNIRDF=',num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
     ptc99str=strcat('99 % Ptile ALBNIRDF=',num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    fprintf(fid,'%s\n',' End Stats follow for ALBNIRDF');
+   if(framecounter==1)
+        fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
+        fprintf(fid,'%s\n',descstr);
+        fprintf(fid,'%s\n',ptc1str)
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        fprintf(fid,'%s\n',' End Stats follow for ALBNIRDF');
+    end
     frachigh=1;
     maxval=1;
     maxval2=maxval+10; 
 elseif(ikind==3)
     PlotArray1D=reshape(PlotArray,nrows*ncols,1);
     PlotArray1DS=sort(PlotArray1D);
-    num01=floor(.01*numpts);
-    num25=floor(.25*numpts);
-    num50=floor(.50*numpts);
-    num75=floor(.75*numpts);
-    num99=floor(.99*numpts);
+    [ibad]=isnan(PlotArray1DS);
+    numgood=numpts;
+    a1=isempty(ibad);
+    if((a1==0) && (ikind==3))
+        numbad=sum(ibad);
+        numgood=numpts-(numbad+1);
+    else
+        numgood=numpts;
+    end
+    num01=floor(.01*numgood);
+    num25=floor(.25*numgood);
+    num50=floor(.50*numgood);
+    num75=floor(.75*numgood);
+    num99=floor(.99*numgood);
     val01=PlotArray1DS(num01,1);
     val25=PlotArray1DS(num25,1);
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
     ptc1str= strcat('01 % Ptile ALBNIRDR=',num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
     ptc25str=strcat('25 % Ptile ALBNIRDR=',num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
     ptc50str=strcat('50 % Ptile ALBNIRDR=',num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
     ptc75str=strcat('75 % Ptile ALBNIRDR=',num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
     ptc99str=strcat('99 % Ptile ALBNIRDR=',num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    fprintf(fid,'%s\n',' End Stats follow for ALBNIRDR');
+    if(framecounter==1)
+        fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        fprintf(fid,'%s\n',' End Stats follow for ALBNIRDR');
+    end
     frachigh=1;
     maxval=1;
     maxval2=maxval+10; 
@@ -1099,56 +1159,78 @@ elseif(ikind==3)
 elseif(ikind==4)
     PlotArray1D=reshape(PlotArray,nrows*ncols,1);
     PlotArray1DS=sort(PlotArray1D);
-    num01=floor(.01*numpts);
-    num25=floor(.25*numpts);
-    num50=floor(.50*numpts);
-    num75=floor(.75*numpts);
-    num99=floor(.99*numpts);
+    [ibad]=isnan(PlotArray1DS);
+    numgood=numpts;
+    a1=isempty(ibad);
+    if((a1==0) && (ikind==4))
+        numbad=sum(ibad);
+        numgood=numpts-(numbad+1);
+    else
+        numgood=numpts;
+    end
+    num01=floor(.01*numgood);
+    num25=floor(.25*numgood);
+    num50=floor(.50*numgood);
+    num75=floor(.75*numgood);
+    num99=floor(.99*numgood);
     val01=PlotArray1DS(num01,1);
     val25=PlotArray1DS(num25,1);
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
     ptc1str= strcat('01 % Ptile ALVISDF=',num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
     ptc25str=strcat('25 % Ptile ALBVISDF=',num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
     ptc50str=strcat('50 % Ptile ALBVISDF=',num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
     ptc75str=strcat('75 % Ptile ALBVISDF=',num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
     ptc99str=strcat('99 % Ptile ALBVISDF=',num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    fprintf(fid,'%s\n',' End Stats follow for ALBVISDF');
+    if(framecounter==1)
+        fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        fprintf(fid,'%s\n',' End Stats follow for ALBVISDF');
+    end
     frachigh=1;
     maxval=1;
     maxval2=maxval+10; 
  elseif(ikind==5)
     PlotArray1D=reshape(PlotArray,nrows*ncols,1);
     PlotArray1DS=sort(PlotArray1D);
-    num01=floor(.01*numpts);
-    num25=floor(.25*numpts);
-    num50=floor(.50*numpts);
-    num75=floor(.75*numpts);
-    num99=floor(.99*numpts);
+    [ibad]=isnan(PlotArray1DS);
+    numgood=numpts;
+    a1=isempty(ibad);
+    if((a1==0) && (ikind==5))
+        numbad=sum(ibad);
+        numgood=numpts-(numbad+1);
+    else
+        numgood=numpts;
+    end
+    num01=floor(.01*numgood);
+    num25=floor(.25*numgood);
+    num50=floor(.50*numgood);
+    num75=floor(.75*numgood);
+    num99=floor(.99*numgood);
     val01=PlotArray1DS(num01,1);
     val25=PlotArray1DS(num25,1);
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
     ptc1str= strcat('01 % Ptile ALVISDR=',num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
     ptc25str=strcat('25 % Ptile ALBVISDR=',num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
     ptc50str=strcat('50 % Ptile ALBVISDR=',num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
     ptc75str=strcat('75 % Ptile ALBVISDR=',num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
     ptc99str=strcat('99 % Ptile ALBVISDR=',num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    fprintf(fid,'%s\n',' End Stats follow for ALBVISDR');
+    if(framecounter==1)
+        fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        fprintf(fid,'%s\n',' End Stats follow for ALBVISDR');
+    end
     frachigh=1;
     maxval=1;
     maxval2=maxval+10; 
@@ -1165,18 +1247,21 @@ elseif(ikind==4)
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
+    
     ptc1str= strcat('01 % Ptile CLDHGH=',num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
     ptc25str=strcat('25 % Ptile CLDHGH=',num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
     ptc50str=strcat('50 % Ptile CLDHGH=',num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
     ptc75str=strcat('75 % Ptile CLDHGH=',num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
     ptc99str=strcat('99 % Ptile CLDHGH=',num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    fprintf(fid,'%s\n',' End Stats follow for CLDHGH');
+    if(framecounter==1)
+        fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        fprintf(fid,'%s\n',' End Stats follow for CLDHGH');
+    end
     frachigh=1;
     maxval=1;
     maxval2=maxval+10; 
@@ -1193,18 +1278,20 @@ elseif(ikind==4)
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
     ptc1str= strcat('01 % Ptile CLDLOW=',num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
     ptc25str=strcat('25 % Ptile CLHLOW=',num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
     ptc50str=strcat('50 % Ptile CLDLOW=',num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
     ptc75str=strcat('75 % Ptile CLDLOW=',num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
     ptc99str=strcat('99 % Ptile CLDLOW=',num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    fprintf(fid,'%s\n',' End Stats follow for CLDLOW');
+    if(framecounter==1)
+        fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        fprintf(fid,'%s\n',' End Stats follow for CLDLOW');
+    end
     frachigh=1;
     maxval=1;
     maxval2=maxval+10; 
@@ -1221,18 +1308,20 @@ elseif(ikind==4)
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
     ptc1str= strcat('01 % Ptile CLDMID=',num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
     ptc25str=strcat('25 % Ptile CLHMID=',num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
     ptc50str=strcat('50 % Ptile CLDMID=',num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
     ptc75str=strcat('75 % Ptile CLDMID=',num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
     ptc99str=strcat('99 % Ptile CLDMID=',num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    fprintf(fid,'%s\n',' End Stats follow for CLDMID');
+    if(framecounter==1)
+        fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        fprintf(fid,'%s\n',' End Stats follow for CLDMID');
+    end
     frachigh=1;
     maxval=1;
     maxval2=maxval+10; 
@@ -1249,19 +1338,21 @@ elseif((ikind==13) || (ikind==16) || (ikind==20) || (ikind==23) || (ikind==25)||
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',descstr);
-    ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
-    ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
-    ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
-    ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
-    ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
+    ptc1str= strcat('01 % Ptile-',desc,'-',num2str(val01,6));
+    ptc25str=strcat('25 % Ptile-',desc,'-',num2str(val25,6));
+    ptc50str=strcat('50 % Ptile-',desc,'-',num2str(val50,6));
+    ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
+    ptc99str=strcat('99 % Ptile -',desc,'-',num2str(val99,6));
     endstr=strcat('End stats for-',desc);
-    fprintf(fid,'%s\n',endstr);
+    if(framecounter==1)
+        fprintf(fid,'%s\n',descstr);
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        fprintf(fid,'%s\n',endstr);
+    end
     frachigh=1;
     maxval=1000;
     maxval2=maxval+20; 
@@ -1278,19 +1369,21 @@ elseif((ikind==14))
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',descstr);
     ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
     ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
     ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
     ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
     ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    endstr=strcat('End stats for-',desc);
-    fprintf(fid,'%s\n',endstr);
+    if(framecounter==1)
+        fprintf(fid,'%s\n',descstr);
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        endstr=strcat('End stats for-',desc);
+        fprintf(fid,'%s\n',endstr);
+    end
     frachigh=1;
     maxval=1000;
     maxval2=maxval+20; 
@@ -1307,19 +1400,22 @@ elseif((ikind==14))
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',descstr);
-    ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
-    ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
-    ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
-    ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
-    ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    endstr=strcat('End stats for-',desc);
-    fprintf(fid,'%s\n',endstr);
+    if(framecounter==1)
+        ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
+        ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
+        ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
+        ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
+        ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
+        fprintf(fid,'%s\n',descstr);
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        endstr=strcat('End stats for-',desc);
+        fprintf(fid,'%s\n',endstr);
+    end
+    
     frachigh=1;
     maxval=1000;
     maxval2=maxval+20; 
@@ -1336,19 +1432,21 @@ elseif((ikind==14))
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',descstr);
-    ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
-    ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
-    ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
-    ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
-    ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    endstr=strcat('End stats for-',desc);
-    fprintf(fid,'%s\n',endstr);
+    ptc1str= strcat('01 % Ptile-',desc,'-',num2str(val01,6));
+    ptc25str=strcat('25 % Ptile-',desc,'-',num2str(val25,6));
+    ptc50str=strcat('50 % Ptile-',desc,'-',num2str(val50,6));
+    ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
+    ptc99str=strcat('99 % Ptile-',desc,'-',num2str(val99,6));
+    if(framecounter==1)
+        fprintf(fid,'%s\n',descstr);
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        endstr=strcat('End stats for-',desc);
+        fprintf(fid,'%s\n',endstr);
+    end
     frachigh=1;
     maxval=1000;
     maxval2=maxval+20; 
@@ -1365,19 +1463,21 @@ elseif((ikind==28) || (ikind==30) || (ikind==31) || (ikind==32) || (ikind==33))
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',descstr);
-    ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
-    ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
-    ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
-    ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
-    ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    endstr=strcat('End stats for-',desc);
-    fprintf(fid,'%s\n',endstr);
+    ptc1str= strcat('01 % Ptile-',desc,'-',num2str(val01,6));
+    ptc25str=strcat('25 % Ptile-',desc,'-',num2str(val25,6));
+    ptc50str=strcat('50 % Ptile-',desc,'-',num2str(val50,6));
+    ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
+    ptc99str=strcat('99 % Ptile-',desc,'-',num2str(val99,6));
+    if(framecounter==1)
+        fprintf(fid,'%s\n',descstr);
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        endstr=strcat('End stats for-',desc);
+        fprintf(fid,'%s\n',endstr)    
+    end 
     frachigh=1;
     maxval=2000;
     maxval2=maxval+20; 
@@ -1394,19 +1494,21 @@ elseif((ikind==34) || (ikind==35) || (ikind==36) || (ikind==37))
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',descstr);
     ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
     ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
     ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
     ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
     ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
-    endstr=strcat('End stats for-',desc);
-    fprintf(fid,'%s\n',endstr);
+    if(framecounter==1)
+        fprintf(fid,'%s\n',descstr);
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        endstr=strcat('End stats for-',desc);
+        fprintf(fid,'%s\n',endstr);
+    end
     frachigh=1;
     maxval=50;
     maxval2=maxval+20; 
@@ -1424,19 +1526,21 @@ elseif(ikind==39)
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    fprintf(fid,'%s\n',descstr);
-    ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
-    fprintf(fid,'%s\n',ptc1str);
-    ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
-    fprintf(fid,'%s\n',ptc25str);
-    ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
-    fprintf(fid,'%s\n',ptc50str);
-    ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
-    fprintf(fid,'%s\n',ptc75str);
-    ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
-    fprintf(fid,'%s\n',ptc99str);
+    ptc1str= strcat('01 % Ptile-',desc,'-',num2str(val01,6));
+    ptc25str=strcat('25 % Ptile-',desc,'-',num2str(val25,6));
+    ptc50str=strcat('50 % Ptile-',desc,'-',num2str(val50,6));
+    ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
+    ptc99str=strcat('99 % Ptile -',desc,'-',num2str(val99,6));
     endstr=strcat('End stats for-',desc);
-    fprintf(fid,'%s\n',endstr);
+    if(framecounter==1)
+        fprintf(fid,'%s\n',descstr);
+        fprintf(fid,'%s\n',ptc1str);
+        fprintf(fid,'%s\n',ptc25str);
+        fprintf(fid,'%s\n',ptc50str);
+        fprintf(fid,'%s\n',ptc75str);
+        fprintf(fid,'%s\n',ptc99str);
+        fprintf(fid,'%s\n',endstr);
+    end
     frachigh=1;
     maxval=500;
     maxval2=maxval+20; 
@@ -1445,7 +1549,7 @@ end
 
 %% Fetch the map limits
 
-if(framecounter==1)
+if((framecounter==1) && (ikind==1))
     maplimitstr1='****Map Limits Follow*****';
     fprintf(fid,'%s\n',maplimitstr1);
     maplimitstr2=strcat('WestEdge=',num2str(westEdge,7),'-EastEdge=',num2str(eastEdge));
@@ -1472,9 +1576,12 @@ set(gcf,'MenuBar','none');
 set(gcf,'Position',[hor1 vert1 widd lend])
 set(gca,'FontWeight','bold');
 colormap jet
-%% Plot the cloud area fraction on the map
+%% Plot the Selected parameter on the map on the map
 if((ikind==1) || (ikind==2) || (ikind==3) || (ikind==4) || (ikind==5) ||(ikind==6) || (ikind==9) || (ikind==10))
     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
+    if(ikind==10)
+        demcmap('inc',[maxval minval],incsize);
+    end
     hc = colorbar;
     hc.Label.String = labelstr;
     ylabel(hc,units,'FontWeight','bold');
@@ -1487,20 +1594,7 @@ elseif((ikind==7) || (ikind==8) || (ikind==14) || (ikind==15) || (ikind==17))
     ylabel(hc,units,'FontWeight','bold');
     tightmap
     hold on
-% elseif(ikind==3)
-%     geoshow(TAUVAL',Rpix,'DisplayType','texturemap');
-%     hc = colorbar;
-%     hc.Label.String = 'Cloud Optical Thickness-Dimensionless';
-%     ylabel(hc,units,'FontWeight','bold');
-%     tightmap
-%     hold on
-% elseif(ikind==4)
-%     geoshow(CloudyFrac',Rpix,'DisplayType','texturemap');
-%     hc = colorbar;
-%     hc.Label.String = 'Cloud Optical Thickness-Dimensionless';
-%     ylabel(hc,units,'FontWeight','bold');
-%     tightmap
-%     hold on
+
 elseif((ikind==13) || (ikind==16) || (ikind==20) || (ikind==23) || (ikind==25) || (ikind==29))
     geoshow(PlotArray',Rpix,'DisplayType','texturemap');
     hc = colorbar;
@@ -1531,86 +1625,54 @@ elseif( (ikind==33) ||(ikind==34) || (ikind==35) || (ikind==36) || (ikind==37) |
     hold on
 
 end
-% load the country borders and plot them
-eval(['cd ' mappath(1:length(mappath)-1)]);
-load('USAHiResBoundaries.mat','USALat','USALon');
+% load the country borders from a single larger file and plot them
+a1=isempty(MexicoLat);
+if(a1==1)
+% load the country borders and plot them-pull them all from the same file
+% if they are not currently in memory
+    eval(['cd ' mappath(1:length(mappath)-1)]);
+    load('WorldMercatorBoundaries.mat');
+end
 plot3m(USALat,USALon,maxval2,'r');
-load('CanadaBoundaries.mat','CanadaLat','CanadaLon');
 plot3m(CanadaLat,CanadaLon,maxval2,'r');
-load('MexicoBoundaries.mat','MexicoLat','MexicoLon');
 plot3m(MexicoLat,MexicoLon,maxval2,'r');
-load('CubaBoundaries.mat','CubaLat','CubaLon');
 plot3m(CubaLat,CubaLon,maxval2,'r');
-load('DominicanRepublicBoundaries.mat','DRLat','DRLon');
 plot3m(DRLat,DRLon,maxval2,'r');
-load('HaitiBoundaries.mat','HaitiLat','HaitiLon');
 plot3m(HaitiLat,HaitiLon,maxval2,'r');
-load('BelizeBoundaries.mat','BelizeLat','BelizeLon');
 plot3m(BelizeLat,BelizeLon,maxval2,'r');
-load('GautemalaBoundaries.mat','GautemalaLat','GautemalaLon');
 plot3m(GautemalaLat,GautemalaLon,maxval2,'r')
-load('JamaicaBoundaries.mat','JamaicaLat','JamaicaLon');
 plot3m(JamaicaLat,JamaicaLon,maxval2,'r');
-load('NicaraguaBoundaries.mat','NicaraguaLat','NicaraguaLon');
 plot3m(NicaraguaLat,NicaraguaLon,maxval2,'r')
-load('HondurasBoundaries.mat','HondurasLat','HondurasLon');
 plot3m(HondurasLat,HondurasLon,maxval2,'r')
-load('ElSalvadorBoundaries.mat','ElSalvadorLat','ElSalvadorLon');
 plot3m(ElSalvadorLat,ElSalvadorLon,maxval2,'r');
-load('PanamaBoundaries.mat','PanamaLat','PanamaLon');
 plot3m(PanamaLat,PanamaLon,maxval2,'r');
-load('ColumbiaBoundaries.mat','ColumbiaLat','ColumbiaLon');
 plot3m(ColumbiaLat,ColumbiaLon,maxval2,'r');
-load('VenezuelaBoundaries.mat','VenezuelaLat','VenezuelaLon');
 plot3m(VenezuelaLat,VenezuelaLon,maxval2,'r')
-load('PeruBoundaries.mat','PeruLat','PeruLon');
 plot3m(PeruLat,PeruLon,maxval2,'r');
-load('EcuadorBoundaries.mat','EcuadorLat','EcuadorLon');
-plot3m(EcuadorLat,EcuadorLon,maxval2,'r')
-load('BrazilBoundaries.mat','BrazilLat','BrazilLon');
+plot3m(EcuadorLat,EcuadorLon,maxval2,'r');
 plot3m(BrazilLat,BrazilLon,maxval2,'r');
-load('BoliviaBoundaries.mat','BoliviaLat','BoliviaLon');
 plot3m(BoliviaLat,BoliviaLon,maxval2,'r')
-load('ChileBoundaries.mat','ChileLat','ChileLon');
 plot3m(ChileLat,ChileLon,maxval2,'r');
-load('ArgentinaBoundaries.mat','ArgentinaLat','ArgentinaLon');
 plot3m(ArgentinaLat,ArgentinaLon,maxval2,'r');
-load('UruguayBoundaries.mat','UruguayLat','UruguayLon');
 plot3m(UruguayLat,UruguayLon,maxval2,'r');
-load('CostaRicaBoundaries.mat','CostaRicaLat','CostaRicaLon');
 plot3m(CostaRicaLat,CostaRicaLon,maxval2,'r');
-load('FrenchGuianaBoundaries.mat','FrenchGuianaLat','FrenchGuianaLon');
 plot3m(FrenchGuianaLat,FrenchGuianaLon,maxval2,'r');
-load('GuyanaBoundaries.mat','GuyanaLat','GuyanaLon');
 plot3m(GuyanaLat,GuyanaLon,maxval2,'r');
-load('SurinameBoundaries.mat','SurinameLat','SurinameLon');
 plot3m(SurinameLat,SurinameLon,maxval2,'r');
-load('SaudiBoundaries','SaudiLat','SaudiLon');
-plot3m(SaudiLat,SaudiLon,maxval2,'r');
-load('TurkeyBoundaries','TurkeyLat','TurkeyLon');
-plot3m(TurkeyLat,TurkeyLon,maxval2,'r');
-load('SyriaBoundaries','SyriaLat','SyriaLon');
-plot3m(SyriaLat,SyriaLon,maxval2,'r');
-load('LebanonBoundaries','LebanonLat','LebanonLon');
-plot3m(LebanonLat,LebanonLon,maxval2,'r');
-load('JordanBoundaries','JordanLat','JordanLon');
-plot3m(JordanLat,JordanLon,maxval2,'r');
-load('IranBoundaries','IranLat','IranLon');
 plot3m(IranLat,IranLon,maxval2,'r');
-load('IraqBoundaries','IraqLat','IraqLon');
 plot3m(IraqLat,IraqLon,maxval2,'r');
-load('KuwaitBoundaries','KuwaitLat','KuwaitLon');
-plot3m(KuwaitLat,KuwaitLon,maxval2,'r');
-load('IsraelBoundaries','IsraelLat','IsraelLon');
-plot3m(IsraelLat,IsraelLon,maxval2,'r');
-load('AfricaHiResBoundaries','AfricaLat','AfricaLon');
+plot3m(TurkeyLat,TurkeyLon,maxval2,'r');
+plot3m(SyriaLat,SyriaLon,maxval2,'r');
+plot3m(SaudiLat,SaudiLon,maxval2,'r');
+plot3m(LebanonLat,LebanonLon,maxval2,'r');
+plot3m(OmanLat,OmanLon,maxval2,'r');
+plot3m(YemenLat,YemenLon,maxval2,'r');
+plot3m(JordanLat,JordanLon,maxval2,'r');
 plot3m(AfricaLat,AfricaLon,maxval2,'r');
-load('AsiaHiResBoundaries.mat','AsiaLat','AsiaLon');
 plot3m(AsiaLat,AsiaLon,maxval2,'r');
-load('EuropeHiResBoundaries.mat','EuropeLat','EuropeLon');
 plot3m(EuropeLat,EuropeLon,maxval2,'r');
-load('AustraliaBoundaries.mat','AustraliaLat','AustraliaLon');
 plot3m(AustraliaLat,AustraliaLon,maxval2,'r');
+
 %% Add Cities to the plot is desired
 if(iCityPlot>0)
     for k=1:maxCities
@@ -1624,15 +1686,17 @@ end
 title(titlestr)
 hold off
 % Add a logo
-if(iLogo==1)
+if((iLogo==1) && (framecounter==1))
     eval(['cd ' govjpegpath(1:length(govjpegpath)-1)]);
+   [xlogo, ~]=imread(LogoFileName1);
+   numcalled=1;
+end
+if(iLogo==1)
     ha =gca;
     uistack(ha,'bottom');
     haPos = get(ha,'position');
-    %ha2=axes('position',[haPos(1:2), .1,.04,]);
     ha2=axes('position',[haPos(1)+.7,haPos(2)-.08, .1,.04,]);
-    [x, ~]=imread(LogoFileName1);
-    imshow(x);
+    imshow(xlogo);
     set(ha2,'handlevisibility','off','visible','off')
 end
 % Set up an axis for writing text at the bottom of the chart
@@ -1647,45 +1711,44 @@ ty2=.14;
 if((ikind==1) || (ikind==6) || (ikind==9) || (ikind==10) || (ikind==13) || (ikind==16) || (ikind==20))
     txtstr2=strcat('1 ptile-',desc,'-',num2str(val01,6),'-50 ptile =',num2str(val50,6),...
         '-75 ptile=',num2str(val75,6),'-99 ptile=',num2str(val99,6),'-frac pix over max range=',num2str(frachigh,6));
-    txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12);
+    txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
     tx3=.07;
     ty3=.10;
 
 elseif((ikind==2) || (ikind==3) || (ikind==23) || (ikind==25) || (ikind==29) || (ikind==34))
     txtstr2=strcat('1 ptile-',desc,'-',num2str(val01,6),'-50 ptile =',num2str(val50,6),...
         '-75 ptile=',num2str(val75,6),'-99 ptile=',num2str(val99,6),'-frac pix over max range=',num2str(frachigh,6));
-    txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12);
+    txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
 
 elseif((ikind==4) || (ikind==5) || (ikind==7) || (ikind==8) || (ikind==14) || (ikind==15) || (ikind==17) ||(ikind==18))
     txtstr2=strcat('1 ptile-',desc,'-',num2str(val01,6),'-50 ptile =',num2str(val50,6),...
         '-75 ptile=',num2str(val75,6),'-99 ptile=',num2str(val99,6),'-frac pix over max range=',num2str(frachigh,6));
-    txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12);
+    txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
 else
     txtstr2=strcat('1 ptile-',desc,'-',num2str(val01,6),'-50 ptile =',num2str(val50,6),...
         '-75 ptile=',num2str(val75,6),'-99 ptile=',num2str(val99,6),'-frac pix over max range=',num2str(frachigh,6));
-    txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',12);
+    txt2=text(tx2,ty2,txtstr2,'FontWeight','bold','FontSize',10);
 
 end
 set(newaxesh,'Visible','Off');
+
 % Grab a movie frame
 if((ikind==1) && (iMovie>0))
     frame=getframe(gcf);
     writeVideo(vTemp,frame);
-    disp('Grabbed 1 frame of movie data for ikind =1')
-elseif((ikind==17) && (iMovie>0))
-    frame=getframe(gcf);
-    writeVideo(vTemp17,frame);
-    disp('Grabbed 1 frame of movie data for ikind =17')
-elseif((ikind==34) && (iMovie>0))
-    frame=getframe(gcf);
-    writeVideo(vTemp34,frame);
-    disp('Grabbed 1 frame of movie data for ikind =34')
+%    disp('Grabbed 1 frame of movie data for ikind =1')
+% elseif((ikind==17) && (iMovie>0))
+%     frame=getframe(gcf);
+%     writeVideo(vTemp17,frame);
+%     disp('Grabbed 1 frame of movie data for ikind =17')
+% elseif((ikind==34) && (iMovie>0))
+%     frame=getframe(gcf);
+%     writeVideo(vTemp34,frame);
+%     disp('Grabbed 1 frame of movie data for ikind =34')
 else
 
 end
-if(ikind==39)
-    ab=1;
-end
+
 % Save this chart
 if((ikind==1) || (ikind==6) || (ikind==9) || (ikind==10) || (ikind==13) || (ikind==14) || (ikind==15))
     figstr=strcat(varname,'-',FullTimeStr,'.jpg');
@@ -1698,12 +1761,23 @@ elseif((ikind==16) ||(ikind==20) ||(ikind==23) || (ikind==25) || (ikind==29) || 
 else
     figstr=strcat(varname,'-',FullTimeStr,'.jpg');
 end
-eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
-actionstr='print';
-typestr='-djpeg';
-[cmdString]=MyStrcat2(actionstr,typestr,figstr);
-eval(cmdString);
-close('all');
+if(iFastSave==0)
+    eval(['cd ' jpegpath(1:length(jpegpath)-1)]);
+    actionstr='print';
+    typestr='-djpeg';
+    [cmdString]=MyStrcat2(actionstr,typestr,figstr);
+    eval(cmdString);
+    close('all');
+else
+% Try a screencapture
+    figstrlen=length(figstr);
+    is=1;
+    ie=figstrlen-4;
+    tiffstub=figstr(is:ie);
+    figstr2=strcat(tiffstub,'.tif');
+    eval(['cd ' tiffpath(1:length(tiffpath)-1)]);
+    screencapture('handle',gcf,'target',figstr2);
+end
 pause(chart_time);
 endstr=strcat('------- Finished Plotting-',varname);
 fprintf(fid,'%s\n',endstr);

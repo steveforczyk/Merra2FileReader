@@ -110,5 +110,6 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
     if(iCloseChapter==1)
         add(rpt,chapter);
     end
-close('all')
+end
+close('all');
 end

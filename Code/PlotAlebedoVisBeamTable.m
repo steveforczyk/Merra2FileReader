@@ -112,3 +112,5 @@ if((iCreatePDFReport==1) && (RptGenPresent==1)  && (iAddToReport==1))
     end
 close('all')
 end
+close('all')
+end

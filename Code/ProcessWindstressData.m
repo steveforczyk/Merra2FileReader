@@ -68,6 +68,7 @@ load(nowFile,'US','VS');
 % levels
 pressurelevel=PressureLevel42(iPress42,2);
 pressureheightkm=PressureLevel42(iPress42,3);
+titlestrorig=titlestr;
 for k=1:4 % Loop over the 4 times available each day
     U150GMT00=US.values(:,:,iPress42,k);
     V150GMT00=VS.values(:,:,iPress42,k);
@@ -78,6 +79,8 @@ for k=1:4 % Loop over the 4 times available each day
     WindDir=zeros(nrows,ncols);
     lowcutoff=-100;
     highcutoff=100;
+    titlestr=strcat(titlestrorig,'-',char(TimeSlices(k,1)));
+
     for i=1:nrows
         for j=1:ncols
             ucomp=u10(i,j);
@@ -145,7 +148,7 @@ for k=1:4 % Loop over the 4 times available each day
     movie_figure1=figure('position',[hor1 vert1 widd lend]);
     set(gcf,'MenuBar','none');
     borders('countries','g')
-    quiversc(lons,lats,u10,v10,'r','density',75);
+    quiversc(lons,lats,u10,v10,'r','density',100);
     ht=title(titlestr);
     axis([-180 180 -80 80]);
     set(gca,'Color',[.1 .1 .1]);

@@ -4,8 +4,10 @@ function [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,f
 % ranges. Remove out of range or NaN values from the calculations
 % Written By: Stephen Forczyk
 % Created: April 8,2023
-% Revised:------
+% Revised: Mar 29,2024 corrected deficiency
+% routine was serach for NaNs when many arrays have a FillValue instead
 % Classification: Public Domain
+global FillValue;
 [nrows,ncols]=size(inArray);
 ntotal=nrows*ncols;
 % Find the fraction of low values'
@@ -36,8 +38,8 @@ for ii=1:numbad
         nowVal=inArray(inow,jnow);
         if(nowVal<lowcutoff)
             nowVal=lowcutoff;
-        elseif(nowVal>highcutoff)
-            nowVal=highcutoff;
+        elseif((nowVal>highcutoff) || (nowVal>.99*FillValue))
+            nowVal=NaN;
         end
         FixedArray(inow,jnow)=nowVal;
     end
@@ -49,6 +51,7 @@ if(totalNaN==0)
     fracNaN=0;
 else
     fracNaN=totalNaN/ntotal;
+    ntotal=ntotal-totalNaN;
 end
 % Now collapse this a a 1 D array and sort
 Fixed1DArray=reshape(FixedArray,nrows*ncols,1);
