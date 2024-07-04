@@ -81,6 +81,7 @@ global iSeaOnly iLandOnly integrateRate;
 global iPostProcessDataset3;
 global numtimeslice iScale datestubstr;
 global iExcelTable iBaseLine iBaseLineFiles iBaseLineHits iBaseLineCal;
+global iSkipReadingSomeVariables;
 
 global fid;
 global widd2 lend2;
@@ -100,6 +101,7 @@ global vTemp5 TempMovieName5;
 global vTemp6 TempMovieName6;
 global vTemp7 TempMovieName7;
 global RCOEFF RCOEFFHist RCOEFFLabels;
+global StatCompTimes;
 
 global matpath datapath maskpath watermaskpath oceanmappath;
 global antarcticpath antarcticshapefile;
@@ -111,7 +113,7 @@ global ColorList RGBVals ColorList2 xkcdVals LandColors;
 global orange bubblegum brown brightblue;
 global viewAZ viewEL viewAZInc;
 % additional paths needed for mapping
-global matpath1 mappath matlabpath USshapefilepath tiffpath;
+global matpath1 mappath matlabpath USshapefilepath tiffpath tiffpath2;
 global northamericalakespath logpath pdfpath govjpegpath;
 
 global shapefilepath Countryshapepath figpath pressurepath averaged1Daypath;
@@ -169,7 +171,7 @@ govjpegpath='D:\Merra-2\gov_jpeg\';
 figpath='D:\Goes16\Imagery\Oct_FigFiles\';
 logpath='H:\Goes16\Imagery\Oct22_2017\Log_Files\'; %This really needs to be set later!!!
 tiffpath='D:\Forczyk\Map_Data\InterstateSigns\';
-tiffpath2='D:\Merra-2\netCDF\Dataset04\Tiff_Files\';
+tiffpath2='K:\Merra-2\netCDF\Dataset08\Tiff_Files2\';
 Countryshapepath='D:\Forczyk\Map_Data\CountryShapefiles\';
 gridpath='D:\Goes16\Grids\';
 oceanmappath='K:\Merra-2\Matlab_Maps_Oceans\';
@@ -180,7 +182,8 @@ NorthPoleFile='NorthPolePoints.mat';
 % Set some flags to control program execution
 iCreatePDFReport=0;
 iSkipReportFrames=2;
-iSkipDisplayFrames=4;
+iSkipDisplayFrames=6;
+iSkipReadingSomeVariables=1;
 JpegCounter=0;
 isavefiles=0;
 idebug=0;
@@ -1599,7 +1602,6 @@ ab=1;
                 fprintf(fid,'%s\n',nowFile);
             end
             fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
-            
             [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
         end
         Merra2FileNames=NewFileList;
@@ -1621,24 +1623,40 @@ ab=1;
     elseif(indx==8)% M2TMNXRAD_5.12.4
         [Merra2FileNames,nowpath] = uigetfile('*.nc4','Select Multiple Files', ...
         'MultiSelect', 'on');
-        Merra2FileNames=Merra2FileNames';
-        numSelectedFiles=length(Merra2FileNames);
-        [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
-        Merra2FileNames=NewFileList;
-        fprintf(fid,'\n');
-        fprintf(fid,'%s\n','----- List of Files to Be processed-----');
-        for nn=1:numSelectedFiles
-            nowFile=Merra2FileNames{nn,1};
-            filestr='File Num';
-            fprintf(fid,'%s\n',nowFile);
+        a1=isempty(Merra2FileNames);
+        if(a1==0)
+            Merra2FileNames=Merra2FileNames';
+            numSelectedFiles=length(Merra2FileNames);
+            fprintf(fid,'\n');
+            fprintf(fid,'%s\n','----- List of Files to Be processed-----');
+            for nn=1:numSelectedFiles
+                nowFile=Merra2FileNames{nn,1};
+                filestr='File Num';
+                fprintf(fid,'%s\n',nowFile);
+            end
+            fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
+            [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
         end
-        fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
+        Merra2FileNames=NewFileList;
+        Merra2FileName=char(Merra2FileNames{1,1});
+        numSelectedFiles=length(Merra2FileNames);
+%         [NewFileList] = SortMonthlyFilesInTimeOrder(Merra2FileNames);
+%         Merra2FileNames=NewFileList;
+%         fprintf(fid,'\n');
+%         fprintf(fid,'%s\n','----- List of Files to Be processed-----');
+%         for nn=1:numSelectedFiles
+%             nowFile=Merra2FileNames{nn,1};
+%             filestr='File Num';
+%             fprintf(fid,'%s\n',nowFile);
+%         end
+%         fprintf(fid,'%s\n','----- End List of Files to Be processed-----');
         framecounter=0;
         testFile=Merra2FileNames{1,1};
         testFileEnd=Merra2FileNames{numSelectedFiles,1};
         [iper]=strfind(testFile,'.');
         is=iper(2)+1;
         ie=iper(3)-1;
+        profile off
         tic;
         if(iMovie>0)
             YearMonthStr=testFile(is:ie);
@@ -1662,6 +1680,7 @@ ab=1;
 %             open(vTemp34);
         end
         ab=1;
+%        profile on
         for nn=1:numSelectedFiles
             nowFile=Merra2FileNames{nn,1};
             framecounter=framecounter+1;
@@ -1941,6 +1960,12 @@ ab=1;
         end
     end
     fprintf(fid,'\n');
+%% Look at Monthly Albedo data by plotting it
+    for ii=1:12
+        PlotMonthlyAlbedoData(ii)
+        PlotAlbedoDataCurveFits(ii)
+    end
+%% Calculate run times and start closeout
     elapsed_time=toc;
     etimestr=strcat('Run Time=',num2str(elapsed_time),'-sec');
     fprintf(fid,'%s\n',etimestr);
@@ -2091,7 +2116,15 @@ if((iPrintTimingInfo==1) && (framecounter>2) && (NumProcFiles>3))
     end
 end
 %% Run closeout
-
+if(indx==8)
+    eval(['cd ' savepath(1:length(savepath)-1)]);
+    actionstr='save';
+    varstr1='StatCompTimes';
+    MatFileName=strcat('StatisticsComputationTimes-',YearMonthStr,'.mat');
+    qualstr='-v7.3';
+    [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr1,qualstr);
+    eval(cmdString)
+end
 endruntime=deblank(datestr(now));
 if(indx~=7)
     runtimestr='all done';
@@ -2103,6 +2136,8 @@ endrunstr=strcat('Finished Merra 2 Analysis Run at-',endruntime);
 fprintf(fid,'%s\n',endrunstr);
 fclose(fid);
 % Close a PDF report if one is created
+
+
 a1=exist('rpt','var');
 % profile off
 % profile viewer

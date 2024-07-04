@@ -64,6 +64,7 @@ global AlbedoJanTT AlbedoFebTT AlbedoMarTT AlbedoAprTT;
 global AlbedoMayTT AlbedoJunTT AlbedoJulTT AlbedoAugTT;
 global AlbedoSepTT AlbedoOctTT AlbedoNovTT AlbedoDecTT;
 global westEdge eastEdge southEdge northEdge;
+global StatCompTimes iSkipReadingSomeVariables;
 
 % Create some holding arrays for data that will be put into tables
 global Albedo10 Albedo20 Albedo30 Albedo40 Albedo50 Albedo60 Albedo70 Albedo80;
@@ -145,6 +146,7 @@ global RCOEFF RCOEFFHist RCOEFFLabels;
 global iCityPlot iSkipDisplayFrames;
 global iExcelTable iBaseLine iBaseLineFiles iBaseLineHits;
 global BaselineSurfaceAlbedo  BaseLineFileName iBaseLineCal;
+global BaselineSurfaceTemp;
 
 % additional paths needed for mapping
 global matpath1 mappath excelpath;
@@ -154,6 +156,7 @@ global fid isavefiles;
 persistent duration start_time end_time;
 if(framecounter==1)
     duration=0;
+    StatCompTimes=zeros(numSelectedFiles,40);
 end
 
 fprintf(fid,'\n');
@@ -339,42 +342,81 @@ for i = 0:numvars-1
        a370=strcmp(varname,'TAUMID');
        a380=strcmp(varname,'TAUTOT');
        a390=strcmp(varname,'TS');
-       a400=strcmp(varname,'Var_ALBEDO');
-       a410=strcmp(varname,'Var_ALBNIRDF');
-       a420=strcmp(varname,'Var_ALBNIRDR');
-       a430=strcmp(varname,'Var_ALBVISDF');
-       a440=strcmp(varname,'Var_ALBVISDR');
-       a450=strcmp(varname,'Var_CLDHGH');
-       a460=strcmp(varname,'Var_CLDLOW');
-       a470=strcmp(varname,'Var_CLDMID');
-       a480=strcmp(varname,'Var_CLDTOT');
-       a490=strcmp(varname,'Var_EMIS');
-       a500=strcmp(varname,'Var_LWGAB');
-       a510=strcmp(varname,'Var_LWGABCLR');
-       a520=strcmp(varname,'Var_LWGABCLRCLN');
-       a530=strcmp(varname,'Var_LWGEM');
-       a540=strcmp(varname,'Var_LWGNT');
-       a550=strcmp(varname,'Var_LWGNTCLR');
-       a560=strcmp(varname,'Var_LWGNTCLRCLN');
-       a570=strcmp(varname,'Var_LWTUP');
-       a580=strcmp(varname,'Var_LWTUPCLR');
-       a590=strcmp(varname,'Var_LWTUPCLRCLN');
-       a600=strcmp(varname,'Var_SWGDN');
-       a610=strcmp(varname,'Var_SWGDNCLR');
-       a620=strcmp(varname,'Var_SWGNT');
-       a630=strcmp(varname,'Var_SWGNTCLN');
-       a640=strcmp(varname,'Var_SWGNTCLR');
-       a650=strcmp(varname,'Var_SWGNTCLRCLN');
-       a660=strcmp(varname,'Var_SWTDN');
-       a670=strcmp(varname,'Var_SWTNT');
-       a680=strcmp(varname,'Var_SWTNTCLN');
-       a690=strcmp(varname,'Var_SWTNTCLR');
-       a700=strcmp(varname,'Var_SWTNTCLRCLN');
-       a710=strcmp(varname,'Var_TAUHGH');
-       a720=strcmp(varname,'Var_TAULOW');
-       a730=strcmp(varname,'Var_TAUMID');
-       a740=strcmp(varname,'Var_TAUTOT');
-       a750=strcmp(varname,'Var_TS');
+       if(iSkipReadingSomeVariables==1)
+           a400=strcmp(varname,'Var_ALBEDO');
+           a410=strcmp(varname,'Var_ALBNIRDF');
+           a420=strcmp(varname,'Var_ALBNIRDR');
+           a430=strcmp(varname,'Var_ALBVISDF');
+           a440=strcmp(varname,'Var_ALBVISDR');
+           a450=strcmp(varname,'Var_CLDHGH');
+           a460=strcmp(varname,'Var_CLDLOW');
+           a470=strcmp(varname,'Var_CLDMID');
+           a480=strcmp(varname,'Var_CLDTOT');
+           a490=strcmp(varname,'Var_EMIS');
+           a500=strcmp(varname,'Var_LWGAB');
+           a510=strcmp(varname,'Var_LWGABCLR');
+           a520=strcmp(varname,'Var_LWGABCLRCLN');
+           a530=strcmp(varname,'Var_LWGEM');
+           a540=strcmp(varname,'Var_LWGNT');
+           a550=strcmp(varname,'Var_LWGNTCLR');
+           a560=strcmp(varname,'Var_LWGNTCLRCLN');
+           a570=strcmp(varname,'Var_LWTUP');
+           a580=strcmp(varname,'Var_LWTUPCLR');
+           a590=strcmp(varname,'Var_LWTUPCLRCLN');
+           a600=strcmp(varname,'Var_SWGDN');
+           a610=strcmp(varname,'Var_SWGDNCLR');
+           a620=strcmp(varname,'Var_SWGNT');
+           a630=strcmp(varname,'Var_SWGNTCLN');
+           a640=strcmp(varname,'Var_SWGNTCLR');
+           a650=strcmp(varname,'Var_SWGNTCLRCLN');
+           a660=strcmp(varname,'Var_SWTDN');
+           a670=strcmp(varname,'Var_SWTNT');
+           a680=strcmp(varname,'Var_SWTNTCLN');
+           a690=strcmp(varname,'Var_SWTNTCLR');
+           a700=strcmp(varname,'Var_SWTNTCLRCLN');
+           a710=strcmp(varname,'Var_TAUHGH');
+           a720=strcmp(varname,'Var_TAULOW');
+           a730=strcmp(varname,'Var_TAUMID');
+           a740=strcmp(varname,'Var_TAUTOT');
+           a750=strcmp(varname,'Var_TS');
+           a400=0;
+           a410=0;
+           a420=0;
+           a430=0;
+           a440=0;
+           a450=0;
+           a460=0;
+           a470=0;
+           a480=0;
+           a490=0;
+           a500=0;
+           a510=0;
+           a520=0;
+           a530=0;
+           a540=0;
+           a550=0;
+           a560=0;
+           a570=0;
+           a580=0;
+           a590=0;
+           a600=0;
+           a610=0;
+           a620=0;
+           a630=0;
+           a640=0;
+           a650=0;
+           a660=0;
+           a670=0;
+           a680=0;
+           a690=0;
+           a700=0;
+           a710=0;
+           a720=0;
+           a730=0;
+           a740=0;
+           a750=0;
+
+       end
 
 
 
@@ -4311,21 +4353,26 @@ else
 
     end
 end
-% Save any selected varibales to holding arrays to later allow the
+% Save any selected varibles to holding arrays to later allow the
 % calculation of parameter changes over time
 if((iBaseLine==1) && (framecounter==1))
     BaselineSurfaceAlbedo=zeros(576,361,12);
+    BaselineSurfaceTemp=zeros(576,361,12);
 end
 if(iBaseLine==1)
     MonthIndex=str2double(MonthStr);
     if(iBaseLineHits(MonthIndex,1)<iBaseLineFiles)
-        SAlbedo=AlbedoS.values;
+        SAlbedo=AlbedoS.values;% Surface Albedo
         FillValue=AlbedoS.FillValue;
         nanreplacement=0;
         [SAlbedo2,~] = SubstituteNaNValues(SAlbedo,nanreplacement,FillValue);
-        BaselineSurfaceAlbedo(:,:,MonthIndex)=SAlbedo2;
+        BaselineSurfaceAlbedo(:,:,MonthIndex)=SAlbedo2; 
+        SurfaceTemp=TSS.values;% Surface Temp
+        FillValue=TSS.FillValue;
+        nanreplacement=0;
+        [SurfaceTemp2,~] = SubstituteNaNValues(SurfaceTemp,nanreplacement,FillValue);
+        BaselineSurfaceTemp(:,:,MonthIndex)=SurfaceTemp2;
         iBaseLineHits(MonthIndex,1)=iBaseLineHits(MonthIndex,1)+1;
-        ab=1;
     end
 end
 %% First divide the results by the number of hits and then save the data
@@ -4334,7 +4381,7 @@ if((iBaseLine==1) && (framecounter==iBaseLineFiles*12))
     BaselineSurfaceAlbedo=BaselineSurfaceAlbedo/iBaseLineFiles;
     eval(['cd ' savepath(1:length(savepath)-1)]);
     actionstr='save';
-    varstr='BaselineSurfaceAlbedo iBaseLineHits iBaseLineFiles';
+    varstr='BaselineSurfaceAlbedo BaselineSurfaceTemp iBaseLineHits iBaseLineFiles';
     qualstr='-v7.3';
     BaseLineFileName=strcat('BaselineFile3Yrs-',YearMonthStr,'.mat');
     [cmdString]=MyStrcatV73(actionstr,BaseLineFileName,varstr,qualstr);
@@ -4704,17 +4751,18 @@ end
  iNewChapter=0;
  iCloseChapter=1;
  DisplayMerra2MonthlyRadDiagnostics(ikind,itype,varname,iAddToReport,iNewChapter,iCloseChapter)
-
-
-
 %% Capture Selected Statistics to Holding Arrays
 if(framecounter<=numSelectedFiles)
 % Start with the Alebedo ikind=1
   AlbedoValues=AlbedoS.values;
   lowcutoff=0;
   highcutoff=1;
+  %disp('Start computing Albedo stats')
   start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(AlbedoValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,1)=duration;
   Albedo10(framecounter,1)=val10;
   Albedo20(framecounter,1)=val20;
   Albedo30(framecounter,1)=val30;
@@ -4732,7 +4780,11 @@ if(framecounter<=numSelectedFiles)
   AlbnirdfValues=AlbnirdfS.values;
   lowcutoff=0;
   highcutoff=1;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(AlbnirdfValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,2)=duration;
   Albnirdf10(framecounter,1)=val10;
   Albnirdf20(framecounter,1)=val20;
   Albnirdf30(framecounter,1)=val30;
@@ -4750,7 +4802,11 @@ if(framecounter<=numSelectedFiles)
   AlbnirdrValues=AlbnirdrS.values;
   lowcutoff=0;
   highcutoff=1;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(AlbnirdrValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,3)=duration;
   Albnirdr10(framecounter,1)=val10;
   Albnirdr20(framecounter,1)=val20;
   Albnirdr30(framecounter,1)=val30;
@@ -4768,7 +4824,11 @@ if(framecounter<=numSelectedFiles)
   AlbvisdfValues=AlbvisdfS.values;
   lowcutoff=0;
   highcutoff=1;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats( AlbvisdfValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,4)=duration;
   Albvisdf10(framecounter,1)=val10;
   Albvisdf20(framecounter,1)=val20;
   Albvisdf30(framecounter,1)=val30;
@@ -4786,7 +4846,11 @@ if(framecounter<=numSelectedFiles)
   AlbvisdrValues=AlbvisdrS.values;
   lowcutoff=0;
   highcutoff=1;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(AlbvisdrValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,5)=duration;
   Albvisdr10(framecounter,1)=val10;
   Albvisdr20(framecounter,1)=val20;
   Albvisdr30(framecounter,1)=val30;
@@ -4804,7 +4868,11 @@ if(framecounter<=numSelectedFiles)
   CLDHGHValues=CLDHGHS.values;
   lowcutoff=0;
   highcutoff=1;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(CLDHGHValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,6)=duration;
   CLDHGH10(framecounter,1)=val10;
   CLDHGH20(framecounter,1)=val20;
   CLDHGH30(framecounter,1)=val30;
@@ -4822,7 +4890,11 @@ if(framecounter<=numSelectedFiles)
   CLDLOWValues=CLDLOWS.values;
   lowcutoff=0;
   highcutoff=1;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(CLDLOWValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,7)=duration;
   CLDLOW10(framecounter,1)=val10;
   CLDLOW20(framecounter,1)=val20;
   CLDLOW30(framecounter,1)=val30;
@@ -4840,7 +4912,11 @@ if(framecounter<=numSelectedFiles)
   CLDMIDValues=CLDMIDS.values;
   lowcutoff=0;
   highcutoff=1;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(CLDMIDValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,8)=duration;
   CLDMID10(framecounter,1)=val10;
   CLDMID20(framecounter,1)=val20;
   CLDMID30(framecounter,1)=val30;
@@ -4858,7 +4934,11 @@ if(framecounter<=numSelectedFiles)
   CLDTOTValues=CLDTOTS.values;
   lowcutoff=0;
   highcutoff=1;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(CLDHGHValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,9)=duration;
   CLDTOT10(framecounter,1)=val10;
   CLDTOT20(framecounter,1)=val20;
   CLDTOT30(framecounter,1)=val30;
@@ -4876,7 +4956,11 @@ if(framecounter<=numSelectedFiles)
   SEmisValues=EmissS.values;
   lowcutoff=0;
   highcutoff=1;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(CLDHGHValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,10)=duration;
   SEmis10(framecounter,1)=val10;
   SEmis20(framecounter,1)=val20;
   SEmis30(framecounter,1)=val30;
@@ -4894,7 +4978,11 @@ if(framecounter<=numSelectedFiles)
   LWGABValues=LWGABS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(LWGABValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,13)=duration;
   LWGAB10(framecounter,1)=val10;
   LWGAB20(framecounter,1)=val20;
   LWGAB30(framecounter,1)=val30;
@@ -4912,7 +5000,11 @@ if(framecounter<=numSelectedFiles)
   LWGABCLRValues=LWGABCLRS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(LWGABCLRValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,14)=duration;
   LWGABCLR10(framecounter,1)=val10;
   LWGABCLR20(framecounter,1)=val20;
   LWGABCLR30(framecounter,1)=val30;
@@ -4931,7 +5023,11 @@ if(framecounter<=numSelectedFiles)
   LWGABCLRCLNValues=LWGABCLRCLNS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(LWGABCLRCLNValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,15)=duration;
   LWGABCLRCLN10(framecounter,1)=val10;
   LWGABCLRCLN20(framecounter,1)=val20;
   LWGABCLRCLN30(framecounter,1)=val30;
@@ -4950,7 +5046,11 @@ if(framecounter<=numSelectedFiles)
   LWGEMValues=LWGEMS.values;
   lowcutoff=0;
   highcutoff=1000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(LWGEMValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,16)=duration;
   LWGEM10(framecounter,1)=val10;
   LWGEM20(framecounter,1)=val20;
   LWGEM30(framecounter,1)=val30;
@@ -4968,7 +5068,11 @@ if(framecounter<=numSelectedFiles)
   LWGNTValues=LWGNTS.values;
   lowcutoff=-1000;
   highcutoff=1000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(LWGNTValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,17)=duration;
   LWGNT10(framecounter,1)=val10;
   LWGNT20(framecounter,1)=val20;
   LWGNT30(framecounter,1)=val30;
@@ -4987,7 +5091,11 @@ if(framecounter<=numSelectedFiles)
   LWGNTCLRValues=LWGNTCLRS.values;
   lowcutoff=-1000;
   highcutoff=1000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(LWGNTCLRValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,18)=duration;
   LWGNTCLR10(framecounter,1)=val10;
   LWGNTCLR20(framecounter,1)=val20;
   LWGNTCLR30(framecounter,1)=val30;
@@ -5006,7 +5114,11 @@ if(framecounter<=numSelectedFiles)
   LWGNTCLRCLNValues=LWGNTCLRCLNS.values;
   lowcutoff=-1000;
   highcutoff=1000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(LWGNTCLRCLNValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,19)=duration;
   LWGNTCLRCLN10(framecounter,1)=val10;
   LWGNTCLRCLN20(framecounter,1)=val20;
   LWGNTCLRCLN30(framecounter,1)=val30;
@@ -5024,7 +5136,11 @@ if(framecounter<=numSelectedFiles)
   LWTUPValues=LWTUPS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(LWTUPValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,20)=duration;
   LWTUP10(framecounter,1)=val10;
   LWTUP20(framecounter,1)=val20;
   LWTUP30(framecounter,1)=val30;
@@ -5042,7 +5158,11 @@ if(framecounter<=numSelectedFiles)
   LWTUPCLRValues=LWTUPCLRS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(LWTUPCLRValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,21)=duration;
   LWTUPCLR10(framecounter,1)=val10;
   LWTUPCLR20(framecounter,1)=val20;
   LWTUPCLR30(framecounter,1)=val30;
@@ -5060,7 +5180,11 @@ if(framecounter<=numSelectedFiles)
   LWTUPCLRCLNValues=LWTUPCLRCLNS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(LWTUPCLRCLNValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,22)=duration;
   LWTUPCLRCLN10(framecounter,1)=val10;
   LWTUPCLRCLN20(framecounter,1)=val20;
   LWTUPCLRCLN30(framecounter,1)=val30;
@@ -5078,7 +5202,11 @@ if(framecounter<=numSelectedFiles)
   SWGDNValues=SWGDNS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWGDNValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,23)=duration;
   SWGDN10(framecounter,1)=val10;
   SWGDN20(framecounter,1)=val20;
   SWGDN30(framecounter,1)=val30;
@@ -5097,7 +5225,11 @@ if(framecounter<=numSelectedFiles)
   SWGDNCLRValues=SWGDNCLRS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWGDNCLRValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,24)=duration;
   SWGDNCLR10(framecounter,1)=val10;
   SWGDNCLR20(framecounter,1)=val20;
   SWGDNCLR30(framecounter,1)=val30;
@@ -5115,7 +5247,11 @@ if(framecounter<=numSelectedFiles)
   SWGNTValues=SWGNTS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWGNTValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,25)=duration;
   SWGNT10(framecounter,1)=val10;
   SWGNT20(framecounter,1)=val20;
   SWGNT30(framecounter,1)=val30;
@@ -5134,7 +5270,11 @@ if(framecounter<=numSelectedFiles)
   SWGNTCLNValues=SWGNTCLNS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWGNTCLNValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,26)=duration;
   SWGNTCLN10(framecounter,1)=val10;
   SWGNTCLN20(framecounter,1)=val20;
   SWGNTCLN30(framecounter,1)=val30;
@@ -5153,7 +5293,11 @@ if(framecounter<=numSelectedFiles)
   SWGNTCLRValues=SWGNTCLRS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWGNTCLRValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,27)=duration;
   SWGNTCLR10(framecounter,1)=val10;
   SWGNTCLR20(framecounter,1)=val20;
   SWGNTCLR30(framecounter,1)=val30;
@@ -5172,7 +5316,11 @@ if(framecounter<=numSelectedFiles)
   SWGNTCLRCLNValues=SWGNTCLRCLNS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWGNTCLRCLNValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,28)=duration;
   SWGNTCLRCLN10(framecounter,1)=val10;
   SWGNTCLRCLN20(framecounter,1)=val20;
   SWGNTCLRCLN30(framecounter,1)=val30;
@@ -5190,7 +5338,11 @@ if(framecounter<=numSelectedFiles)
   SWTDNValues=SWTDNS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWTDNValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,29)=duration;
   SWTDN10(framecounter,1)=val10;
   SWTDN20(framecounter,1)=val20;
   SWTDN30(framecounter,1)=val30;
@@ -5208,7 +5360,11 @@ if(framecounter<=numSelectedFiles)
   SWTNTValues=SWTNTS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWTNTValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,30)=duration;
   SWTNT10(framecounter,1)=val10;
   SWTNT20(framecounter,1)=val20;
   SWTNT30(framecounter,1)=val30;
@@ -5226,7 +5382,11 @@ if(framecounter<=numSelectedFiles)
   SWTNTCLNValues=SWTNTCLNS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWTNTCLNValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,31)=duration;
   SWTNTCLN10(framecounter,1)=val10;
   SWTNTCLN20(framecounter,1)=val20;
   SWTNTCLN30(framecounter,1)=val30;
@@ -5245,7 +5405,11 @@ if(framecounter<=numSelectedFiles)
   SWTNTCLRValues=SWTNTCLRS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWTNTCLRValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,32)=duration;
   SWTNTCLR10(framecounter,1)=val10;
   SWTNTCLR20(framecounter,1)=val20;
   SWTNTCLR30(framecounter,1)=val30;
@@ -5264,7 +5428,11 @@ if(framecounter<=numSelectedFiles)
   SWTNTCLRCLNValues=SWTNTCLRCLNS.values;
   lowcutoff=0;
   highcutoff=2000;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(SWTNTCLRCLNValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,33)=duration;
   SWTNTCLRCLN10(framecounter,1)=val10;
   SWTNTCLRCLN20(framecounter,1)=val20;
   SWTNTCLRCLN30(framecounter,1)=val30;
@@ -5282,7 +5450,11 @@ if(framecounter<=numSelectedFiles)
   TAUHGHValues=TAUHGHS.values;
   lowcutoff=0;
   highcutoff=20;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(TAUHGHValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,34)=duration;
   TAUHGH10(framecounter,1)=val10;
   TAUHGH20(framecounter,1)=val20;
   TAUHGH30(framecounter,1)=val30;
@@ -5297,10 +5469,14 @@ if(framecounter<=numSelectedFiles)
   TAUHGHHigh(framecounter,1)=frachigh;
   TAUHGHNaN(framecounter,1)=fracNaN;
 % Continue with TAULOW or LOW Cloud Optical Thickness - ikind= 35
-  TAULOWValues=TAULOWS.values;
+  TAULOWValues=TAULOWS.values;% another time waster
   lowcutoff=0;
-  highcutoff=20;
+  highcutoff=50;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(TAULOWValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,35)=duration;
   TAULOW10(framecounter,1)=val10;
   TAULOW20(framecounter,1)=val20;
   TAULOW30(framecounter,1)=val30;
@@ -5318,7 +5494,11 @@ if(framecounter<=numSelectedFiles)
   TAUMIDValues=TAUMIDS.values;
   lowcutoff=0;
   highcutoff=20;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(TAUMIDValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,36)=duration;
   TAUMID10(framecounter,1)=val10;
   TAUMID20(framecounter,1)=val20;
   TAUMID30(framecounter,1)=val30;
@@ -5333,10 +5513,14 @@ if(framecounter<=numSelectedFiles)
   TAUMIDHigh(framecounter,1)=frachigh;
   TAUMIDNaN(framecounter,1)=fracNaN;
 % Continue with TAUTOT or TOT Cloud Optical Thickness - ikind= 37
-  TAUTOTValues=TAUTOTS.values;
+  TAUTOTValues=TAUTOTS.values;% This is the long pole in the tent
   lowcutoff=0;
-  highcutoff=20;
+  highcutoff=100;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(TAUTOTValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,37)=duration;
   TAUTOT10(framecounter,1)=val10;
   TAUTOT20(framecounter,1)=val20;
   TAUTOT30(framecounter,1)=val30;
@@ -5354,7 +5538,11 @@ if(framecounter<=numSelectedFiles)
   TSValues=TSS.values;
   lowcutoff=0;
   highcutoff=500;
+  start_time=cputime;
   [val10,val20,val30,val40,val50,val60,val70,val80,val90,val100,fraclow,frachigh,fracNaN] = GetDistributionStats(TSValues,lowcutoff,highcutoff);
+  end_time=cputime;
+  duration=end_time-start_time;
+  StatCompTimes(framecounter,39)=duration;
   TS10(framecounter,1)=val10;
   TS20(framecounter,1)=val20;
   TS30(framecounter,1)=val30;
@@ -5368,6 +5556,7 @@ if(framecounter<=numSelectedFiles)
   TSLow(framecounter,1)=fraclow;
   TSHigh(framecounter,1)=frachigh;
   TSNaN(framecounter,1)=fracNaN;
+  StatCompTimes(framecounter,40)=sum(StatCompTimes(framecounter,1:39));
 end
 end_time=cputime;
 duration=end_time-start_time+duration;
@@ -5513,7 +5702,6 @@ if(framecounter>0)
 end
 %% Create a series of timetables
 if(framecounter==numSelectedFiles)
-
   stime=datetime(yd,md,dd);
   timestep=calmonths(1);
   fprintf(fid,'%s\n','----Start Creating Tables----');
@@ -5534,7 +5722,7 @@ if(framecounter==numSelectedFiles)
   varstr2=' AlbedoMarTT AlbedoAprTT AlbedoMayTT AlbedoJunTT AlbedoJulTT AlbedoAugTT';
   varstr3=' AlbedoSepTT AlbedoOctTT AlbedoNovTT AlbedoDecTT';
   varstr=strcat(varstr1,varstr2,varstr3);
-  MatFileName=strcat('AlbedoTable',YearMonthStr,'.mat');
+  MatFileName=strcat('CombinedAlbedoTable',YearMonthStr,'.mat');
   qualstr='-v7.3';
   [cmdString]=MyStrcatV73(actionstr,MatFileName,varstr,qualstr);
   eval(cmdString)
@@ -5558,8 +5746,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   albedonirstr=strcat('Created AlbnirdfTT-','Contains Surface NearIRAlebedo Data-',num2str(2));
   fprintf(fid,'%s\n',albedonirstr);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(AlbnirdfTT,tablefilename,'Sheet','SurfaceAlebdoNIRD');
+
   % Create the Albedo Table ikind=3
   AlbnirdrTable=table(Albnirdr10(:,1),Albnirdr20(:,1),Albnirdr30(:,1),...
             Albnirdr40(:,1),Albnirdr50(:,1),Albnirdr60(:,1),...
@@ -5577,8 +5764,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   albedonirdstr=strcat('Created AlbnirdrTT-','Contains Surface NearIR Albedo Beam Data -',num2str(3));
   fprintf(fid,'%s\n',albedonirdstr);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(AlbnirdrTT,tablefilename,'Sheet','SurfaceAlebdoNIBeam');
 
 % Create the Albedo Table ikind=4
   AlbvisdfTable=table(Albvisdf10(:,1),Albvisdf20(:,1),Albvisdf30(:,1),...
@@ -5597,8 +5782,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   albedovisdstr=strcat('Created AlbvisdfTableTT-','Contains Surface Visible Albedo Difuse Data -',num2str(3));
   fprintf(fid,'%s\n',albedovisdstr);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(AlbvisdfTT,tablefilename,'Sheet','SurfaceAlebdoVisDiff');
+
  % Create the Albedo Table ikind=5
   AlbvisdrTable=table(Albvisdr10(:,1),Albvisdr20(:,1),Albvisdr30(:,1),...
             Albvisdr40(:,1),Albvisdr50(:,1),Albvisdr60(:,1),...
@@ -5616,8 +5800,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   albedovisdstr=strcat('Created AlbvisdrTableTT-','Contains Surface Visible Albedo Beam Data -',num2str(3));
   fprintf(fid,'%s\n',albedovisdstr);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(AlbvisdrTT,tablefilename,'Sheet','SurfaceAlebdoVisBeam');
+
 % Create the High Altitude Cloud Fraction Table ikind=6
   CLDHGHTable=table(CLDHGH10(:,1),CLDHGH20(:,1),CLDHGH30(:,1),...
             CLDHGH40(:,1),CLDHGH50(:,1),CLDHGH60(:,1),...
@@ -5636,8 +5819,7 @@ if(framecounter==numSelectedFiles)
   cloudhighstr=strcat('Created CLDHGHTTTT-','Contains High Cloud Area Fraction-',num2str(6));
   fprintf(fid,'%s\n',cloudhighstr);
   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   tablefilename=strcat('CloudFrac-',YearMonthStr,'.xlsx');
-%   writetimetable(CLDHGHTT,tablefilename,'Sheet','HighCloudFrac');
+
  % Create the Low Altitude Cloud Fraction Table ikind=7
   CLDLOWTable=table(CLDLOW10(:,1),CLDLOW20(:,1),CLDLOW30(:,1),...
             CLDLOW40(:,1),CLDLOW50(:,1),CLDLOW60(:,1),...
@@ -5655,8 +5837,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   cloudlowstr=strcat('Created CLDLOWTT-','Contains Low Cloud Area Fraction-',num2str(6));
   fprintf(fid,'%s\n',cloudlowstr);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(CLDLOWTT,tablefilename,'Sheet','LowCloudFrac');
+
  % Create the Mid Altitude Cloud Fraction Table ikind=8
   CLDMIDTable=table(CLDMID10(:,1),CLDMID20(:,1),CLDMID30(:,1),...
             CLDMID40(:,1),CLDMID50(:,1),CLDMID60(:,1),...
@@ -5674,8 +5855,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   cloudmidstr=strcat('Created CLDMIDTT-','Contains Mid Cloud Area Fraction-',num2str(6));
   fprintf(fid,'%s\n',cloudmidstr);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(CLDMIDTT,tablefilename,'Sheet','MidCloudFrac');
+
 
  % Create the High Total Cloud Fraction Table ikind=9
   CLDTOTTable=table(CLDTOT10(:,1),CLDTOT20(:,1),CLDTOT30(:,1),...
@@ -5694,8 +5874,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   cloudtotstr=strcat('Created CLDTOTTTTT-','Contains Total Cloud Area Fraction-',num2str(9));
   fprintf(fid,'%s\n',cloudtotstr);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(CLDTOTTT,tablefilename,'Sheet','TotalCloudFrac');
 
   % Create the Surface Emissivity Table ikind=11
   SurfaceEmissTable=table(SEmis10(:,1),SEmis20(:,1),SEmis30(:,1),...
@@ -5734,8 +5912,7 @@ if(framecounter==numSelectedFiles)
   lwgabstr=strcat('Created LWGABTT-','Contains Long Wave Surface Absorption-',num2str(13));
   fprintf(fid,'%s\n',lwgabstr);
   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   tablefilename=strcat('LWIRAbsorption-',YearMonthStr,'.xlsx');
-%   writetimetable(LWGABTT,tablefilename,'Sheet','LWIRSurfAbs');
+
  % Create the Long Wave Surface Absorption Clear Sky Table ikind=14
   LWGABCLRTable=table(LWGABCLR10(:,1),LWGABCLR20(:,1),LWGABCLR30(:,1),...
             LWGABCLR40(:,1),LWGABCLR50(:,1),LWGABCLR60(:,1),...
@@ -5753,8 +5930,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgab1str=strcat('Created LWGABCLRTT-','Contains Long Wave Surface Absorption Clear Sky-',num2str(14));
   fprintf(fid,'%s\n',lwgab1str);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(LWGABCLRTT,tablefilename,'Sheet','LWIRClearSkySurfAbs');
+
 
   % Create the Long Wave Surface Absorption Clear Sky Table No Aerosol ikind=15
   LWGABCLRCLNTable=table(LWGABCLRCLN10(:,1),LWGABCLRCLN20(:,1),LWGABCLRCLN30(:,1),...
@@ -5773,8 +5949,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgab2str=strcat('Created LWGABCLRCLNTT-','Contains Long Wave Surface Absorption Clear Sky No Aerosol-',num2str(15));
   fprintf(fid,'%s\n',lwgab2str);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(LWGABCLRCLNTT,tablefilename,'Sheet','LWIRClearSkyNoAeroSurfAbs');
 
   % Create the Long Wave Surface Emission Table ikind=16
   LWGEMTable=table(LWGEM10(:,1),LWGEM20(:,1),LWGEM30(:,1),...
@@ -5793,9 +5967,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgemstr=strcat('Created LWGEMTT-','Contains Long Wave Surface Emission-',num2str(16));
   fprintf(fid,'%s\n',lwgemstr);
-%  eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   tablefilename=strcat('LWIREmiss-',YearMonthStr,'.xlsx');
-%   writetimetable(LWGEMTT,tablefilename,'Sheet','LWIRSurfEmiss');
 
 % Create the Long Wave Surface Net Downward Flux ikind=17
   LWGNTTable=table(LWGNT10(:,1),LWGNT20(:,1),LWGNT30(:,1),...
@@ -5814,8 +5985,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgem2str=strcat('Created LWGNTTT-','Contains Long Wave Surface Net Downwards Flux-',num2str(17));
   fprintf(fid,'%s\n',lwgem2str);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(LWGNTTT,tablefilename,'Sheet','LWIRNetDownFlux');
 
  % Create the Long Wave Surface Net Downward Clear Sky Flux ikind=18
   LWGNTCLRTable=table(LWGNTCLR10(:,1),LWGNTCLR20(:,1),LWGNTCLR30(:,1),...
@@ -5834,8 +6003,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgem3str=strcat('Created LWGNTCLRTT-','Contains Long Wave Surface Net Downwards Clear Sky Flux-',num2str(18));
   fprintf(fid,'%s\n',lwgem3str);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(LWGNTCLRTT,tablefilename,'Sheet','LWIRNetDownClearFlux');
 
  % Create the Long Wave Surface Net Downward Clear Sky/No Aero Flux
  % ikind=19
@@ -5855,8 +6022,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwgem4str=strcat('Created LWGNTCLRCLNTT-','Contains Long Wave Surface Net Downwards Clear Sky/No Aero Flux-',num2str(19));
   fprintf(fid,'%s\n',lwgem4str);
-%   eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   writetimetable(LWGNTCLRCLNTT,tablefilename,'Sheet','LWIRNetDownClrSkyNoAero');
 
  % Create the Long Wave upwelling radiation at the TOA (LWTUP) ikind=20
   LWTUPTable=table(LWTUP10(:,1),LWTUP20(:,1),LWTUP30(:,1),...
@@ -5875,9 +6040,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwtupstr=strcat('Created LWTUPTT-','Contains Long Wave Upwelling radiation-',num2str(20));
   fprintf(fid,'%s\n',lwtupstr);
-  %  eval(['cd ' excelpath(1:length(excelpath)-1)]);
-%   tablefilename=strcat('LWUpwelling-',YearMonthStr,'.xlsx');
-%   writetimetable(LWTUPTT,tablefilename,'Sheet','LWUPTOA');
+
 
  % Create the Long Wave clear sky upwelling radiation at the TOA (LWTUPCLR) ikind=21
   LWTUPCLRTable=table(LWTUPCLR10(:,1),LWTUPCLR20(:,1),LWTUPCLR30(:,1),...
@@ -5896,7 +6059,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwtup1str=strcat('Created LWTUPCLRTT-','Contains Long Wave clear sky Upwelling radiation-',num2str(21));
   fprintf(fid,'%s\n',lwtup1str);
- %writetimetable(LWTUPCLRTT,tablefilename,'Sheet','LWUPClearSkyTOA'); 
+
  % Create the Long Wave clear sky no/aero upwelling radiation at the TOA (LWTUPCLRCLN)
  % ikind=22
   LWTUPCLRCLNTable=table(LWTUPCLRCLN10(:,1),LWTUPCLRCLN20(:,1),LWTUPCLRCLN30(:,1),...% Fix this
@@ -5915,8 +6078,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwtup2str=strcat('Created LWTUPCLRCLNTT-','Contains Long Wave clear sky no/aero Upwelling radiation-',num2str(22));
   fprintf(fid,'%s\n',lwtup2str);
- % writetimetable(LWTUPCLRCLNTT,tablefilename,'Sheet','LWUPClearSkyNoAeroTOA'); 
-
+ 
  % Create the Surface Incoming ShortWave Flux ikind=23
    SWGDNTable=table(SWGDN10(:,1),SWGDN20(:,1),SWGDN30(:,1),...
             SWGDN40(:,1),SWGDN50(:,1),SWGDN60(:,1),...
@@ -5934,9 +6096,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   lwtupstr=strcat('Created SWGDNTT-','Contains Surface Incoming ShortWave Flux-',num2str(23));
   fprintf(fid,'%s\n',lwtupstr);
-%   tablefilename=strcat('SWIRFlux-',YearMonthStr,'.xlsx');
-%   writetimetable(SWGDNTT,tablefilename,'Sheet','SurfIncSWIRFlux');
-
 
  % Create the Surface Incoming Clear Sky ShortWave Flux ikind=24
    SWGDNCLRTable=table(SWGDNCLR10(:,1),SWGDNCLR20(:,1),SWGDNCLR30(:,1),...
@@ -5955,7 +6114,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swdgn1str=strcat('Created SWDGNCLRTT-','Contains Surface Clear Sky Incoming ShortWave Flux-',num2str(24));
   fprintf(fid,'%s\n',swdgn1str);
-  %   writetimetable(SWGDNCLRTT,tablefilename,'Sheet','SurfIncSWIRClrSkyFlux');
 
 % Create the Surface Net Downwards Flux ikind=25
    SWGNTTable=table(SWGNT10(:,1),SWGNT20(:,1),SWGNT30(:,1),...
@@ -5974,7 +6132,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swdgn1str=strcat('Created SWGNTTT-','Contains Surface Net Downwards Flux-',num2str(25));
   fprintf(fid,'%s\n',swdgn1str);
-   %   writetimetable(SWGNTTT,tablefilename,'Sheet','SurfNetDownFlux');
 
 % Create the Surface Net Downwards Flux ikind=26
    SWGNTCLNTable=table(SWGNTCLN10(:,1),SWGNTCLN20(:,1),SWGNTCLN30(:,1),...
@@ -5993,7 +6150,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swdgn2str=strcat('Created SWGNTCLNTT-','Contains Surface Net Downwards Flux No Aerosol-',num2str(26));
   fprintf(fid,'%s\n',swdgn2str);
- % writetimetable(SWGNTCLNTT,tablefilename,'Sheet','SurfNetDownFluxNoAero');
 
  % Create the Surface Net Downwards Flux ikind=27
    SWGNTCLRTable=table(SWGNTCLR10(:,1),SWGNTCLR20(:,1),SWGNTCLR30(:,1),...
@@ -6031,9 +6187,7 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swdgn4str=strcat('Created SWGNTCLRCLNTT-','Contains Surface Net Downwards Flux Clear Sky No Aero-',num2str(27));
   fprintf(fid,'%s\n',swdgn4str);
-  % writetimetable(SWGNTCLRCLNTT,tablefilename,'Sheet','SurfNetDownFluxClearSkyNoAero');
   
-
 % Create the Toa Incoming ShortWave Flux ikind=29
    SWTDNTable=table(SWTDN10(:,1),SWTDN20(:,1),SWTDN30(:,1),...
             SWTDN40(:,1),SWTDN50(:,1),SWTDN60(:,1),...
@@ -6051,8 +6205,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swtdnstr=strcat('Created SWTDNTT-','Contains Toa Incoming ShortWave Flux-',num2str(29));
   fprintf(fid,'%s\n',swtdnstr);
-%  tablefilename=strcat('SWIRIncomingFlux-',YearMonthStr,'.xlsx');
-%  writetimetable(SWTDNTT,tablefilename,'Sheet','TOAIncSWIRFlux');
 
  % Create the Toa Net ShortWave Flux ikind=30
    SWTNTTable=table(SWTNT10(:,1),SWTNT20(:,1),SWTNT30(:,1),...
@@ -6071,7 +6223,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swtntstr=strcat('Created SWTNTTT-','Contains Toa Net ShortWave Flux-',num2str(29));
   fprintf(fid,'%s\n',swtntstr);
-%  writetimetable(SWTNTTT,tablefilename,'Sheet','TOANetSWIRFlux');
 
  % Create the Toa Net ShortWave Flux No Aero ikind=31
    SWTNTCLNTable=table(SWTNTCLN10(:,1),SWTNTCLN20(:,1),SWTNTCLN30(:,1),...
@@ -6090,7 +6241,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swtntstr1=strcat('Created SWTNTCLNTT-','Contains Toa Net No Aero ShortWave Flux-',num2str(31));
   fprintf(fid,'%s\n',swtntstr1);
-%  writetimetable(SWTNTCLNTT,tablefilename,'Sheet','TOANetSWIRFluxNoAero');
 
  % Create the Toa Net ShortWave Flux Clear Sky ikind=32
    SWTNTCLRTable=table(SWTNTCLR10(:,1),SWTNTCLR20(:,1),SWTNTCLR30(:,1),...
@@ -6109,8 +6259,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swtntstr2=strcat('Created SWTNTCLRTT-','Contains Toa Net Clear Sky ShortWave Flux-',num2str(32));
   fprintf(fid,'%s\n',swtntstr2);
-  %writetimetable(SWTNTCLRTT,tablefilename,'Sheet','TOANetSWIRFluxClearSky');
-
 
  % Create the Toa Net ShortWave Flux Clear Sky/No Aero ikind=33
    SWTNTCLRCLNTable=table(SWTNTCLRCLN10(:,1),SWTNTCLRCLN20(:,1),SWTNTCLRCLN30(:,1),...
@@ -6129,7 +6277,6 @@ if(framecounter==numSelectedFiles)
   eval(cmdString)
   swtntstr3=strcat('Created SWTNTCLRCLNTT-','Contains Toa Net Clear Sky/No Aero ShortWave Flux-',num2str(32));
   fprintf(fid,'%s\n',swtntstr3);
-  %writetimetable(SWTNTCLRCLNTT,tablefilename,'Sheet','TOANetSWIRFluxClearSkyNoAero');
 
 
 % Create the High Cloud Optical Thickness ikind=34

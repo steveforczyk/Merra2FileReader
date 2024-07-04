@@ -17,7 +17,7 @@ global LatSpacing LonSpacing RasterAreas;
 global RasterLats RasterLons;
 global Merra2FileName Merra2ShortFileName Merra2Dat;
 global numlat numlon Rpix latlim lonlim rasterSize;
-
+global StatCompTimes;
 global LonS LatS TimeS AlbedoS AlbnirdfS AlbnirdrS AlbvisdfS;
 global AlbvisdrS  CLDHGHS CLDLOWS CLDMIDS CLDTOTS;
 global EmissS LWGABS LWGABCLRS LWGABCLRCLNS;
@@ -860,18 +860,22 @@ elseif(ikind==2)
     desc='ALBNIRDF';
     units='dimensioness';
     titlestr=strcat('Surface Albedo NearIR Diffuse For-',Merra2FileName);
+    descstr=strcat('Basic stats monthly follow for-',titlestr);
 elseif(ikind==3)
     desc='ALBNIRDR';
     units='dimensionless';
     titlestr=strcat('Surface Albedo Near IR Beam For-',Merra2FileName);
+    descstr=strcat('Basic stats monthly follow for-',titlestr);
 elseif(ikind==4)
     desc='ALBVISDF';
     units='Dimensionless';  
     titlestr=strcat('Surface Albedo Visible Difuse For-', Merra2FileName);
+    descstr=strcat('Basic stats monthly follow for-',titlestr);
 elseif(ikind==5)
     desc='ALBVISDR';
     units='Dimensionless';  
     titlestr=strcat('Surface Albedo Visible Beam For-', Merra2FileName);
+    descstr=strcat('Basic stats monthly follow for-',titlestr);
 elseif(ikind==6)
     desc='High Cloud Frac';
     units='Dimensionless';  
@@ -1061,7 +1065,7 @@ if((ikind==1) ||(ikind==6) || (ikind==9) || (ikind==10))
     ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
     ptc99str=strcat('99 % Ptile -',desc,'-',num2str(val99,6));
     endstr=strcat('End stats for-',desc);
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',descstr);
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1103,10 +1107,10 @@ elseif(ikind==2)
     ptc50str=strcat('50 % Ptile ALBNIRDF=',num2str(val50,6));
     ptc75str=strcat('75 % Ptile ALBNIRDF=',num2str(val75,6));
     ptc99str=strcat('99 % Ptile ALBNIRDF=',num2str(val99,6));
-   if(framecounter==1)
+   if(framecounter<=10)
         fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
         fprintf(fid,'%s\n',descstr);
-        fprintf(fid,'%s\n',ptc1str)
+        fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
         fprintf(fid,'%s\n',ptc50str);
         fprintf(fid,'%s\n',ptc75str);
@@ -1143,7 +1147,7 @@ elseif(ikind==3)
     ptc50str=strcat('50 % Ptile ALBNIRDR=',num2str(val50,6));
     ptc75str=strcat('75 % Ptile ALBNIRDR=',num2str(val75,6));
     ptc99str=strcat('99 % Ptile ALBNIRDR=',num2str(val99,6));
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1183,7 +1187,7 @@ elseif(ikind==4)
     ptc50str=strcat('50 % Ptile ALBVISDF=',num2str(val50,6));
     ptc75str=strcat('75 % Ptile ALBVISDF=',num2str(val75,6));
     ptc99str=strcat('99 % Ptile ALBVISDF=',num2str(val99,6));
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1222,7 +1226,7 @@ elseif(ikind==4)
     ptc50str=strcat('50 % Ptile ALBVISDR=',num2str(val50,6));
     ptc75str=strcat('75 % Ptile ALBVISDR=',num2str(val75,6));
     ptc99str=strcat('99 % Ptile ALBVISDR=',num2str(val99,6));
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1247,13 +1251,12 @@ elseif(ikind==4)
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    
     ptc1str= strcat('01 % Ptile CLDHGH=',num2str(val01,6));
     ptc25str=strcat('25 % Ptile CLDHGH=',num2str(val25,6));
     ptc50str=strcat('50 % Ptile CLDHGH=',num2str(val50,6));
     ptc75str=strcat('75 % Ptile CLDHGH=',num2str(val75,6));
     ptc99str=strcat('99 % Ptile CLDHGH=',num2str(val99,6));
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1283,7 +1286,7 @@ elseif(ikind==4)
     ptc50str=strcat('50 % Ptile CLDLOW=',num2str(val50,6));
     ptc75str=strcat('75 % Ptile CLDLOW=',num2str(val75,6));
     ptc99str=strcat('99 % Ptile CLDLOW=',num2str(val99,6));
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1313,7 +1316,7 @@ elseif(ikind==4)
     ptc50str=strcat('50 % Ptile CLDMID=',num2str(val50,6));
     ptc75str=strcat('75 % Ptile CLDMID=',num2str(val75,6));
     ptc99str=strcat('99 % Ptile CLDMID=',num2str(val99,6));
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',' Basic Stats follow for 1 Month Data Average ');
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1344,7 +1347,7 @@ elseif((ikind==13) || (ikind==16) || (ikind==20) || (ikind==23) || (ikind==25)||
     ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
     ptc99str=strcat('99 % Ptile -',desc,'-',num2str(val99,6));
     endstr=strcat('End stats for-',desc);
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',descstr);
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1374,7 +1377,7 @@ elseif((ikind==14))
     ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
     ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
     ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',descstr);
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1400,7 +1403,7 @@ elseif((ikind==14))
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    if(framecounter==1)
+    if(framecounter<=10)
         ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
         ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
         ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
@@ -1437,7 +1440,7 @@ elseif((ikind==14))
     ptc50str=strcat('50 % Ptile-',desc,'-',num2str(val50,6));
     ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
     ptc99str=strcat('99 % Ptile-',desc,'-',num2str(val99,6));
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',descstr);
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1468,7 +1471,7 @@ elseif((ikind==28) || (ikind==30) || (ikind==31) || (ikind==32) || (ikind==33))
     ptc50str=strcat('50 % Ptile-',desc,'-',num2str(val50,6));
     ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
     ptc99str=strcat('99 % Ptile-',desc,'-',num2str(val99,6));
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',descstr);
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1476,7 +1479,7 @@ elseif((ikind==28) || (ikind==30) || (ikind==31) || (ikind==32) || (ikind==33))
         fprintf(fid,'%s\n',ptc75str);
         fprintf(fid,'%s\n',ptc99str);
         endstr=strcat('End stats for-',desc);
-        fprintf(fid,'%s\n',endstr)    
+        fprintf(fid,'%s\n',endstr);    
     end 
     frachigh=1;
     maxval=2000;
@@ -1494,12 +1497,12 @@ elseif((ikind==34) || (ikind==35) || (ikind==36) || (ikind==37))
     val50=PlotArray1DS(num50,1);
     val75=PlotArray1DS(num75,1);
     val99=PlotArray1DS(num99,1);
-    ptc1str= strcat('01 % Ptile-',desc,num2str(val01,6));
-    ptc25str=strcat('25 % Ptile-',desc,num2str(val25,6));
-    ptc50str=strcat('50 % Ptile-',desc,num2str(val50,6));
-    ptc75str=strcat('75 % Ptile-',desc,num2str(val75,6));
-    ptc99str=strcat('99 % Ptile -',desc,num2str(val99,6));
-    if(framecounter==1)
+    ptc1str= strcat('01 % Ptile-',desc,'-',num2str(val01,6));
+    ptc25str=strcat('25 % Ptile-',desc,'-',num2str(val25,6));
+    ptc50str=strcat('50 % Ptile-',desc,'-',num2str(val50,6));
+    ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
+    ptc99str=strcat('99 % Ptile-',desc,'-',num2str(val99,6));
+    if(framecounter<=10)
         fprintf(fid,'%s\n',descstr);
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
@@ -1532,7 +1535,7 @@ elseif(ikind==39)
     ptc75str=strcat('75 % Ptile-',desc,'-',num2str(val75,6));
     ptc99str=strcat('99 % Ptile -',desc,'-',num2str(val99,6));
     endstr=strcat('End stats for-',desc);
-    if(framecounter==1)
+    if(framecounter<=10)
         fprintf(fid,'%s\n',descstr);
         fprintf(fid,'%s\n',ptc1str);
         fprintf(fid,'%s\n',ptc25str);
